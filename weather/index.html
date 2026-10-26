@@ -79,7 +79,7 @@ h2 { font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: u
     Updated every 10 minutes by Deeside.com. Always follow official advice in an emergency.
   </div>
 </div>
-<script src="common.js?v=2"></script>
+<script src="common.js?v=3"></script>
 <script>
 function render(d) {
   document.getElementById('upd').textContent = 'Updated ' + fmtTime(d.generated);
@@ -108,7 +108,7 @@ function render(d) {
     const nowMs = Date.now(), nextIdx = t.events.findIndex(e => new Date(e.time) > nowMs);
     const rows = t.events.filter((e, i) => i >= Math.max(0, nextIdx - 1)).slice(0, 12);
     document.getElementById('tides').innerHTML = `<table class="tides"><tr><th>Day</th><th>Tide</th><th>Time</th><th>Height</th></tr>${rows.map(e =>
-      `<tr class="${t.events.indexOf(e) === nextIdx ? 'next' : ''}"><td>${dayName(e.time)}</td><td class="${e.type === 'High' ? 'hw' : ''}">${e.type} water</td><td>${fmtTime(e.time)}</td><td>${e.height ? e.height + 'm' : ''}</td></tr>`).join('')}</table>
+      `<tr class="${t.events.indexOf(e) === nextIdx ? 'next' : ''}"><td>${dayName(e.time)}</td><td class="${e.type === 'High' ? 'hw' : ''}">${e.type} water</td><td>${fmtTime(e.time)}</td><td>${e.height ? e.height.toFixed(1) + 'm' : ''}</td></tr>`).join('')}</table>
       <p class="note">Predicted times and heights. Weather, especially strong winds and low pressure, can push real tides higher than predicted. The Dee at Connah's Quay largely dries at low water, so no low water height is given.</p>`;
   } else {
     document.getElementById('tidesec').style.display = 'none';

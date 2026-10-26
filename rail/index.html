@@ -39,12 +39,31 @@ tr.we td:first-child { color: var(--muted); }
 .wrapt { overflow-x: auto; }
 .how p { font-size: 14.5px; line-height: 1.6; margin-bottom: 10px; }
 .src { padding: 16px 0 4px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.live-hd { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin-bottom: 10px; }
+.live-hd h2 { margin: 0; }
+.live-hd select { font: inherit; font-size: 14px; padding: 7px 10px; border: 1px solid #ced4da; border-radius: 4px; background: #fff; }
+.upd2 { font-size: 12.5px; color: var(--muted); margin: -4px 0 10px; }
+.cxl { background: var(--red-bg); color: #7f1212; font-size: 13.5px; padding: 9px 12px; margin-bottom: 12px; line-height: 1.45; }
+.cxl b { display: block; }
+.dirs { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+@media (max-width: 640px) { .dirs { grid-template-columns: 1fr; } }
+.dir { font-size: 13px; font-weight: 800; color: var(--head); padding: 8px 0 6px; border-bottom: 2px solid var(--rule); }
+.tr { display: grid; grid-template-columns: 50px 1fr auto; gap: 10px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 14.5px; }
+.tr .t { font-weight: 800; color: var(--head); font-variant-numeric: tabular-nums; }
+.tr .d small { display: block; font-size: 12px; color: var(--muted); }
+.tr .st { font-size: 13px; font-weight: 700; white-space: nowrap; }
+.st.ok { color: var(--green-dk); } .st.late { color: var(--amber); } .st.can { color: var(--red); }
+.tr.can { background: var(--red-bg); } .tr.can .t { text-decoration: line-through; color: var(--muted); }
+.none { font-size: 14px; color: var(--muted); padding: 10px 0; }
 </style>
 </head>
 <body>
 <script>if (self !== top) document.body.classList.add('embedded');</script>
 <div id="wrap">
-  <div class="top"><h1>Wrexham to Bidston line tracker</h1><p>How trains on the Wrexham to Bidston line, also known as the Borderlands line, are running day by day. Updated every morning.</p></div>
+  <div class="top"><h1>Wrexham to Bidston line tracker</h1><p>How trains on the Wrexham to Bidston line, also known as the Borderlands line, are running day by day. Live departures every minute, and day-by-day performance updated every morning.</p></div>
+  <section id="live"><div class="live-hd"><h2>Live departures</h2><label>Station <select id="stn"></select></label></div>
+    <p class="upd2" id="lupd">Loading live departures…</p><div id="lcx"></div>
+    <div class="dirs"><div><div class="dir">Towards Bidston</div><div id="ln"></div></div><div><div class="dir">Towards Wrexham</div><div id="ls"></div></div></div></section>
   <section><h2>The last seven days</h2><div class="stats" id="stats"><div class="s"><div class="lbl">Loading the latest figures…</div></div></div></section>
   <section><h2>Cancellations per day</h2><div id="chart"><p class="lbl">Loading…</p></div></section>
   <section><h2>Day by day</h2><div class="wrapt" id="table"><p class="lbl">Loading…</p></div></section>
@@ -79,6 +98,52 @@ fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).th
   document.getElementById('src').textContent = `Powered by National Rail Enquiries. Figures compiled by Deeside.com, latest day ${fd(all[all.length - 1].day, {weekday: 'long', day: 'numeric', month: 'long'})}.`;
   try { parent.postMessage({deesideWidget: 'rail-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {}
 });
+</script>
+<script>
+/* Live departures: refreshed every minute from the Deeside.com server */
+(function () {
+  const URL = 'https://65-109-143-26.sslip.io/live/rail.json';
+  const sel = document.getElementById('stn');
+  let data, stn = (new URLSearchParams(location.search).get('station') || '').toUpperCase();
+  try { stn = stn || localStorage.getItem('dsRailStn') || ''; } catch (e) {}
+  stn = stn || 'SHT';
+  const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  function row(x) {
+    const late = x.etd && x.etd !== 'On time' && x.etd !== 'Cancelled' && x.etd !== 'Delayed';
+    const st = x.cancelled ? '<span class="st can">Cancelled</span>' : x.etd === 'On time' ? '<span class="st ok">On time</span>'
+      : x.etd === 'Delayed' ? '<span class="st late">Delayed</span>' : late ? `<span class="st late">Exp ${esc(x.etd)}</span>` : `<span class="st">${esc(x.etd)}</span>`;
+    const sub = [x.cancelled || x.etd === 'Delayed' ? x.reason : '', x.coaches ? x.coaches + ' coaches' : '', x.plat ? 'Platform ' + x.plat : ''].filter(Boolean).join('. ');
+    return `<div class="tr${x.cancelled ? ' can' : ''}"><span class="t">${esc(x.std)}</span><span class="d">${esc(x.to)}${sub ? `<small>${esc(sub)}</small>` : ''}</span>${st}</div>`;
+  }
+  function list(L, end) {
+    if (L === null) return '<p class="none">Live times for this station are unavailable right now.</p>';
+    if (end) return '<p class="none">End of the line.</p>';
+    return L.length ? L.map(row).join('') : '<p class="none">No more trains in the next two and a half hours.</p>';
+  }
+  function draw() {
+    if (!data) return;
+    const s = data.stations.find(x => x.crs === stn) || data.stations.find(x => x.crs === 'SHT');
+    document.getElementById('lupd').textContent = 'Updated ' + new Date(data.generated).toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'}) + '. Refreshes every minute.';
+    const c = data.cancelled_today || [];
+    document.getElementById('lcx').innerHTML = c.length ? `<div class="cxl"><b>${c.length} train${c.length > 1 ? 's' : ''} cancelled today</b>${c.map(x => esc(`${x.std} ${x.from} to ${x.to}${x.reason ? ': ' + x.reason.replace(/^This service has been cancelled because of /i, '').replace(/^This train has been cancelled because of /i, '') : ''}`)).join('<br>')}</div>` : '';
+    document.getElementById('ln').innerHTML = list(s.north, s.crs === 'BID');
+    document.getElementById('ls').innerHTML = list(s.south, s.crs === 'WXC');
+  }
+  function load() {
+    fetch(URL + '?t=' + Math.floor(Date.now() / 30000)).then(r => r.json()).then(d => {
+      data = d;
+      if (!sel.options.length) {
+        sel.innerHTML = d.stations.map(x => `<option value="${x.crs}">${esc(x.name)}</option>`).join('');
+        if (!d.stations.some(x => x.crs === stn)) stn = 'SHT';
+        sel.value = stn;
+      }
+      draw();
+    }).catch(() => { document.getElementById('lupd').textContent = 'Live departures are unavailable right now.'; });
+  }
+  sel.onchange = () => { stn = sel.value; try { localStorage.setItem('dsRailStn', stn); } catch (e) {} draw(); };
+  load(); setInterval(load, 60000);
+  if (window.ResizeObserver) new ResizeObserver(() => { try { parent.postMessage({deesideWidget: 'rail-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {} }).observe(document.getElementById('wrap'));
+})();
 </script>
 </body>
 </html>

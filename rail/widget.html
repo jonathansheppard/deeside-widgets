@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Borderlands line tracker</title>
+<title>Wrexham to Bidston trains</title>
 <link rel="stylesheet" href="../house.css?v=1">
 <style>
 .sub { padding: 8px 14px 0; font-size: 12.5px; color: var(--muted); }
@@ -28,8 +28,8 @@
 </style>
 </head>
 <body>
-<a class="card" id="w" href="https://www.deeside.com/borderlands-line/" target="_top">
-  <div class="card-hd"><h3>Borderlands line tracker</h3><span class="upd" id="upd"></span></div>
+<a class="card" id="w" href="https://www.deeside.com/wrexham-bidston-line/" target="_top">
+  <div class="card-hd"><h3>Wrexham to Bidston trains</h3><span class="upd" id="upd"></span></div>
   <div class="load" id="body">Loading…</div>
 </a>
 <script>
@@ -42,7 +42,7 @@ fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).th
   const max = Math.max(4, ...days.map(x => x.cancelled + x.part_cancelled));
   document.getElementById('upd').textContent = 'To ' + fmtDay(wk[wk.length - 1].day, {weekday: 'short', day: 'numeric', month: 'short'});
   document.getElementById('body').outerHTML = `
-    <div class="sub">Wrexham to Bidston trains, last 7 days</div>
+    <div class="sub">Both directions, last 7 days</div>
     <div class="stats">
       <div class="s"><div class="big ${canc ? 'bad' : ''}">${canc}<span> of ${tt}</span></div><div class="lbl">trains cancelled in full or in part</div></div>
       <div class="s"><div class="big">${Math.round(w3 / tt * 100)}<span>%</span></div><div class="lbl">ran within 3 minutes of the timetable</div></div>

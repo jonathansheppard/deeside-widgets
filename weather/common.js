@@ -36,7 +36,7 @@ function alerts(d) {
   (d.floods || []).forEach(f => out.push({lvl: f.sev <= 2 ? 'red' : 'amber', text: `${f.label}: ${f.area}`, sub: f.tidal ? 'Tidal' : '',
     link: 'https://flood-warning.naturalresources.wales/?culture=en-GB'}));
   (d.powercuts || []).filter(p => !p.planned).forEach(p => out.push({lvl: 'amber', text: `Power cut: ${p.outcodes}${p.town ? ' ' + p.town : ''}`,
-    sub: `${p.postcodes} postcodes. Estimate ${p.eta}`, link: p.link}));
+    sub: `${p.postcodes} postcodes. Estimate ${p.eta}`, list: p.postcode_list || [], link: p.link}));
   return out.sort((a, b) => (a.lvl === 'red' ? 0 : 1) - (b.lvl === 'red' ? 0 : 1));
 }
 

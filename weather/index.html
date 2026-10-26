@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deeside right now: weather, warnings, tides and power cuts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --bg: #0c0c0e; --panel: #141418; --rule: rgba(255,255,255,.08); --text: #f9fafb; --muted: #8b93a1; --dim: #5b6472;
+  --green: #22c55e; --amber: #f59e0b; --red: #ef4444; --blue: #60a5fa; }
+html { background: #fff; }
+body { font-family: 'DM Sans', sans-serif; color: var(--text); background: transparent; padding: 0; }
+a { color: var(--blue); }
+.wrap { background: var(--bg); border-radius: 10px; overflow: hidden; }
+.top { padding: 18px 20px 14px; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+h1 { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 40px; letter-spacing: .5px; line-height: 1; }
+.top p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.upd { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.pip { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pip 2.4s infinite; }
+@keyframes pip { 50% { opacity: .35; box-shadow: none; } }
+section { padding: 18px 20px; border-bottom: 1px solid var(--rule); }
+h2 { font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.alert { display: flex; gap: 10px; padding: 11px 13px; border-radius: 6px; margin-bottom: 8px; font-size: 14px; font-weight: 600; line-height: 1.35; }
+.alert small { display: block; font-weight: 400; font-size: 12.5px; opacity: .85; margin-top: 3px; }
+.alert a { color: inherit; font-weight: 400; font-size: 12px; text-decoration: underline; }
+.alert.red { background: rgba(239,68,68,.15); color: #fecaca; border: 1px solid rgba(239,68,68,.3); }
+.alert.amber { background: rgba(245,158,11,.13); color: #fde68a; border: 1px solid rgba(245,158,11,.28); }
+.alert.info { background: rgba(255,255,255,.04); color: #cbd5e1; border: 1px solid var(--rule); font-weight: 500; }
+.alert .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex: none; }
+.red .dot { background: var(--red); } .amber .dot { background: var(--amber); } .info .dot { background: var(--dim); }
+.ok { color: var(--green); font-size: 14px; }
+.now { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.temp { font-family: 'Bebas Neue', sans-serif; font-size: 88px; line-height: .85; }
+.temp sup { font-size: 32px; vertical-align: top; opacity: .7; }
+.cond b { font-size: 20px; display: block; }
+.cond span { color: var(--muted); font-size: 13.5px; line-height: 1.6; display: block; }
+.hours { display: flex; gap: 2px; overflow-x: auto; margin-top: 16px; padding-bottom: 6px; scrollbar-width: thin; }
+.h { flex: 0 0 62px; text-align: center; padding: 8px 2px; background: var(--panel); border-radius: 6px; font-size: 11.5px; color: var(--muted); }
+.h b { display: block; color: var(--text); font-size: 16px; }
+.h .r { color: var(--blue); font-size: 11px; display: block; }
+.h .g { font-size: 10.5px; display: block; margin-top: 2px; }
+.days { display: grid; gap: 6px; }
+.d { display: grid; grid-template-columns: 80px 40px 1fr auto auto; gap: 10px; align-items: center; padding: 8px 12px; background: var(--panel); border-radius: 6px; font-size: 14px; }
+.d .n { font-weight: 600; } .d .w { color: var(--muted); font-size: 13px; }
+.d .t b { font-size: 16px; } .d .t span { color: var(--muted); }
+.d .r { color: var(--blue); font-size: 12.5px; width: 62px; text-align: right; }
+.tides { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tides th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--rule); }
+.tides td { padding: 8px; border-bottom: 1px solid var(--rule); }
+.tides td.hw { color: var(--blue); font-weight: 600; }
+.tides tr.next td { background: rgba(96,165,250,.1); }
+.note { color: var(--muted); font-size: 12.5px; line-height: 1.5; margin-top: 10px; }
+.src { padding: 16px 20px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+.src a { color: var(--muted); }
+@media (max-width: 520px) {
+  .d { grid-template-columns: 70px 32px 1fr auto; } .d .w { display: none; }
+  h1 { font-size: 32px; } .temp { font-size: 72px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <div class="top">
+    <div><h1>Deeside right now</h1><p>Weather, warnings, flood alerts, tides and power cuts for Deeside and Flintshire</p></div>
+    <div class="upd"><span class="pip"></span><span id="upd">Loading…</span></div>
+  </div>
+  <section><h2>Warnings and disruption</h2><div id="alerts"></div></section>
+  <section id="nowsec"><h2>Weather now and next 24 hours</h2><div id="now"></div></section>
+  <section id="weeksec"><h2>Next seven days</h2><div class="days" id="days"></div></section>
+  <section id="tidesec"><h2>Tides at Connah's Quay</h2><div id="tides"></div></section>
+  <div class="src">
+    Forecast and weather warnings from the <a href="https://www.metoffice.gov.uk/" target="_blank" rel="noopener">Met Office</a>.
+    Flood alerts and warnings: contains Natural Resources Wales information © Natural Resources Wales and database right.
+    Tidal predictions © Crown copyright, UK Hydrographic Office (ADMIRALTY).
+    Power cut information from <a href="https://powercuts.spenergynetworks.co.uk/" target="_blank" rel="noopener">SP Energy Networks</a>.
+    Updated every 10 minutes by Deeside.com. Always follow official advice in an emergency.
+  </div>
+</div>
+<script src="common.js"></script>
+<script>
+function render(d) {
+  document.getElementById('upd').textContent = 'Updated ' + fmtTime(d.generated);
+  // Alerts
+  const a = alerts(d), box = [];
+  a.forEach(x => box.push(`<div class="alert ${x.lvl}"><span class="dot"></span><div>${esc(x.text)}${x.sub ? `<small>${esc(x.sub)}</small>` : ''}${x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener">Details</a>` : ''}</div></div>`));
+  (d.powercuts || []).filter(p => p.planned).forEach(p => box.push(`<div class="alert info"><span class="dot"></span><div>Planned power work: ${esc(p.outcodes)} ${esc(p.town)}<small>${p.postcodes} postcodes. Due to finish ${esc(p.eta)}</small><a href="${esc(p.link)}" target="_blank" rel="noopener">Details</a></div></div>`));
+  (d.warnings || []).filter(w => !w.local).forEach(w => box.push(`<div class="alert info"><span class="dot"></span><div>${esc(w.title)}, not including Flintshire<small>${esc(w.from)} to ${esc(w.to)}. ${esc(w.areas)}</small><a href="${esc(w.link)}" target="_blank" rel="noopener">Met Office details</a></div></div>`));
+  document.getElementById('alerts').innerHTML = a.length ? box.join('')
+    : '<p class="ok">No Met Office warnings, flood alerts or unplanned power cuts for Deeside right now.</p>' + box.join('');
+  // Now and hours
+  const f = d.forecast;
+  if (f && f.hours && f.hours.length) {
+    const n = f.hours[0];
+    document.getElementById('now').innerHTML = `<div class="now">${icon(n.code, 80)}<div class="temp">${n.temp}<sup>°C</sup></div>
+      <div class="cond"><b>${esc(n.wx)}</b><span>Feels like ${n.feels}°C<br>Wind ${n.wind}mph, gusting ${n.gust}mph<br>${n.rain ?? 0}% chance of rain</span></div></div>
+      <div class="hours">${f.hours.slice(1).map(h => `<div class="h">${fmtHour(h.time)}${icon(h.code, 30)}<b>${h.temp}°</b><span class="r">${h.rain ?? 0}%</span><span class="g">${h.gust}mph</span></div>`).join('')}</div>`;
+    document.getElementById('days').innerHTML = (f.days || []).map(x => `<div class="d"><span class="n">${dayName(x.date)}</span>${icon(x.code, 32)}<span class="w">${esc(x.wx)}</span><span class="t"><b>${x.max}°</b> <span>${x.min}°</span></span><span class="r">${x.rain ?? 0}% rain</span></div>`).join('');
+  } else {
+    document.getElementById('nowsec').style.display = document.getElementById('weeksec').style.display = 'none';
+  }
+  // Tides
+  const t = d.tides;
+  if (t && t.events && t.events.length) {
+    const nowMs = Date.now(), nextIdx = t.events.findIndex(e => new Date(e.time) > nowMs);
+    const rows = t.events.filter((e, i) => i >= Math.max(0, nextIdx - 1)).slice(0, 12);
+    document.getElementById('tides').innerHTML = `<table class="tides"><tr><th>Day</th><th>Tide</th><th>Time</th><th>Height</th></tr>${rows.map(e =>
+      `<tr class="${t.events.indexOf(e) === nextIdx ? 'next' : ''}"><td>${dayName(e.time)}</td><td class="${e.type === 'High' ? 'hw' : ''}">${e.type} water</td><td>${fmtTime(e.time)}</td><td>${e.height ? e.height + 'm' : ''}</td></tr>`).join('')}</table>
+      <p class="note">Predicted times and heights. Weather, especially strong winds and low pressure, can push real tides higher than predicted. The Dee at Connah's Quay largely dries at low water, so no low water height is given.</p>`;
+  } else {
+    document.getElementById('tidesec').style.display = 'none';
+  }
+  size();
+}
+function size() { try { parent.postMessage({deesideWidget: 'weather-page', height: document.getElementById('wrap').offsetHeight + 4}, '*'); } catch (e) {} }
+addEventListener('resize', size);
+function load() { fetch(DATA + '?t=' + Math.floor(Date.now() / 300000)).then(r => r.json()).then(render)
+  .catch(() => { document.getElementById('upd').textContent = 'Could not load the latest data'; }); }
+load(); setInterval(load, 10 * 60 * 1000);
+</script>
+</body>
+</html>

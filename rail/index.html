@@ -126,7 +126,7 @@ fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).th
   function list(L, end) {
     if (L === null) return '<p class="none">Live times for this station are unavailable right now.</p>';
     if (end) return '<p class="none">End of the line.</p>';
-    return L.length ? L.map(row).join('') : '<p class="none">No more trains in the next two and a half hours.</p>';
+    return L.length ? L.map(row).join('') : '<p class="none">No trains in the next two hours.</p>';
   }
   function draw() {
     if (!data) return;

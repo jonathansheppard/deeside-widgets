@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Deeside right now</title>
+<script>window.__d=fetch('weather.json?t='+Math.floor(Date.now()/60000)).then(function(r){return r.json()});</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -77,7 +78,7 @@ function render(d) {
 }
 function size() { try { parent.postMessage({deesideWidget: 'weather', height: document.getElementById('w').offsetHeight + 2}, '*'); } catch (e) {} }
 addEventListener('resize', size);
-fetch(DATA + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(render)
+window.__d.then(render)
   .catch(() => { document.getElementById('body').textContent = 'Weather is unavailable right now.'; });
 </script>
 </body>

@@ -68,7 +68,7 @@
 <script>
 (function () {
   var box = document.getElementById('dsg-news');
-  fetch('/wp-json/wp/v2/posts?search=Mold&per_page=6&_fields=link,title,date')
+  fetch('/wp-json/wp/v2/posts?search=Mold&search_columns=post_title&per_page=6&_fields=link,title,date')
     .then(function (r) { return r.json(); })
     .then(function (posts) {
       box.innerHTML = posts.map(function (p) {

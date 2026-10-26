@@ -36,6 +36,7 @@ a { color: inherit; text-decoration: none; }
 .cond small { display: block; font-weight: 400; font-size: 10.5px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
 .hours { display: grid; grid-template-columns: repeat(4, 1fr); padding: 4px 8px 10px; border-bottom: 1px solid var(--rule); }
 .h { text-align: center; font-size: 10px; color: var(--muted); }
+.h svg { display: block; margin: 2px auto 1px; }
 .h b { display: block; color: var(--text); font-size: 13px; font-weight: 600; }
 .h .r { color: var(--blue); font-size: 9.5px; }
 .tide { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--rule); }
@@ -60,11 +61,12 @@ function render(d) {
   } else {
     out.push('<div class="clear">No weather warnings, flood alerts or power cuts for Deeside</div>');
   }
-  if (f && f.hours && f.hours.length) {
-    const n = f.hours[0];
+  const hs = upcoming(f);
+  if (hs.length) {
+    const n = hs[0];
     out.push(`<div class="now">${icon(n.code, 50)}<div class="temp">${n.temp}<sup>°C</sup></div>
       <div class="cond">${esc(n.wx)}<small>Feels like ${n.feels}°. Wind ${n.wind}mph, gusts ${n.gust}mph</small></div></div>`);
-    const picks = [3, 6, 9, 12].map(i => f.hours[i]).filter(Boolean);
+    const picks = [3, 6, 9, 12].map(i => hs[i]).filter(Boolean);
     out.push('<div class="hours">' + picks.map(h => `<div class="h">${fmtHour(h.time)}${icon(h.code, 26)}<b>${h.temp}°</b><span class="r">${h.rain ?? 0}% rain</span></div>`).join('') + '</div>');
   }
   const hi = nextTide(d, 'High');

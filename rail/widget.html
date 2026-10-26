@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wrexham to Bidston trains</title>
-<link rel="stylesheet" href="../house.css?v=3">
+<script>window.__d=fetch('widget.json?t='+Math.floor(Date.now()/600000)).then(function(r){return r.json()});</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="../house.css?v=4">
 <style>
 .sub { padding: 8px 14px 0; font-size: 12.5px; color: var(--muted); }
 .stats { display: grid; grid-template-columns: 1fr 1fr; padding: 6px 0 10px; }
@@ -35,7 +38,7 @@
 <script>
 const TZ = 'Europe/London';
 const fmtDay = (iso, o) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-GB', {timeZone: TZ, ...o});
-fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).then(d => {
+window.__d.then(d => {
   const days = d.days.slice(-14), wk = days.slice(-7);
   const sum = (a, k) => a.reduce((n, x) => n + x[k], 0);
   const tt = sum(wk, 'timetabled'), canc = sum(wk, 'cancelled') + sum(wk, 'part_cancelled'), w3 = sum(wk, 'within_3');

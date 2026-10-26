@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Deeside.com</title>
+<link rel="stylesheet" href="../house.css?v=2">
+<style>
+body { background: #fff; }
+.top { padding: 4px 0 16px; border-bottom: 4px solid var(--green); margin-bottom: 18px; }
+h1 { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -.5px; }
+.lede { font-size: 16px; line-height: 1.55; margin-top: 8px; max-width: 640px; }
+form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; max-width: 680px; }
+label, .q { font-size: 13.5px; font-weight: 700; color: var(--head); display: block; }
+input, textarea { width: 100%; font: inherit; font-size: 15px; padding: 9px 10px; border: 1px solid #ced4da; border-radius: 3px; margin-top: 4px; color: var(--ink); background: #fff; }
+textarea { min-height: 140px; resize: vertical; }
+.full { grid-column: 1 / -1; }
+.topics { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; margin-top: 6px; }
+.topics label { font-weight: 400; font-size: 14.5px; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+.topics input { width: auto; margin: 0; }
+.hint { font-size: 12.5px; color: var(--muted); font-weight: 400; margin-top: 3px; display: block; }
+.note { background: #f6faee; padding: 10px 12px; font-size: 13.5px; line-height: 1.5; display: none; }
+.hp { position: absolute; left: -9999px; height: 0; overflow: hidden; }
+button { background: var(--green-dk); color: #fff; border: 0; font: inherit; font-weight: 700; font-size: 15px; padding: 11px 22px; border-radius: 3px; cursor: pointer; }
+button:disabled { opacity: .6; }
+#msg { font-size: 15px; font-weight: 600; } #msg.ok { color: var(--green-dk); } #msg.err { color: var(--red); }
+.small { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-top: 14px; }
+@media (max-width: 560px) { form, .topics { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<script>if (self !== top) document.body.classList.add('embedded');</script>
+<div id="wrap">
+  <div class="top"><h1>Contact Deeside.com</h1>
+    <p class="lede">Got a story, a question or something we should know about? Send it to the newsdesk using the form below.</p></div>
+  <form id="f" novalidate>
+    <div class="full"><span class="q">What is it about?</span>
+      <div class="topics">
+        <label><input type="radio" name="topic" value="News tip or story idea" checked> News tip or story idea</label>
+        <label><input type="radio" name="topic" value="Event or community notice"> Event or community notice</label>
+        <label><input type="radio" name="topic" value="Correction or complaint"> Correction or complaint</label>
+        <label><input type="radio" name="topic" value="Advertising"> Advertising</label>
+        <label><input type="radio" name="topic" value="Something else"> Something else</label>
+      </div>
+    </div>
+    <div class="full note" id="adnote">For advertising, our <a href="https://www.deeside.com/advertise/" target="_top" style="text-decoration:underline;font-weight:700;color:var(--green-dk)">advertise page</a> has our audience figures and options. You can still message us here.</div>
+    <div><label for="name">Your name</label><input id="name" name="name" required autocomplete="name"></div>
+    <div><label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="email"></div>
+    <div><label for="phone">Phone (optional)<span class="hint">Useful if we need to check details quickly</span></label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
+    <div><label for="link">Link (optional)<span class="hint">A web page, post or article it relates to</span></label><input id="link" name="link" type="url" placeholder="https://"></div>
+    <div class="full"><label for="message">Your message<span class="hint" id="mhint">Tell us what happened, where and when, and how you know</span></label><textarea id="message" name="message" required></textarea></div>
+    <div class="hp" aria-hidden="true"><label for="website">Leave this empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+    <div class="full" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap"><button type="submit" id="btn">Send to the newsdesk</button><span id="msg" role="status"></span></div>
+  </form>
+  <p class="small">We read every message, but cannot reply to them all. We will only use your details to deal with your message, and we will not name you in a story without asking first. If you want to send photos or videos, mention it in your message and we will reply with how to send them.</p>
+</div>
+<script>
+const ENDPOINT = 'https://65-109-143-26.sslip.io/contact';
+const HINTS = {'News tip or story idea': 'Tell us what happened, where and when, and how you know',
+  'Event or community notice': 'What is happening, where, when, and who is organising it',
+  'Correction or complaint': 'Which article, what is wrong, and what the correct information is',
+  'Advertising': 'Tell us about your business and what you would like to promote',
+  'Something else': 'How can we help?'};
+const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn');
+f.addEventListener('change', () => { const t = f.topic.value; document.getElementById('mhint').textContent = HINTS[t]; document.getElementById('adnote').style.display = t === 'Advertising' ? 'block' : 'none'; size(); });
+f.addEventListener('submit', async e => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(f).entries());
+  if (!data.name || !/^\S+@\S+\.\S+$/.test(data.email || '') || !(data.message || '').trim()) { msg.className = 'err'; msg.textContent = 'Please give your name, a valid email and a message.'; return; }
+  btn.disabled = true; msg.className = ''; msg.textContent = 'Sending…';
+  try {
+    const j = await fetch(ENDPOINT, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)}).then(r => r.json());
+    if (j.ok) { f.reset(); f.dispatchEvent(new Event('change')); msg.className = 'ok'; msg.textContent = 'Thank you. Your message has gone to the newsdesk.'; }
+    else { msg.className = 'err'; msg.textContent = j.error || 'Sorry, that did not send. Please try again later.'; }
+  } catch (err) { msg.className = 'err'; msg.textContent = 'Sorry, that did not send. Please try again later.'; }
+  btn.disabled = false; size();
+});
+function size() { try { parent.postMessage({deesideWidget: 'contact-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {} }
+addEventListener('load', size); addEventListener('resize', size);
+</script>
+</body>
+</html>

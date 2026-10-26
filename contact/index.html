@@ -46,7 +46,25 @@ button:disabled { opacity: .6; }
         <label><input type="radio" name="topic" value="Something else"> Something else</label>
       </div>
     </div>
-    <div class="full note" id="adnote">For advertising, our <a href="https://www.deeside.com/advertise/" target="_top" style="text-decoration:underline;font-weight:700;color:var(--green-dk)">advertise page</a> has our audience figures and options. You can still message us here.</div>
+    <div class="full note" id="adnote">Our <a href="https://www.deeside.com/advertise/" target="_top" style="text-decoration:underline;font-weight:700;color:var(--green-dk)">advertise page</a> has our audience figures and options. Advertising starts from £60 a week.</div>
+    <div class="full story" id="ad" style="display:none">
+      <div class="sgrid">
+        <div class="full"><label for="business">Business or organisation</label><input id="business" name="business" autocomplete="organization"></div>
+        <div class="full"><span class="q">What are you interested in?</span>
+          <div class="topics">
+            <label><input type="checkbox" name="interest" value="Banner"> Banner</label>
+            <label><input type="checkbox" name="interest" value="In-article"> In-article</label>
+            <label><input type="checkbox" name="interest" value="Sidebar"> Sidebar</label>
+            <label><input type="checkbox" name="interest" value="Full site takeover"> Full site takeover</label>
+            <label><input type="checkbox" name="interest" value="Promoted article"> Promoted article</label>
+            <label><input type="checkbox" name="interest" value="Social media"> Social media</label>
+            <label><input type="checkbox" name="interest" value="Not sure yet"> Not sure yet</label>
+          </div>
+        </div>
+        <div class="full"><label for="timing">When would you like to start?</label>
+          <select id="timing" name="timing" style="width:100%;font:inherit;font-size:15px;padding:9px 10px;border:1px solid #ced4da;border-radius:3px;margin-top:4px;background:#fff"><option value="">Choose one</option><option>As soon as possible</option><option>Within the next month</option><option>In the next few months</option><option>Just looking at options</option></select></div>
+      </div>
+    </div>
     <div><label for="name">Your name</label><input id="name" name="name" required autocomplete="name"></div>
     <div><label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="email"></div>
     <div><label for="phone">Phone (optional)<span class="hint">Useful if we need to check details quickly</span></label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
@@ -84,18 +102,23 @@ function topicChanged() {
   document.getElementById('mlabel').firstChild.textContent = story ? 'Anything else we should know?' : 'Your message';
   document.getElementById('mhint').textContent = story ? 'Optional' : (t === 'Correction or complaint' ? 'Which article, what is wrong, and what the correct information is' : t === 'Advertising' ? 'Tell us about your business and what you would like to promote' : 'How can we help?');
   document.getElementById('adnote').style.display = t === 'Advertising' ? 'block' : 'none';
+  document.getElementById('ad').style.display = t === 'Advertising' ? '' : 'none';
   size();
 }
 f.addEventListener('change', e => { if (e.target.name === 'topic') topicChanged(); });
 f.addEventListener('submit', async e => {
   e.preventDefault();
-  const data = Object.fromEntries(new FormData(f).entries());
+  const data = {};
+  for (const [k, v] of new FormData(f).entries()) data[k] = data[k] ? data[k] + ', ' + v : v;
+  const isAd = f.topic.value === 'Advertising';
   const story = f.topic.value in STORY;
   if (!data.name || !/^\S+@\S+\.\S+$/.test(data.email || '') || !((story ? data.what : data.message) || '').trim()) { msg.className = 'err'; msg.textContent = story ? 'Please give your name, a valid email and tell us what happened.' : 'Please give your name, a valid email and a message.'; return; }
   if (!story) ['what', 'where', 'when', 'who', 'source'].forEach(k => delete data[k]);
   btn.disabled = true; msg.className = ''; msg.textContent = 'Sending…';
   try {
-    const j = await fetch(ENDPOINT, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)}).then(r => r.json());
+    if (isAd) ['what', 'where', 'when', 'who', 'source', 'topic', 'link'].forEach(k => delete data[k]);
+    else ['business', 'interest', 'timing'].forEach(k => delete data[k]);
+    const j = await fetch(isAd ? ENDPOINT.replace('/contact', '/enquiry') : ENDPOINT, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)}).then(r => r.json());
     if (j.ok) { f.reset(); topicChanged(); msg.className = 'ok'; msg.textContent = 'Thank you. Your message has gone to the newsdesk.'; }
     else { msg.className = 'err'; msg.textContent = j.error || 'Sorry, that did not send. Please try again later.'; }
   } catch (err) { msg.className = 'err'; msg.textContent = 'Sorry, that did not send. Please try again later.'; }

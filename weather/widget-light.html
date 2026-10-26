@@ -51,7 +51,7 @@ function render(d) {
 }
 function size() { try { parent.postMessage({deesideWidget: 'weather', height: document.getElementById('w').offsetHeight}, '*'); } catch (e) {} }
 addEventListener('resize', size);
-fetch(DATA + '?t=' + Math.floor(Date.now() / 300000)).then(r => r.json()).then(render)
+fetch(DATA + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(render)
   .catch(() => { document.getElementById('body').textContent = 'Weather is unavailable right now.'; });
 </script>
 </body>

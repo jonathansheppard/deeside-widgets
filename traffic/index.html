@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live traffic: Deeside and Flintshire</title>
+<script>window.__d = fetch('https://65-109-143-26.sslip.io/live/traffic.json?t=' + Math.floor(Date.now() / 60000)).then(function (r) { return r.json(); });</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="../house.css?v=4">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+body { background: #fff; }
+html, body { max-width: 100%; overflow-x: hidden; }
+.top { padding: 4px 0 14px; border-bottom: 4px solid var(--green); }
+h1 { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -.5px; line-height: 1.15; }
+.top p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.sum { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); margin: 16px 0 4px; }
+.sum div { padding: 10px 14px; }
+.sum div + div { border-left: 1px solid var(--rule); }
+.sum b { display: block; font-size: 30px; font-weight: 800; color: var(--head); line-height: 1.1; }
+.sum b.bad { color: var(--red); } .sum b.warn { color: var(--amber); }
+.sum span { font-size: 12.5px; color: var(--muted); }
+.upd { font-size: 12.5px; color: var(--muted); margin: 6px 0 0; }
+.opt { font-size: 13.5px; margin: 10px 0 0; display: flex; align-items: center; gap: 6px; }
+section { padding: 18px 0 6px; }
+h2 { font-size: 19px; font-weight: 800; color: var(--head); margin-bottom: 4px; }
+.sub { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.it { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.it .rd { font-weight: 800; font-size: 14px; color: #fff; background: var(--green-dk); border-radius: 3px; text-align: center; padding: 3px 0; align-self: start; }
+.it .rd.a { background: #1f6f3f; } .it .rd.b { background: #6c757d; } .it .rd.n { background: #adb5bd; }
+.it b { display: block; font-size: 15px; color: var(--head); line-height: 1.35; }
+.it small { display: block; font-size: 13px; color: var(--muted); line-height: 1.45; overflow-wrap: anywhere; }
+.tag { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 1px 6px; border-radius: 3px; margin-right: 6px; }
+.tag.now { background: var(--red-bg); color: var(--red); } .tag.q { background: var(--amber-bg); color: var(--amber); }
+.tag.w { background: #f1f3f5; color: #495057; } .tag.bd { background: #e7f1fb; color: var(--blue); }
+.none { font-size: 14px; color: var(--muted); padding: 8px 0; }
+#map { height: 380px; border: 1px solid var(--rule); margin-top: 8px; }
+.links li { font-size: 14.5px; padding: 6px 0; border-bottom: 1px solid var(--rule); list-style: none; }
+.links a { color: var(--green-dk); font-weight: 600; text-decoration: underline; }
+.src { padding: 14px 0 4px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.more { background: none; border: 0; color: var(--green-dk); font: inherit; font-weight: 700; font-size: 14px; padding: 10px 0; cursor: pointer; }
+@media (max-width: 520px) { .sum b { font-size: 24px; } .it { grid-template-columns: 54px minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<script>if (self !== top) document.body.classList.add('embedded');</script>
+<div id="wrap">
+  <div class="top"><h1>Live traffic: Deeside and Flintshire</h1><p>Collisions, closures, queues and roadworks on the roads around Deeside and Flintshire, updated every five minutes.</p></div>
+  <div class="sum" id="sum"><div><b>…</b><span>incidents and closures</span></div><div><b>…</b><span>queues</span></div><div><b>…</b><span>roadworks</span></div></div>
+  <p class="upd" id="upd">Loading the latest traffic information…</p>
+  <label class="opt"><input type="checkbox" id="border" checked> Include Chester and the border</label>
+  <section><h2>Incidents and closures</h2><div id="g-now"></div></section>
+  <section><h2>Queues</h2><p class="sub">Slow or stationary traffic, with the extra time it is adding where known.</p><div id="g-queues"></div></section>
+  <section><h2>Roadworks and planned closures</h2><div id="g-works"></div></section>
+  <section><h2>Map</h2><p class="sub">Red: incidents and closures. Amber: queues. Grey: roadworks. Tap a dot for details.</p><div id="map"></div></section>
+  <section><h2>Useful links</h2><ul class="links">
+    <li><a href="https://traffic.wales/" target="_blank" rel="noopener">Traffic Wales</a> for the A55 and A494, which are run by the Welsh Government</li>
+    <li><a href="https://www.deeside.com/trafficcams/" target="_top">A494 traffic cameras</a> and <a href="https://north.wales/a55-traffic-cameras" target="_blank" rel="noopener">A55 traffic cameras</a></li>
+    <li><a href="https://www.deeside.com/a55-a494-junction-guide/" target="_top">A55 and A494 junction guide</a></li>
+    <li><a href="https://www.deeside.com/wrexham-bidston-line/" target="_top">Wrexham to Bidston trains, live</a></li>
+    <li><a href="https://www.waze.com/live-map/" target="_blank" rel="noopener">Waze live map</a> for congestion colours</li>
+  </ul></section>
+  <div class="src">Traffic data from TomTom, checked every five minutes. Roadworks dates are planned dates and can change. Deeside.com is not responsible for the accuracy of third-party traffic data.</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const COL = {now: '#b91c1c', queues: '#b45309', works: '#6c757d'};
+let data, map, layer, showAll = {now: false, queues: false, works: false};
+const day = iso => { if (!iso) return ''; const d = new Date(iso); return d.toLocaleDateString('en-GB', {day: 'numeric', month: 'short'}); };
+const tm = iso => iso ? new Date(iso).toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'}) : '';
+function place(i) {
+  const f = (i.from || '').replace(/\s*\/.*$/, ''), t = (i.to || '').replace(/\s*\/.*$/, '');
+  return f && t && f !== t ? `${f} to ${t}` : (f || t);
+}
+function item(i) {
+  const cls = /^[AM]\d/.test(i.road) ? 'a' : /^B\d/.test(i.road) ? 'b' : 'n';
+  const tag = i.group === 'now' ? `<span class="tag now">${esc(i.type)}</span>` : i.group === 'queues' ? `<span class="tag q">${esc(i.events[0] || 'Queue')}</span>` : `<span class="tag w">${esc(i.type)}</span>`;
+  const bits = [];
+  if (i.both) bits.push('Both directions');
+  if (i.delay_min) bits.push(`Adding about ${i.delay_min} min`);
+  if (i.group === 'works' && i.end) bits.push('Until ' + day(i.end));
+  if (i.group !== 'works' && i.start) bits.push('Reported ' + tm(i.start));
+  const ev = i.events.filter(e => !/^(Closed|Roadworks|Stationary traffic|Queuing traffic|Slow traffic)$/.test(e));
+  if (ev.length) bits.unshift(ev.join('. '));
+  return `<div class="it"><span class="rd ${cls}">${esc(i.road || 'Road')}</span><div><b>${tag}${esc(place(i))}</b>${i.tier === 2 ? '<small><span class="tag bd">Chester and border</span></small>' : ''}<small>${esc(bits.join('. '))}</small></div></div>`;
+}
+function draw() {
+  const all = document.getElementById('border').checked;
+  const items = data.items.filter(i => all || i.tier === 1);
+  const g = k => items.filter(i => i.group === k);
+  const c = {now: g('now').length, queues: g('queues').length, works: g('works').length};
+  document.getElementById('sum').innerHTML = `<div><b class="${c.now ? 'bad' : ''}">${c.now}</b><span>incidents and closures</span></div><div><b class="${c.queues ? 'warn' : ''}">${c.queues}</b><span>queues</span></div><div><b>${c.works}</b><span>roadworks</span></div>`;
+  for (const k of ['now', 'queues', 'works']) {
+    const L = g(k), lim = showAll[k] ? L.length : 8;
+    document.getElementById('g-' + k).innerHTML = L.length ? L.slice(0, lim).map(item).join('') + (L.length > lim ? `<button class="more" data-k="${k}">Show all ${L.length}</button>` : '')
+      : `<p class="none">${k === 'now' ? 'No incidents or unplanned closures reported right now.' : k === 'queues' ? 'No queues reported right now.' : 'No roadworks listed.'}</p>`;
+  }
+  document.querySelectorAll('.more').forEach(b => b.onclick = () => { showAll[b.dataset.k] = true; draw(); });
+  if (!map) {
+    map = L.map('map', {scrollWheelZoom: false}).setView([53.2, -3.05], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 18, attribution: '&copy; OpenStreetMap contributors'}).addTo(map);
+  }
+  if (layer) layer.remove();
+  layer = L.layerGroup(items.filter(i => i.at).map(i => L.circleMarker(i.at, {radius: i.group === 'works' ? 5 : 7, weight: 1, color: '#fff', fillColor: COL[i.group], fillOpacity: .9})
+    .bindPopup(`<b>${esc(i.road ? i.road + ': ' : '')}${esc(i.type)}</b><br>${esc(place(i))}${i.delay_min ? '<br>Adding about ' + i.delay_min + ' min' : ''}${i.group === 'works' && i.end ? '<br>Until ' + day(i.end) : ''}`))).addTo(map);
+  document.getElementById('upd').textContent = 'Updated ' + tm(data.generated) + '. Checked every five minutes.';
+  size();
+}
+function load(p) {
+  (p || fetch('https://65-109-143-26.sslip.io/live/traffic.json?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()))
+    .then(d => { data = d; draw(); })
+    .catch(() => { document.getElementById('upd').textContent = 'Live traffic information is unavailable right now.'; size(); });
+}
+function size() { try { parent.postMessage({deesideWidget: 'traffic-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {} }
+document.getElementById('border').onchange = draw;
+addEventListener('resize', size);
+if (window.ResizeObserver) new ResizeObserver(size).observe(document.getElementById('wrap'));
+load(window.__d);
+setInterval(load, 120000);
+</script>
+</body>
+</html>

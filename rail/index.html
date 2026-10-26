@@ -45,25 +45,30 @@ tr.we td:first-child { color: var(--muted); }
 .upd2 { font-size: 12.5px; color: var(--muted); margin: -4px 0 10px; }
 .cxl { background: var(--red-bg); color: #7f1212; font-size: 13.5px; padding: 9px 12px; margin-bottom: 12px; line-height: 1.45; }
 .cxl b { display: block; }
-.dirs { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
-@media (max-width: 640px) { .dirs { grid-template-columns: 1fr; } }
-.dir { font-size: 13px; font-weight: 800; color: var(--head); padding: 8px 0 6px; border-bottom: 2px solid var(--rule); }
-.tr { display: grid; grid-template-columns: 50px 1fr auto; gap: 10px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 14.5px; }
+#live { border: 1px solid var(--rule); border-top: 4px solid var(--green); padding: 16px 0 0; margin-top: 18px; }
+#live .live-hd, #live .upd2, #live #lcx { padding-left: 16px; padding-right: 16px; }
+#live #lcx .cxl { margin: 0 0 12px; }
+.dirs { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--rule); }
+.dirs > div + div { border-left: 1px solid var(--rule); }
+.lnote { font-size: 12.5px; color: var(--muted); line-height: 1.5; padding: 12px 16px 14px; border-top: 1px solid var(--rule); }
+@media (max-width: 640px) { .dirs { grid-template-columns: 1fr; } .dirs > div + div { border-left: 0; } }
+.dir { font-size: 13.5px; font-weight: 800; color: var(--head); padding: 10px 16px 8px; background: #f8f9fa; border-bottom: 1px solid var(--rule); }
+.tr { display: grid; grid-template-columns: 52px 1fr auto; gap: 10px; align-items: baseline; padding: 10px 16px; border-bottom: 1px solid var(--rule); font-size: 14.5px; }
 .tr .t { font-weight: 800; color: var(--head); font-variant-numeric: tabular-nums; }
 .tr .d small { display: block; font-size: 12px; color: var(--muted); }
 .tr .st { font-size: 13px; font-weight: 700; white-space: nowrap; }
 .st.ok { color: var(--green-dk); } .st.late { color: var(--amber); } .st.can { color: var(--red); }
 .tr.can { background: var(--red-bg); } .tr.can .t { text-decoration: line-through; color: var(--muted); }
-.none { font-size: 14px; color: var(--muted); padding: 10px 0; }
+.none { font-size: 14px; color: var(--muted); padding: 10px 16px; }
 </style>
 </head>
 <body>
 <script>if (self !== top) document.body.classList.add('embedded');</script>
 <div id="wrap">
   <div class="top"><h1>Wrexham to Bidston line tracker</h1><p>How trains on the Wrexham to Bidston line, also known as the Borderlands line, are running day by day. Live departures every minute, and day-by-day performance updated every morning.</p></div>
-  <section id="live"><div class="live-hd"><h2>Live departures</h2><label>Station <select id="stn"></select></label></div>
+  <section id="live"><div class="live-hd"><h2 style="font-size:24px">Live departures</h2><label>Station <select id="stn"></select></label></div>
     <p class="upd2" id="lupd">Loading live departures…</p><div id="lcx"></div>
-    <div class="dirs"><div><div class="dir">Towards Bidston</div><div id="ln"></div></div><div><div class="dir">Towards Wrexham</div><div id="ls"></div></div></div></section>
+    <div class="dirs"><div><div class="dir">Towards Bidston</div><div id="ln"></div></div><div><div class="dir">Towards Wrexham</div><div id="ls"></div></div></div><p class="lnote">Live data from National Rail Enquiries. Times are expected departure times and can change. Check before you travel. Cancelled trains stay listed so you can see what has gone.</p></section>
   <section><h2>The last seven days</h2><div class="stats" id="stats"><div class="s"><div class="lbl">Loading the latest figures…</div></div></div></section>
   <section><h2>Cancellations per day</h2><div id="chart"><p class="lbl">Loading…</p></div></section>
   <section><h2>Day by day</h2><div class="wrapt" id="table"><p class="lbl">Loading…</p></div></section>
@@ -113,7 +118,9 @@ fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).th
     const late = x.etd && x.etd !== 'On time' && x.etd !== 'Cancelled' && x.etd !== 'Delayed';
     const st = x.cancelled ? '<span class="st can">Cancelled</span>' : x.etd === 'On time' ? '<span class="st ok">On time</span>'
       : x.etd === 'Delayed' ? '<span class="st late">Delayed</span>' : late ? `<span class="st late">Exp ${esc(x.etd)}</span>` : `<span class="st">${esc(x.etd)}</span>`;
-    const sub = [x.cancelled || x.etd === 'Delayed' ? why(x.reason) : '', x.coaches ? x.coaches + ' coaches' : '', x.plat ? 'Platform ' + x.plat : ''].filter(Boolean).join('. ');
+    const mins = (a, b) => { const m = t => +t.slice(0, 2) * 60 + +t.slice(3, 5); let d = m(b) - m(a); if (d < -600) d += 1440; return d; };
+    const lateBy = late && /^\d\d:\d\d$/.test(x.etd) ? mins(x.std, x.etd) : 0;
+    const sub = [lateBy > 0 ? lateBy + ' min late' : '', x.cancelled || x.etd === 'Delayed' ? why(x.reason) : '', x.coaches ? x.coaches + ' coaches' : '', x.plat ? 'Platform ' + x.plat : ''].filter(Boolean).join('. ');
     return `<div class="tr${x.cancelled ? ' can' : ''}"><span class="t">${esc(x.std)}</span><span class="d">${esc(x.to)}${sub ? `<small>${esc(sub)}</small>` : ''}</span>${st}</div>`;
   }
   function list(L, end) {

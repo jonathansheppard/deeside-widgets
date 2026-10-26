@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live trains mock-up</title>
+<link rel="stylesheet" href="../house.css?v=3">
+<style>
+body { background: #f1f3f5; padding: 16px; }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+@media (max-width: 760px) { .wrap { grid-template-columns: 1fr; } }
+.mock { max-width: 980px; margin: 0 auto 14px; background: #fff4e0; color: #7c3a03; font-size: 13px; padding: 8px 12px; border-left: 4px solid #b45309; }
+.lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin: 0 0 6px; }
+.dir { padding: 8px 14px 4px; font-size: 12px; font-weight: 700; color: var(--head); background: #f8f9fa; border-bottom: 1px solid var(--rule); }
+.row { display: grid; grid-template-columns: 48px 1fr auto; gap: 8px; align-items: baseline; padding: 8px 14px; border-bottom: 1px solid var(--rule); font-size: 13px; }
+.row .t { font-weight: 800; color: var(--head); font-variant-numeric: tabular-nums; }
+.row .to { color: var(--ink); }
+.row .to small { display: block; color: var(--muted); font-size: 11px; }
+.st { font-size: 12px; font-weight: 700; white-space: nowrap; }
+.st.ok { color: var(--green-dk); }
+.st.late { color: var(--amber); }
+.st.can { color: var(--red); }
+.row.cancelled .t { text-decoration: line-through; color: var(--muted); }
+.row.cancelled { background: var(--red-bg); }
+.big { background: #fff; border-top: 4px solid var(--green); }
+.big .hd { padding: 14px 16px 10px; border-bottom: 1px solid var(--rule); }
+.big h2 { font-size: 22px; font-weight: 800; color: var(--head); }
+.big .hd p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.pick { display: flex; gap: 8px; align-items: center; margin-top: 10px; font-size: 13px; }
+.pick select { font: inherit; padding: 6px 8px; border: 1px solid #ced4da; border-radius: 4px; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; }
+@media (max-width: 600px) { .cols { grid-template-columns: 1fr; } }
+.cols > div + div { border-left: 1px solid var(--rule); }
+.big .row { grid-template-columns: 52px 1fr auto; padding: 10px 16px; }
+.plat { font-size: 11px; color: var(--muted); text-align: center; }
+.foot { font-size: 11.5px; color: var(--muted); padding: 10px 16px 14px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="mock"><b>Mock-up.</b> Times and delays below are made-up sample data to show the layout. The real version would update every minute from National Rail.</div>
+<div class="wrap">
+  <div>
+    <p class="lbl">Sidebar widget</p>
+    <a class="card" href="#">
+      <div class="card-hd"><h3>Wrexham to Bidston trains</h3><span class="upd" id="u1"></span></div>
+      <div class="note amber">1 train cancelled today<small>Wrexham 15:42 to Bidston: no driver available</small></div>
+      <div class="dir">Shotton High Level, towards Bidston</div>
+      <div id="w1"></div>
+      <div class="dir">Shotton High Level, towards Wrexham</div>
+      <div id="w2"></div>
+      <div class="card-ft"><span>All stations and live times</span><small>National Rail</small></div>
+    </a>
+  </div>
+  <div>
+    <p class="lbl">Full page</p>
+    <div class="big">
+      <div class="hd">
+        <h2>Live departures</h2>
+        <p>Wrexham to Bidston line. Updated <span id="u2"></span></p>
+        <div class="pick">Station
+          <select id="stn"></select>
+        </div>
+      </div>
+      <div class="cols">
+        <div><div class="dir" id="h1"></div><div id="b1"></div></div>
+        <div><div class="dir" id="h2"></div><div id="b2"></div></div>
+      </div>
+      <div class="foot">Live data from National Rail Enquiries. Times are expected departure times and can change. Check before you travel. Cancelled trains stay listed so you can see what has gone.</div>
+    </div>
+  </div>
+</div>
+<script>
+const LINE = ['Wrexham Central','Wrexham General','Gwersyllt','Cefn-y-bedd','Caergwrle','Hope','Penyffordd','Buckley','Hawarden','Shotton High Level','Hawarden Bridge','Neston','Heswall','Upton','Bidston'];
+const now = new Date(); const hhmm = d => d.toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'});
+const add = m => new Date(now.getTime() + m * 60000);
+// sample pattern: [minutes from now, status, delay mins, reason]
+const S = {
+  north: [[4,'ok'],[38,'late',7],[71,'can',0,'No driver available'],[104,'ok'],[131,'ok'],[164,'ok']],
+  south: [[11,'late',3],[44,'ok'],[78,'ok'],[109,'can',0,'Train fault'],[141,'ok'],[171,'ok']]
+};
+function rows(list, dest, big) {
+  return list.map(([m, s, d, why], i) => {
+    const t = add(m), st = s === 'ok' ? '<span class="st ok">On time</span>' : s === 'late' ? `<span class="st late">Exp ${hhmm(add(m + d))}</span>` : '<span class="st can">Cancelled</span>';
+    const sub = s === 'can' ? `<small>${why}</small>` : (s === 'late' ? `<small>${d} min late</small>` : '');
+    return `<div class="row${s === 'can' ? ' cancelled' : ''}"><span class="t">${hhmm(t)}</span><span class="to">${dest}${sub}</span>${st}</div>`;
+  }).join('');
+}
+document.getElementById('u1').textContent = 'Updated ' + hhmm(now);
+document.getElementById('u2').textContent = hhmm(now);
+document.getElementById('w1').innerHTML = rows(S.north.slice(0, 2), 'Bidston');
+document.getElementById('w2').innerHTML = rows(S.south.slice(0, 2), 'Wrexham Central');
+const sel = document.getElementById('stn');
+sel.innerHTML = LINE.map(s => `<option${s === 'Shotton High Level' ? ' selected' : ''}>${s}</option>`).join('');
+function board() {
+  const s = sel.value;
+  document.getElementById('h1').textContent = 'Towards Bidston';
+  document.getElementById('h2').textContent = 'Towards Wrexham';
+  document.getElementById('b1').innerHTML = s === 'Bidston' ? '<div class="row"><span></span><span class="to">End of the line</span></div>' : rows(S.north, 'Bidston', true);
+  document.getElementById('b2').innerHTML = s === 'Wrexham Central' ? '<div class="row"><span></span><span class="to">End of the line</span></div>' : rows(S.south, 'Wrexham Central', true);
+}
+sel.onchange = board; board();
+</script>
+</body>
+</html>

@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Deeside weather</title>
-<link rel="stylesheet" href="../house.css?v=3">
+<script>window.__d=fetch('weather.json?t='+Math.floor(Date.now()/60000)).then(function(r){return r.json()});</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="../house.css?v=4">
 <style>
 .now { display: flex; align-items: center; gap: 10px; padding: 12px 14px 6px; }
 .temp { font-size: 46px; font-weight: 800; line-height: 1; color: var(--head); letter-spacing: -1.5px; }
@@ -51,7 +54,7 @@ function render(d) {
 }
 function size() { try { parent.postMessage({deesideWidget: 'weather', height: document.getElementById('w').offsetHeight + 6}, '*'); } catch (e) {} }
 addEventListener('resize', size);
-fetch(DATA + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(render)
+window.__d.then(render)
   .catch(() => { document.getElementById('body').textContent = 'Weather is unavailable right now.'; });
 </script>
 

@@ -1,5 +1,4 @@
 /* Deeside.com house style for sidebar widgets: matches the site (Open Sans, white cards, site green) */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap');
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root { --ink: #212529; --head: #2d2d2d; --muted: #6c757d; --rule: #e9ecef; --green: #88c425; --green-dk: #4d7a0c;
   --amber-bg: #fff4e0; --amber: #b45309; --red-bg: #fdecec; --red: #b91c1c; --blue: #1d6fb8; }

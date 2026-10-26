@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wrexham to Bidston line tracker</title>
-<link rel="stylesheet" href="../house.css?v=2">
+<link rel="stylesheet" href="../house.css?v=3">
 <style>
 body { background: #fff; }
 .top { padding: 4px 0 14px; border-bottom: 4px solid var(--green); }
@@ -43,9 +43,9 @@ tr.we td:first-child { color: var(--muted); }
 <script>if (self !== top) document.body.classList.add('embedded');</script>
 <div id="wrap">
   <div class="top"><h1>Wrexham to Bidston line tracker</h1><p>How trains on the Wrexham to Bidston line, also known as the Borderlands line, are running day by day. Updated every morning.</p></div>
-  <section><h2>The last seven days</h2><div class="stats" id="stats"></div></section>
-  <section><h2>Cancellations per day</h2><div id="chart"></div></section>
-  <section><h2>Day by day</h2><div class="wrapt" id="table"></div></section>
+  <section><h2>The last seven days</h2><div class="stats" id="stats"><div class="s"><div class="lbl">Loading the latest figures…</div></div></div></section>
+  <section><h2>Cancellations per day</h2><div id="chart"><p class="lbl">Loading…</p></div></section>
+  <section><h2>Day by day</h2><div class="wrapt" id="table"><p class="lbl">Loading…</p></div></section>
   <section class="how"><h2>How we measure this</h2>
     <p>We count every passenger train timetabled to run between Wrexham General and Bidston, in both directions, each day. A train counts as cancelled if it did not run at all, and part-cancelled if it skipped some of its stops, for example by terminating early.</p>
     <p>"Within 3 minutes" means the train ran its full route and was never more than three minutes behind the timetable at any station where its time was recorded.</p>

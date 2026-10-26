@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wrexham to Bidston trains</title>
-<link rel="stylesheet" href="../house.css?v=1">
+<link rel="stylesheet" href="../house.css?v=3">
 <style>
 .sub { padding: 8px 14px 0; font-size: 12.5px; color: var(--muted); }
 .stats { display: grid; grid-template-columns: 1fr 1fr; padding: 6px 0 10px; }
@@ -55,8 +55,20 @@ fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).th
     </div>
     <div class="explain">Each bar is one day. <b>The taller the red bar, the more trains were cancelled.</b> A flat <em>green line</em> means every train ran.</div>
     <div class="card-ft"><span>Full performance figures</span><small>Source: National Rail</small></div>`;
-  try { parent.postMessage({deesideWidget: 'rail', height: document.getElementById('w').offsetHeight}, '*'); } catch (e) {}
+  try { parent.postMessage({deesideWidget: 'rail', height: document.getElementById('w').offsetHeight + 6}, '*'); } catch (e) {}
 }).catch(() => { document.getElementById('body').textContent = 'Figures are unavailable right now.'; });
+</script>
+
+<script>
+/* Keep the frame on deeside.com exactly the right height, including after fonts load on phones */
+(function () {
+  var el = document.getElementById('w'), key = 'rail';
+  function post() { try { parent.postMessage({deesideWidget: key, height: Math.ceil(el.getBoundingClientRect().height) + 6}, '*'); } catch (e) {} }
+  if (window.ResizeObserver) new ResizeObserver(post).observe(el);
+  addEventListener('load', post); addEventListener('resize', post);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(post);
+  setTimeout(post, 1500); setTimeout(post, 4000);
+})();
 </script>
 </body>
 </html>

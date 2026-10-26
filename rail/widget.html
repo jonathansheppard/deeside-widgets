@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Borderlands line tracker</title>
+<link rel="stylesheet" href="../house.css?v=1">
+<style>
+.sub { padding: 8px 14px 0; font-size: 12.5px; color: var(--muted); }
+.stats { display: grid; grid-template-columns: 1fr 1fr; padding: 6px 0 10px; }
+.s { padding: 4px 14px; }
+.s + .s { border-left: 1px solid var(--rule); }
+.big { font-size: 34px; font-weight: 800; color: var(--head); letter-spacing: -1px; line-height: 1.1; }
+.big.bad { color: var(--red); }
+.big span { font-size: 16px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.lbl { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.chart { padding: 6px 14px 4px; border-top: 1px solid var(--rule); }
+.chart h4 { font-size: 12.5px; font-weight: 700; color: var(--head); margin: 4px 0 6px; }
+.bars { display: flex; align-items: flex-end; gap: 3px; height: 64px; border-bottom: 1px solid #ced4da; }
+.bar { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+.bar i { display: block; background: var(--red); border-radius: 2px 2px 0 0; }
+.bar i.zero { background: var(--green); height: 3px; border-radius: 1px; }
+.days { display: flex; gap: 3px; font-size: 9.5px; color: var(--muted); text-align: center; margin-top: 3px; }
+.days span { flex: 1; }
+.explain { font-size: 11.5px; color: var(--muted); line-height: 1.4; padding: 6px 14px 10px; }
+.explain b { color: var(--red); font-weight: 600; }
+.explain em { color: var(--green-dk); font-style: normal; font-weight: 600; }
+</style>
+</head>
+<body>
+<a class="card" id="w" href="https://www.deeside.com/borderlands-line/" target="_top">
+  <div class="card-hd"><h3>Borderlands line tracker</h3><span class="upd" id="upd"></span></div>
+  <div class="load" id="body">Loading…</div>
+</a>
+<script>
+const TZ = 'Europe/London';
+const fmtDay = (iso, o) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-GB', {timeZone: TZ, ...o});
+fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).then(d => {
+  const days = d.days.slice(-14), wk = days.slice(-7);
+  const sum = (a, k) => a.reduce((n, x) => n + x[k], 0);
+  const tt = sum(wk, 'timetabled'), canc = sum(wk, 'cancelled') + sum(wk, 'part_cancelled'), w3 = sum(wk, 'within_3');
+  const max = Math.max(4, ...days.map(x => x.cancelled + x.part_cancelled));
+  document.getElementById('upd').textContent = 'To ' + fmtDay(wk[wk.length - 1].day, {weekday: 'short', day: 'numeric', month: 'short'});
+  document.getElementById('body').outerHTML = `
+    <div class="sub">Wrexham to Bidston trains, last 7 days</div>
+    <div class="stats">
+      <div class="s"><div class="big ${canc ? 'bad' : ''}">${canc}<span> of ${tt}</span></div><div class="lbl">trains cancelled in full or in part</div></div>
+      <div class="s"><div class="big">${Math.round(w3 / tt * 100)}<span>%</span></div><div class="lbl">ran within 3 minutes of the timetable</div></div>
+    </div>
+    <div class="chart">
+      <h4>Cancellations per day, last two weeks</h4>
+      <div class="bars">${days.map(x => { const c = x.cancelled + x.part_cancelled;
+        return `<div class="bar" title="${fmtDay(x.day, {weekday: 'short', day: 'numeric', month: 'short'})}: ${c} of ${x.timetabled} cancelled">${c ? `<i style="height:${Math.round(c / max * 100)}%"></i>` : '<i class="zero"></i>'}</div>`; }).join('')}</div>
+      <div class="days">${days.map(x => `<span>${fmtDay(x.day, {weekday: 'narrow'})}</span>`).join('')}</div>
+    </div>
+    <div class="explain">Each bar is one day. <b>The taller the red bar, the more trains were cancelled.</b> A flat <em>green line</em> means every train ran.</div>
+    <div class="card-ft"><span>Full performance figures</span><small>Source: National Rail</small></div>`;
+  try { parent.postMessage({deesideWidget: 'rail', height: document.getElementById('w').offsetHeight}, '*'); } catch (e) {}
+}).catch(() => { document.getElementById('body').textContent = 'Figures are unavailable right now.'; });
+</script>
+</body>
+</html>

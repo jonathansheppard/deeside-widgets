@@ -100,7 +100,7 @@ function render(d) {
 }
 function size() { try { parent.postMessage({deesideWidget: 'weather-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {} }
 addEventListener('resize', size);
-function load() { fetch(DATA + '?t=' + Math.floor(Date.now() / 300000)).then(r => r.json()).then(render)
+function load() { fetch(DATA + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(render)
   .catch(() => { document.getElementById('upd').textContent = 'Could not load the latest data'; }); }
 load(); setInterval(load, 10 * 60 * 1000);
 </script>

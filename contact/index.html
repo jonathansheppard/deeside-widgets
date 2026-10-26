@@ -20,6 +20,9 @@ textarea { min-height: 140px; resize: vertical; }
 .topics input { width: auto; margin: 0; }
 .hint { font-size: 12.5px; color: var(--muted); font-weight: 400; margin-top: 3px; display: block; }
 .note { background: #f6faee; padding: 10px 12px; font-size: 13.5px; line-height: 1.5; display: none; }
+.sgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+.story { border-left: 4px solid var(--green); padding-left: 14px; }
+@media (max-width: 560px) { .sgrid { grid-template-columns: 1fr; } }
 .hp { position: absolute; left: -9999px; height: 0; overflow: hidden; }
 button { background: var(--green-dk); color: #fff; border: 0; font: inherit; font-weight: 700; font-size: 15px; padding: 11px 22px; border-radius: 3px; cursor: pointer; }
 button:disabled { opacity: .6; }
@@ -48,7 +51,23 @@ button:disabled { opacity: .6; }
     <div><label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="email"></div>
     <div><label for="phone">Phone (optional)<span class="hint">Useful if we need to check details quickly</span></label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
     <div><label for="link">Link (optional)<span class="hint">A web page, post or article it relates to</span></label><input id="link" name="link" type="url" placeholder="https://"></div>
-    <div class="full"><label for="message">Your message<span class="hint" id="mhint">Tell us what happened, where and when, and how you know</span></label><textarea id="message" name="message" required></textarea></div>
+    <div class="full story" id="story">
+      <div class="sgrid">
+        <div class="full"><label for="what">What happened?<span class="hint" id="whathint">A sentence or two is fine</span></label><textarea id="what" name="what" style="min-height:90px"></textarea></div>
+        <div><label for="where">Where?<span class="hint">Street, village or town</span></label><input id="where" name="where"></div>
+        <div><label for="when">When?<span class="hint">Date and rough time</span></label><input id="when" name="when"></div>
+        <div class="full"><label for="who">Who is involved?<span class="hint">People, businesses or organisations, if you know</span></label><input id="who" name="who"></div>
+        <div class="full"><span class="q">How do you know?</span>
+          <div class="topics">
+            <label><input type="radio" name="source" value="I saw it or was there"> I saw it or was there</label>
+            <label><input type="radio" name="source" value="It involves me or my family"> It involves me or my family</label>
+            <label><input type="radio" name="source" value="I work there or was told directly"> I work there or was told directly</label>
+            <label><input type="radio" name="source" value="I heard it or saw it online"> I heard it or saw it online</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="full"><label for="message" id="mlabel">Anything else we should know?<span class="hint" id="mhint">Optional</span></label><textarea id="message" name="message" style="min-height:90px"></textarea></div>
     <div class="hp" aria-hidden="true"><label for="website">Leave this empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
     <div class="full" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap"><button type="submit" id="btn">Send to the newsdesk</button><span id="msg" role="status"></span></div>
   </form>
@@ -56,27 +75,34 @@ button:disabled { opacity: .6; }
 </div>
 <script>
 const ENDPOINT = 'https://65-109-143-26.sslip.io/contact';
-const HINTS = {'News tip or story idea': 'Tell us what happened, where and when, and how you know',
-  'Event or community notice': 'What is happening, where, when, and who is organising it',
-  'Correction or complaint': 'Which article, what is wrong, and what the correct information is',
-  'Advertising': 'Tell us about your business and what you would like to promote',
-  'Something else': 'How can we help?'};
+const STORY = {'News tip or story idea': 'A sentence or two is fine', 'Event or community notice': 'What is the event or notice?'};
 const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn');
-f.addEventListener('change', () => { const t = f.topic.value; document.getElementById('mhint').textContent = HINTS[t]; document.getElementById('adnote').style.display = t === 'Advertising' ? 'block' : 'none'; size(); });
+function topicChanged() {
+  const t = f.topic.value, story = t in STORY;
+  document.getElementById('story').style.display = story ? '' : 'none';
+  if (story) document.getElementById('whathint').textContent = STORY[t];
+  document.getElementById('mlabel').firstChild.textContent = story ? 'Anything else we should know?' : 'Your message';
+  document.getElementById('mhint').textContent = story ? 'Optional' : (t === 'Correction or complaint' ? 'Which article, what is wrong, and what the correct information is' : t === 'Advertising' ? 'Tell us about your business and what you would like to promote' : 'How can we help?');
+  document.getElementById('adnote').style.display = t === 'Advertising' ? 'block' : 'none';
+  size();
+}
+f.addEventListener('change', e => { if (e.target.name === 'topic') topicChanged(); });
 f.addEventListener('submit', async e => {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(f).entries());
-  if (!data.name || !/^\S+@\S+\.\S+$/.test(data.email || '') || !(data.message || '').trim()) { msg.className = 'err'; msg.textContent = 'Please give your name, a valid email and a message.'; return; }
+  const story = f.topic.value in STORY;
+  if (!data.name || !/^\S+@\S+\.\S+$/.test(data.email || '') || !((story ? data.what : data.message) || '').trim()) { msg.className = 'err'; msg.textContent = story ? 'Please give your name, a valid email and tell us what happened.' : 'Please give your name, a valid email and a message.'; return; }
+  if (!story) ['what', 'where', 'when', 'who', 'source'].forEach(k => delete data[k]);
   btn.disabled = true; msg.className = ''; msg.textContent = 'Sending…';
   try {
     const j = await fetch(ENDPOINT, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)}).then(r => r.json());
-    if (j.ok) { f.reset(); f.dispatchEvent(new Event('change')); msg.className = 'ok'; msg.textContent = 'Thank you. Your message has gone to the newsdesk.'; }
+    if (j.ok) { f.reset(); topicChanged(); msg.className = 'ok'; msg.textContent = 'Thank you. Your message has gone to the newsdesk.'; }
     else { msg.className = 'err'; msg.textContent = j.error || 'Sorry, that did not send. Please try again later.'; }
   } catch (err) { msg.className = 'err'; msg.textContent = 'Sorry, that did not send. Please try again later.'; }
   btn.disabled = false; size();
 });
 function size() { try { parent.postMessage({deesideWidget: 'contact-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {} }
-addEventListener('load', size); addEventListener('resize', size);
+addEventListener('load', topicChanged); addEventListener('resize', size);
 </script>
 </body>
 </html>

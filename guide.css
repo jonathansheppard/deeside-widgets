@@ -1,0 +1,38 @@
+/* Shared style for Deeside.com evergreen guide pages (on top of house.css) */
+body { background: #fff; }
+.top { padding: 4px 0 16px; border-bottom: 4px solid var(--green); }
+h1 { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -.5px; line-height: 1.15; }
+.lede { font-size: 16.5px; line-height: 1.55; margin-top: 8px; max-width: 680px; color: var(--ink); }
+.lede a, .g a { color: var(--green-dk); font-weight: 700; text-decoration: underline; }
+.jump { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.jump a { font-size: 13px; font-weight: 600; background: #f1f3f5; color: var(--head); padding: 5px 10px; border-radius: 999px; }
+.jump a:hover { background: #e6efd6; }
+section.g { padding: 20px 0; border-bottom: 1px solid var(--rule); scroll-margin-top: 10px; }
+.g h2 { font-size: 20px; font-weight: 800; color: var(--head); margin-bottom: 6px; }
+.g .sub { font-size: 14px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+.g p { font-size: 15px; line-height: 1.65; margin-bottom: 10px; }
+.g ul { margin: 0 0 10px 20px; font-size: 15px; line-height: 1.65; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); border: 1px solid var(--rule); margin: 4px 0 12px; }
+.fact { padding: 11px 13px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.fact b { display: block; font-size: 12.5px; color: var(--muted); font-weight: 700; margin-bottom: 2px; }
+.fact span { font-size: 14.5px; color: var(--head); font-weight: 600; line-height: 1.4; }
+.entry { padding: 11px 0; border-bottom: 1px solid var(--rule); scroll-margin-top: 10px; }
+.entry:last-child { border-bottom: 0; }
+.entry h3 { font-size: 16px; font-weight: 800; color: var(--head); margin-bottom: 3px; }
+.entry h3 .num { display: inline-block; min-width: 46px; font-size: 13px; font-weight: 800; color: #fff; background: var(--green-dk); border-radius: 3px; padding: 1px 6px; margin-right: 8px; text-align: center; vertical-align: 2px; }
+.entry h3 .num.eng { background: #868e96; }
+.entry .roads { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 3px; }
+.entry p { font-size: 14.5px; line-height: 1.55; margin: 0; }
+.entry.key { background: #f6faee; border-left: 4px solid var(--green); padding: 11px 12px; }
+.border { margin: 10px 0; padding: 8px 12px; background: #f1f3f5; font-size: 13.5px; font-weight: 700; color: var(--head); text-align: center; }
+.callout { background: #f6faee; border-left: 4px solid var(--green); padding: 12px 14px; font-size: 14.5px; line-height: 1.55; margin: 8px 0 12px; }
+.warn { background: var(--amber-bg); border-left: 4px solid #f59e0b; padding: 12px 14px; font-size: 14.5px; line-height: 1.55; margin: 8px 0 12px; }
+table.t { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 4px 0 10px; }
+.t th { text-align: left; font-size: 12.5px; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--rule); }
+.t td { padding: 7px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+details.faq { border-bottom: 1px solid var(--rule); padding: 10px 0; }
+details.faq summary { font-size: 15px; font-weight: 700; color: var(--head); cursor: pointer; }
+details.faq p { margin-top: 6px; }
+.src { padding: 16px 0 4px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.src a { text-decoration: underline; }
+@media (max-width: 560px) { h1 { font-size: 25px; } }

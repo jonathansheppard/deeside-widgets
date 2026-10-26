@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Deeside weather</title>
-<link rel="stylesheet" href="../house.css?v=1">
+<link rel="stylesheet" href="../house.css?v=3">
 <style>
 .now { display: flex; align-items: center; gap: 10px; padding: 12px 14px 6px; }
 .temp { font-size: 46px; font-weight: 800; line-height: 1; color: var(--head); letter-spacing: -1.5px; }
@@ -49,10 +49,22 @@ function render(d) {
   document.getElementById('body').outerHTML = out.join('');
   size();
 }
-function size() { try { parent.postMessage({deesideWidget: 'weather', height: document.getElementById('w').offsetHeight}, '*'); } catch (e) {} }
+function size() { try { parent.postMessage({deesideWidget: 'weather', height: document.getElementById('w').offsetHeight + 6}, '*'); } catch (e) {} }
 addEventListener('resize', size);
 fetch(DATA + '?t=' + Math.floor(Date.now() / 300000)).then(r => r.json()).then(render)
   .catch(() => { document.getElementById('body').textContent = 'Weather is unavailable right now.'; });
+</script>
+
+<script>
+/* Keep the frame on deeside.com exactly the right height, including after fonts load on phones */
+(function () {
+  var el = document.getElementById('w'), key = 'weather';
+  function post() { try { parent.postMessage({deesideWidget: key, height: Math.ceil(el.getBoundingClientRect().height) + 6}, '*'); } catch (e) {} }
+  if (window.ResizeObserver) new ResizeObserver(post).observe(el);
+  addEventListener('load', post); addEventListener('resize', post);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(post);
+  setTimeout(post, 1500); setTimeout(post, 4000);
+})();
 </script>
 </body>
 </html>

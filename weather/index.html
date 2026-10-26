@@ -38,6 +38,7 @@ h2 { font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: u
 .cond span { color: var(--muted); font-size: 13.5px; line-height: 1.6; display: block; }
 .hours { display: flex; gap: 2px; overflow-x: auto; margin-top: 16px; padding-bottom: 6px; scrollbar-width: thin; }
 .h { flex: 0 0 62px; text-align: center; padding: 8px 2px; background: var(--panel); border-radius: 6px; font-size: 11.5px; color: var(--muted); }
+.h svg { display: block; margin: 3px auto; }
 .h b { display: block; color: var(--text); font-size: 16px; }
 .h .r { color: var(--blue); font-size: 11px; display: block; }
 .h .g { font-size: 10.5px; display: block; margin-top: 2px; }
@@ -91,11 +92,12 @@ function render(d) {
     : '<p class="ok">No Met Office warnings, flood alerts or unplanned power cuts for Deeside right now.</p>' + box.join('');
   // Now and hours
   const f = d.forecast;
-  if (f && f.hours && f.hours.length) {
-    const n = f.hours[0];
+  const hs = upcoming(f);
+  if (hs.length) {
+    const n = hs[0];
     document.getElementById('now').innerHTML = `<div class="now">${icon(n.code, 80)}<div class="temp">${n.temp}<sup>°C</sup></div>
       <div class="cond"><b>${esc(n.wx)}</b><span>Feels like ${n.feels}°C<br>Wind ${n.wind}mph, gusting ${n.gust}mph<br>${n.rain ?? 0}% chance of rain</span></div></div>
-      <div class="hours">${f.hours.slice(1).map(h => `<div class="h">${fmtHour(h.time)}${icon(h.code, 30)}<b>${h.temp}°</b><span class="r">${h.rain ?? 0}%</span><span class="g">${h.gust}mph</span></div>`).join('')}</div>`;
+      <div class="hours">${hs.slice(1).map(h => `<div class="h">${fmtHour(h.time)}${icon(h.code, 30)}<b>${h.temp}°</b><span class="r">${h.rain ?? 0}%</span><span class="g">${h.gust}mph</span></div>`).join('')}</div>`;
     document.getElementById('days').innerHTML = (f.days || []).map(x => `<div class="d"><span class="n">${dayName(x.date)}</span>${icon(x.code, 32)}<span class="w">${esc(x.wx)}</span><span class="t"><b>${x.max}°</b> <span>${x.min}°</span></span><span class="r">${x.rain ?? 0}% rain</span></div>`).join('');
   } else {
     document.getElementById('nowsec').style.display = document.getElementById('weeksec').style.display = 'none';

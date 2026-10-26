@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deeside weather</title>
+<link rel="stylesheet" href="../house.css?v=1">
+<style>
+.now { display: flex; align-items: center; gap: 10px; padding: 12px 14px 6px; }
+.temp { font-size: 46px; font-weight: 800; line-height: 1; color: var(--head); letter-spacing: -1.5px; }
+.temp sup { font-size: 18px; font-weight: 600; vertical-align: top; position: relative; top: 6px; letter-spacing: 0; color: var(--muted); }
+.cond { font-size: 15px; font-weight: 700; color: var(--head); line-height: 1.25; }
+.cond small { display: block; font-size: 12px; font-weight: 400; color: var(--muted); margin-top: 2px; }
+.hours { display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px 8px 10px; }
+.h { text-align: center; font-size: 11.5px; color: var(--muted); }
+.h svg { display: block; margin: 2px auto 0; }
+.h b { display: block; font-size: 15px; color: var(--head); }
+.h .r { font-size: 11px; color: var(--blue); }
+.tide { display: flex; justify-content: space-between; padding: 9px 14px; border-top: 1px solid var(--rule); font-size: 12.5px; color: var(--muted); }
+.tide b { color: var(--head); }
+</style>
+</head>
+<body>
+<a class="card" id="w" href="https://www.deeside.com/deeside-right-now/" target="_top">
+  <div class="card-hd"><h3>Deeside weather</h3><span class="upd" id="upd"></span></div>
+  <div class="load" id="body">Loading…</div>
+</a>
+<script src="common.js?v=3"></script>
+<script>
+function render(d) {
+  document.getElementById('upd').textContent = 'Updated ' + fmtTime(d.generated);
+  const a = alerts(d), out = [], hs = upcoming(d.forecast);
+  if (a.length) {
+    a.slice(0, 2).forEach(x => out.push(`<div class="note ${x.lvl}">${esc(x.text)}${x.sub ? `<small>${esc(x.sub)}</small>` : ''}</div>`));
+    if (a.length > 2) out.push(`<div class="note">${a.length - 2} more on the full page</div>`);
+  } else {
+    out.push('<div class="note ok">No weather warnings, flood alerts or power cuts</div>');
+  }
+  if (hs.length) {
+    const n = hs[0];
+    out.push(`<div class="now">${icon(n.code, 46)}<div class="temp">${n.temp}<sup>°C</sup></div>
+      <div class="cond">${esc(n.wx)}<small>Feels like ${n.feels}°. Gusts ${n.gust}mph</small></div></div>`);
+    out.push('<div class="hours">' + [3, 6, 9, 12].map(i => hs[i]).filter(Boolean).map(h =>
+      `<div class="h">${fmtHour(h.time)}${icon(h.code, 26)}<b>${h.temp}°</b><span class="r">${h.rain ?? 0}% rain</span></div>`).join('') + '</div>');
+  }
+  const hi = nextTide(d, 'High');
+  if (hi) out.push(`<div class="tide"><span>High tide, Connah's Quay</span><span><b>${fmtTime(hi.time)}</b>${dayName(hi.time) === 'Today' ? '' : ' ' + dayLabel(hi.time)}${hi.height ? ', ' + hi.height.toFixed(1) + 'm' : ''}</span></div>`);
+  out.push('<div class="card-ft"><span>Full forecast, tides and alerts</span><small>Met Office, NRW</small></div>');
+  document.getElementById('body').outerHTML = out.join('');
+  size();
+}
+function size() { try { parent.postMessage({deesideWidget: 'weather', height: document.getElementById('w').offsetHeight}, '*'); } catch (e) {} }
+addEventListener('resize', size);
+fetch(DATA + '?t=' + Math.floor(Date.now() / 300000)).then(r => r.json()).then(render)
+  .catch(() => { document.getElementById('body').textContent = 'Weather is unavailable right now.'; });
+</script>
+</body>
+</html>

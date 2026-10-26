@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Widget style preview</title>
+<style>
+body { font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; background: rgba(175,174,174,.32); margin: 0; padding: 24px; color: #212529; }
+h1 { font-size: 18px; margin-bottom: 16px; }
+.cols { display: flex; gap: 40px; flex-wrap: wrap; }
+.col { width: 330px; }
+.col h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .5px; color: #555; margin: 0 0 10px; }
+.slot { box-shadow: 0 16px 48px rgba(0,0,0,.176); border-radius: .25rem; overflow: hidden; margin-bottom: 3rem; }
+iframe { display: block; width: 100%; border: 0; }
+</style>
+</head>
+<body>
+<h1>Sidebar widgets: current style vs Deeside.com house style</h1>
+<div class="cols">
+  <div class="col"><h2>Current</h2>
+    <div class="slot"><iframe src="https://deeside-fuel-prices.netlify.app/fuel-widget-bold.html" height="260" scrolling="no"></iframe></div>
+    <div class="slot"><iframe data-w="weather-dark" src="../weather/widget.html?v=4" height="300" scrolling="no"></iframe></div>
+  </div>
+  <div class="col"><h2>House style</h2>
+    <div class="slot"><iframe data-w="fuel" src="../fuel/widget-light.html?v=1" height="230" scrolling="no"></iframe></div>
+    <div class="slot"><iframe data-w="weather" src="../weather/widget-light.html?v=1" height="300" scrolling="no"></iframe></div>
+  </div>
+</div>
+<script>
+addEventListener('message', e => {
+  if (!e.data || !e.data.deesideWidget) return;
+  document.querySelectorAll('iframe').forEach(f => { if (f.contentWindow === e.source) f.style.height = e.data.height + 'px'; });
+});
+</script>
+</body>
+</html>

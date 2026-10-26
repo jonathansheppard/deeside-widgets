@@ -51,7 +51,7 @@ a { color: inherit; text-decoration: none; }
   <div class="hd"><div class="brand">Deeside right now<small>Weather, warnings, tides and power</small></div><div class="live"><span class="pip"></span>Live</div></div>
   <div class="load" id="body">Loading the latest…</div>
 </a>
-<script src="common.js?v=2"></script>
+<script src="common.js?v=3"></script>
 <script>
 function render(d) {
   const a = alerts(d), f = d.forecast, out = [];
@@ -70,7 +70,7 @@ function render(d) {
     out.push('<div class="hours">' + picks.map(h => `<div class="h">${fmtHour(h.time)}${icon(h.code, 26)}<b>${h.temp}°</b><span class="r">${h.rain ?? 0}% rain</span></div>`).join('') + '</div>');
   }
   const hi = nextTide(d, 'High');
-  if (hi) out.push(`<div class="tide"><span>Next high tide, Connah's Quay</span><span><b>${fmtTime(hi.time)}</b> ${dayName(hi.time) === 'Today' ? '' : dayLabel(hi.time)}${hi.height ? ` · ${hi.height}m` : ''}</span></div>`);
+  if (hi) out.push(`<div class="tide"><span>Next high tide, Connah's Quay</span><span><b>${fmtTime(hi.time)}</b> ${dayName(hi.time) === 'Today' ? '' : dayLabel(hi.time)}${hi.height ? ` · ${hi.height.toFixed(1)}m` : ''}</span></div>`);
   out.push('<div class="ft">Full forecast, tides and disruption →<span>Met Office · NRW · UKHO</span></div>');
   document.getElementById('body').outerHTML = out.join('');
   size();

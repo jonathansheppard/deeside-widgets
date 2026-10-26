@@ -43,3 +43,9 @@ function nextTide(d, type) {
   const now = Date.now();
   return ((d.tides && d.tides.events) || []).find(e => e.type === type && new Date(e.time) > now);
 }
+
+// Forecast hours from the current hour onwards (the data can be up to an hour old)
+function upcoming(f) {
+  const cut = Date.now() - 30 * 60 * 1000;
+  return (f && f.hours || []).filter(h => new Date(h.time).getTime() >= cut);
+}

@@ -107,12 +107,13 @@ fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).th
   let data, stn = (new URLSearchParams(location.search).get('station') || '').toUpperCase();
   try { stn = stn || localStorage.getItem('dsRailStn') || ''; } catch (e) {}
   stn = stn || 'SHT';
+  const why = r => { r = String(r || '').replace(/^This (service|train) (has been|is being) (cancelled|delayed) because of /i, '').replace(/^This (service|train) (has been|is being) (cancelled|delayed) /i, '').trim(); return r ? r[0].toUpperCase() + r.slice(1) : ''; };
   const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
   function row(x) {
     const late = x.etd && x.etd !== 'On time' && x.etd !== 'Cancelled' && x.etd !== 'Delayed';
     const st = x.cancelled ? '<span class="st can">Cancelled</span>' : x.etd === 'On time' ? '<span class="st ok">On time</span>'
       : x.etd === 'Delayed' ? '<span class="st late">Delayed</span>' : late ? `<span class="st late">Exp ${esc(x.etd)}</span>` : `<span class="st">${esc(x.etd)}</span>`;
-    const sub = [x.cancelled || x.etd === 'Delayed' ? x.reason : '', x.coaches ? x.coaches + ' coaches' : '', x.plat ? 'Platform ' + x.plat : ''].filter(Boolean).join('. ');
+    const sub = [x.cancelled || x.etd === 'Delayed' ? why(x.reason) : '', x.coaches ? x.coaches + ' coaches' : '', x.plat ? 'Platform ' + x.plat : ''].filter(Boolean).join('. ');
     return `<div class="tr${x.cancelled ? ' can' : ''}"><span class="t">${esc(x.std)}</span><span class="d">${esc(x.to)}${sub ? `<small>${esc(sub)}</small>` : ''}</span>${st}</div>`;
   }
   function list(L, end) {
@@ -125,7 +126,7 @@ fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).th
     const s = data.stations.find(x => x.crs === stn) || data.stations.find(x => x.crs === 'SHT');
     document.getElementById('lupd').textContent = 'Updated ' + new Date(data.generated).toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'}) + '. Refreshes every minute.';
     const c = data.cancelled_today || [];
-    document.getElementById('lcx').innerHTML = c.length ? `<div class="cxl"><b>${c.length} train${c.length > 1 ? 's' : ''} cancelled today</b>${c.map(x => esc(`${x.std} ${x.from} to ${x.to}${x.reason ? ': ' + x.reason.replace(/^This service has been cancelled because of /i, '').replace(/^This train has been cancelled because of /i, '') : ''}`)).join('<br>')}</div>` : '';
+    document.getElementById('lcx').innerHTML = c.length ? `<div class="cxl"><b>${c.length} train${c.length > 1 ? 's' : ''} cancelled today</b>${c.map(x => esc(`${x.std} ${x.from} to ${x.to}${x.reason ? ': ' + why(x.reason).toLowerCase().replace(/^./, m => m) : ''}`)).join('<br>')}</div>` : '';
     document.getElementById('ln').innerHTML = list(s.north, s.crs === 'BID');
     document.getElementById('ls').innerHTML = list(s.south, s.crs === 'WXC');
   }

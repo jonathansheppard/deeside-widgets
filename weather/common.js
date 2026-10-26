@@ -10,7 +10,7 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&
 
 // Met Office significant weather code -> icon
 function icon(code, size = 40) {
-  const g = c => c == null ? 'cloud' : c === 0 ? 'moon' : c === 1 ? 'sun' : (c === 2 || c === 3) ? 'part' : (c === 5 || c === 6) ? 'fog'
+  const g = c => c == null ? 'cloud' : c === 0 ? 'moon' : c === 1 ? 'sun' : c === 2 ? 'partnight' : c === 3 ? 'part' : (c === 5 || c === 6) ? 'fog'
     : (c === 7 || c === 8) ? 'cloud' : (c >= 9 && c <= 15) ? 'rain' : (c >= 16 && c <= 27) ? 'snow' : 'storm';
   const k = g(code);
   const sun = '<circle cx="24" cy="24" r="8" fill="#fbbf24"/><g stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"><path d="M24 6v5M24 37v5M6 24h5M37 24h5M11.3 11.3l3.5 3.5M33.2 33.2l3.5 3.5M11.3 36.7l3.5-3.5M33.2 14.8l3.5-3.5"/></g>';
@@ -19,6 +19,7 @@ function icon(code, size = 40) {
   const body = {
     sun, moon: '<path d="M30 8a16 16 0 1 0 10 26A13 13 0 0 1 30 8z" fill="#e2e8f0"/>',
     part: '<g transform="translate(-6 -6) scale(.8)">' + sun + '</g>' + cl(2, 4),
+    partnight: '<g transform="translate(-4 -6) scale(.75)"><path d="M30 8a16 16 0 1 0 10 26A13 13 0 0 1 30 8z" fill="#e2e8f0"/></g>' + cl(2, 4),
     cloud: cl(0, 0, '#94a3b8'), rain: cl(0, -4, '#94a3b8') + drops,
     snow: cl(0, -4, '#cbd5e1') + '<g fill="#e2e8f0"><circle cx="17" cy="40" r="2"/><circle cx="25" cy="43" r="2"/><circle cx="33" cy="40" r="2"/></g>',
     storm: cl(0, -4, '#64748b') + '<path d="M26 32l-6 9h5l-3 7 8-10h-5l3-6z" fill="#fbbf24"/>',

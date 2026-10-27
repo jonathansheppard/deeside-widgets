@@ -49,7 +49,7 @@ h2 { font-size: 19px; font-weight: 800; color: var(--head); margin-bottom: 4px; 
 .filt { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 2px; }
 .filt button { font: inherit; font-size: 13px; font-weight: 700; padding: 5px 11px; border-radius: 15px; border: 1px solid var(--rule); background: #fff; color: var(--head); cursor: pointer; }
 .filt button.on { background: var(--green-dk); border-color: var(--green-dk); color: #fff; }
-@media (max-width: 520px) { .sum b { font-size: 24px; } .it { grid-template-columns: 54px minmax(0, 1fr); } }
+@media (max-width: 520px) { #map { height: 260px; } .sum b { font-size: 24px; } .it { grid-template-columns: 54px minmax(0, 1fr); } }
 </style>
 </head>
 <body>
@@ -59,13 +59,13 @@ h2 { font-size: 19px; font-weight: 800; color: var(--head); margin-bottom: 4px; 
   <div class="sum" id="sum"><div><b>…</b><span>incidents and closures</span></div><div><b>…</b><span>queues</span></div><div><b>…</b><span>roadworks</span></div></div>
   <p class="upd" id="upd">Loading the latest traffic information…</p>
   <label class="opt"><input type="checkbox" id="border" checked> Include Chester and the border</label>
+  <section><h2>Map</h2><p class="sub">Red: incidents and closures. Amber: queues. Grey: roadworks. White dots: council-listed closures (red ring) and temporary lights. Tap a dot for details.</p><div id="map"></div></section>
   <section><h2>Incidents and closures</h2><div id="g-now"></div></section>
   <section><h2>Queues</h2><p class="sub">Slow or stationary traffic, with the extra time it is adding where known.</p><div id="g-queues"></div></section>
   <section id="council"><h2>Road closures and temporary lights this week</h2><p class="sub" id="c-sub">From Flintshire Council's weekly roadworks list, by town.</p>
     <div class="filt" id="c-filt"><button data-f="all" class="on">All</button><button data-f="closed">Road closures</button><button data-f="lights">Temporary lights</button><button data-f="soon">Starting soon</button></div>
     <div id="g-council"></div></section>
   <section><h2>Other roadworks and planned closures</h2><p class="sub">Main roads and the border, from TomTom.</p><div id="g-works"></div></section>
-  <section><h2>Map</h2><p class="sub">Red: incidents and closures. Amber: queues. Grey: roadworks. White dots: council-listed closures (red ring) and temporary lights. Tap a dot for details.</p><div id="map"></div></section>
   <section><h2>Useful links</h2><ul class="links">
     <li><a href="https://traffic.wales/" target="_blank" rel="noopener">Traffic Wales</a> for the A55 and A494, which are run by the Welsh Government</li>
     <li><a href="https://www.deeside.com/trafficcams/" target="_top">A494 traffic cameras</a> and <a href="https://north.wales/a55-traffic-cameras" target="_blank" rel="noopener">A55 traffic cameras</a></li>

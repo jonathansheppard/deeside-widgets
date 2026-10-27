@@ -72,7 +72,11 @@ const day = iso => { if (!iso) return ''; const d = new Date(iso); return d.toLo
 const tm = iso => iso ? new Date(iso).toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'}) : '';
 function place(i) {
   const f = (i.from || '').replace(/\s*\/.*$/, ''), t = (i.to || '').replace(/\s*\/.*$/, '');
-  const where = f && t && f !== t ? `${f} to ${t}` : (f || t);
+  let where = f && t && f !== t ? `${f} to ${t}` : (f || t);
+  if (i.street) {
+    const trivial = !where || where.toLowerCase() === (i.area || '').replace(/^near /, '').toLowerCase() || where.toLowerCase().includes(i.street.toLowerCase());
+    where = trivial ? i.street : `${i.street} (${where})`;
+  }
   const ar = i.area || '', bare = ar.replace(/^near /, '');
   if (!ar || where.toLowerCase().includes(bare.toLowerCase())) return where;
   return where ? `${where}, ${ar}` : ar.charAt(0).toUpperCase() + ar.slice(1);

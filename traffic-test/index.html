@@ -112,7 +112,7 @@ const dd = iso => iso ? new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', 
 function councilMatch(i) {
   if (!i.at) return null;
   const txt = (place(i) + ' ' + (i.street || '')).toLowerCase();
-  return council.find(c => c.at && !c.approx && kmJ(i.at, c.at) < 0.5 && (txt.includes(c.street.toLowerCase()) || kmJ(i.at, c.at) < 0.15)) || null;
+  return council.find(c => c.at && !c.approx && kmJ(i.at, c.at) < 0.6 && txt.includes(c.street.toLowerCase())) || null;
 }
 function cline(c) {
   const tag = !c.live ? `<span class="tag soon">Starts ${esc(dd(c.start))}</span>` : `<span class="tag ${c.closure ? 'now' : 'w'}">${esc(c.measure)}</span>`;

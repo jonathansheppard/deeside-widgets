@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Most read on Deeside.com</title>
+<script>window.__d=fetch('widget.json?t='+Math.floor(Date.now()/300000)).then(function(r){return r.json()});</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="../house.css?v=4">
+<style>
+ol { list-style: none; }
+li a { display: flex; gap: 12px; align-items: flex-start; padding: 11px 14px; border-bottom: 1px solid var(--rule); }
+li:last-child a { border-bottom: 0; }
+.n { flex: 0 0 26px; font-size: 22px; font-weight: 800; color: var(--green); line-height: 1.1; text-align: right; }
+.t { font-size: 15px; font-weight: 700; color: var(--head); line-height: 1.35; }
+li a:hover .t { text-decoration: underline; }
+.card-ft a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="card" id="w">
+  <div class="card-hd"><h3>Most read</h3><span class="upd">Last 24 hours</span></div>
+  <div class="load" id="body">Loading…</div>
+</div>
+<script>
+/* ?n=10 shows the full ten (for the Most read page); default is the top five */
+var N = Math.min(10, parseInt(new URLSearchParams(location.search).get('n'), 10) || 5);
+var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+window.__d.then(function (d) {
+  var items = (d.stories || []).slice(0, N);
+  if (!items.length) throw new Error('empty');
+  document.getElementById('body').outerHTML =
+    '<ol>' + items.map(function (s, i) {
+      return '<li><a href="' + esc(s.url) + '" target="_top"><span class="n">' + (i + 1) + '</span><span class="t">' + esc(s.title) + '</span></a></li>';
+    }).join('') + '</ol>' +
+    (N < 10 ? '<div class="card-ft"><a href="https://www.deeside.com/most-read/" target="_top">See the top 10</a><small>Updated every 30 minutes</small></div>' : '');
+}).catch(function () { document.getElementById('body').textContent = 'Most read stories are unavailable right now.'; });
+</script>
+<script>
+/* Keep the frame on deeside.com exactly the right height */
+(function () {
+  var el = document.getElementById('w'), key = 'mostread';
+  function post() { try { parent.postMessage({deesideWidget: key, height: Math.ceil(el.getBoundingClientRect().height) + 6}, '*'); } catch (e) {} }
+  if (window.ResizeObserver) new ResizeObserver(post).observe(el);
+  addEventListener('load', post); addEventListener('resize', post);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(post);
+  setTimeout(post, 1500); setTimeout(post, 4000);
+})();
+</script>
+</body>
+</html>

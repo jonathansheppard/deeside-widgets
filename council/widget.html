@@ -3,13 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coming up at Flintshire County Council</title>
-<script>window.__d=fetch('meetings.json?t='+Math.floor(Date.now()/1800000)).then(function(r){return r.json()});</script>
+<title>Flintshire County Council: meetings, videos and councillors</title>
+<script>
+var __v = Math.floor(Date.now() / 1800000);
+var __get = function (f) { return fetch(f + '?t=' + __v).then(function (r) { if (!r.ok) throw r.status; return r.json(); }); };
+window.__d = { meetings: __get('meetings.json'), videos: __get('videos.json'), councillors: __get('councillors.json') };
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
 <link rel="stylesheet" href="../house.css?v=4">
 <style>
 ul { list-style: none; }
+.tabs { display: flex; border-bottom: 1px solid var(--rule); }
+.tabs button { flex: 1; font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); background: #fff; border: 0; border-bottom: 3px solid transparent; padding: 10px 4px 8px; cursor: pointer; }
+.tabs button[aria-selected="true"] { color: var(--head); border-bottom-color: var(--green); }
+.pane[hidden] { display: none; }
 li a { display: flex; gap: 12px; align-items: flex-start; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
 .d { flex: 0 0 44px; text-align: center; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
 .d b { display: block; font-size: 18px; font-weight: 800; color: var(--head); line-height: 1.2; padding-top: 2px; }
@@ -22,22 +30,59 @@ li a { display: flex; gap: 12px; align-items: flex-start; padding: 10px 14px; bo
 .tag.sp { background: var(--amber-bg); color: var(--amber); }
 li a:hover .c { text-decoration: underline; }
 .card-ft a:hover { text-decoration: underline; }
+.thumb { flex: 0 0 112px; aspect-ratio: 16 / 9; border-radius: 4px; background: #dfe3e0 center / cover no-repeat; position: relative; }
+.thumb::after { content: ''; position: absolute; left: 50%; top: 50%; width: 0; height: 0; margin: -8px 0 0 -5px; border-style: solid; border-width: 8px 0 8px 13px; border-color: transparent transparent transparent #fff; filter: drop-shadow(0 0 3px rgba(0,0,0,.6)); }
+.pick { padding: 12px 14px; border-bottom: 1px solid var(--rule); }
+.pick label { display: block; font-size: 12.5px; font-weight: 700; color: var(--head); margin-bottom: 6px; }
+.pick select { width: 100%; font: inherit; font-size: 15px; padding: 9px 10px; border: 1px solid #ced4da; border-radius: 4px; background: #fff; color: var(--ink); }
+.cl { display: flex; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--rule); }
+.cl img { flex: 0 0 56px; width: 56px; height: 70px; object-fit: cover; border-radius: 4px; background: #dfe3e0; }
+.cl .p { font-size: 12.5px; font-weight: 700; color: var(--green-dk); margin-top: 1px; }
+.cl .k { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.35; }
+.cl .x { margin-top: 6px; font-size: 12.5px; font-weight: 700; }
+.cl .x a { color: var(--blue); margin-right: 12px; }
+.cl .x a:hover { text-decoration: underline; }
+.empty { padding: 18px 14px; font-size: 13px; color: var(--muted); }
 </style>
 </head>
 <body>
 <div class="card" id="w">
-  <div class="card-hd"><h3>Coming up at the council</h3><span class="upd">Flintshire</span></div>
-  <div class="load" id="body">Loading…</div>
+  <div class="card-hd"><h3>Flintshire County Council</h3><span class="upd">Meetings and councillors</span></div>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="t-meet" aria-controls="p-meet" aria-selected="true">Coming up</button>
+    <button role="tab" id="t-vid" aria-controls="p-vid" aria-selected="false">Watch again</button>
+    <button role="tab" id="t-cllr" aria-controls="p-cllr" aria-selected="false">Your councillor</button>
+  </div>
+  <div class="pane" id="p-meet" role="tabpanel"><div class="load">Loading…</div></div>
+  <div class="pane" id="p-vid" role="tabpanel" hidden><div class="load">Loading…</div></div>
+  <div class="pane" id="p-cllr" role="tabpanel" hidden><div class="load">Loading…</div></div>
 </div>
 <script>
-var N = Math.min(12, parseInt(new URLSearchParams(location.search).get('n'), 10) || 6);
-var esc = function (s) { return String(s).replace(/&amp;/g, '&').replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
-var day = function (iso, o) { return new Date(iso + 'T12:00:00Z').toLocaleDateString('en-GB', Object.assign({timeZone: 'Europe/London'}, o)); };
-window.__d.then(function (d) {
+var Q = new URLSearchParams(location.search);
+var N = Math.min(12, parseInt(Q.get('n'), 10) || 6);
+var esc = function (s) { return String(s == null ? '' : s).replace(/&amp;/g, '&').replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+var day = function (iso, o) { return new Date(iso.slice(0, 10) + 'T12:00:00Z').toLocaleDateString('en-GB', Object.assign({timeZone: 'Europe/London'}, o)); };
+var MG = 'https://committeemeetings.flintshire.gov.uk/';
+var $ = function (id) { return document.getElementById(id); };
+
+/* Tabs */
+var tabs = ['meet', 'vid', 'cllr'];
+function show(name) {
+  tabs.forEach(function (t) {
+    $('t-' + t).setAttribute('aria-selected', t === name ? 'true' : 'false');
+    $('p-' + t).hidden = t !== name;
+  });
+}
+tabs.forEach(function (t) { $('t-' + t).addEventListener('click', function () { show(t); }); });
+var start = {videos: 'vid', councillor: 'cllr', councillors: 'cllr'}[Q.get('tab')];
+if (start) show(start);
+
+/* Coming up */
+window.__d.meetings.then(function (d) {
   var today = new Date().toISOString().slice(0, 10);
   var items = (d.meetings || []).filter(function (m) { return m.date >= today; }).slice(0, N);
-  if (!items.length) { document.getElementById('body').textContent = 'No meetings scheduled in the next few weeks.'; return; }
-  document.getElementById('body').outerHTML = '<ul>' + items.map(function (m) {
+  if (!items.length) { $('p-meet').innerHTML = '<p class="empty">No meetings scheduled in the next few weeks.</p>'; return; }
+  $('p-meet').innerHTML = '<ul>' + items.map(function (m) {
     return '<li><a href="' + esc(m.url) + '" target="_blank" rel="noopener">' +
       '<span class="d"><small>' + day(m.date, {month: 'short'}) + '</small><b>' + day(m.date, {day: 'numeric'}) + '</b></span>' +
       '<span><span class="c">' + esc(m.committee) + '</span>' +
@@ -45,12 +90,54 @@ window.__d.then(function (d) {
       (m.webcast ? '<span class="tag live">Webcast</span>' : '') + (m.special ? '<span class="tag sp">Special meeting</span>' : '') +
       '</span></span></a></li>';
   }).join('') + '</ul>' +
-  '<div class="card-ft"><a href="https://committeemeetings.flintshire.gov.uk/mgCalendarMonthView.aspx" target="_blank" rel="noopener">Full council calendar</a><small>Tap a meeting for its papers</small></div>';
-}).catch(function () { document.getElementById('body').textContent = 'Meeting dates are unavailable right now.'; });
+  '<div class="card-ft"><a href="' + MG + 'mgCalendarMonthView.aspx" target="_blank" rel="noopener">Full council calendar</a><small>Tap a meeting for its papers</small></div>';
+}).catch(function () { $('p-meet').innerHTML = '<p class="empty">Meeting dates are unavailable right now.</p>'; });
+
+/* Watch again */
+window.__d.videos.then(function (d) {
+  var items = (d.videos || []).slice(0, N);
+  if (!items.length) throw 0;
+  $('p-vid').innerHTML = '<ul>' + items.map(function (v) {
+    return '<li><a href="https://www.youtube.com/watch?v=' + encodeURIComponent(v.id) + '" target="_blank" rel="noopener">' +
+      '<span class="thumb" style="background-image:url(https://i.ytimg.com/vi/' + encodeURIComponent(v.id) + '/mqdefault.jpg)"></span>' +
+      '<span><span class="c">' + esc(v.title) + '</span>' +
+      '<span class="m">Posted ' + day(v.date, {weekday: 'short', day: 'numeric', month: 'short'}) + '</span></span></a></li>';
+  }).join('') + '</ul>' +
+  '<div class="card-ft"><a href="https://www.youtube.com/channel/UCYqw0PL-O5FTVVQcnOBsReg/videos" target="_blank" rel="noopener">All meeting videos</a><small>On the council\'s YouTube channel</small></div>';
+}).catch(function () { $('p-vid').innerHTML = '<p class="empty">Meeting videos are unavailable right now. <a href="https://www.youtube.com/channel/UCYqw0PL-O5FTVVQcnOBsReg/videos" target="_blank" rel="noopener" style="color:var(--blue)">Watch on YouTube</a></p>'; });
+
+/* Your councillor */
+window.__d.councillors.then(function (d) {
+  var wards = (d.wards || []).slice().sort(function (a, b) { return a.ward.localeCompare(b.ward); });
+  if (!wards.length) throw 0;
+  $('p-cllr').innerHTML = '<div class="pick"><label for="ward">Choose your ward</label><select id="ward"><option value="">Select a ward…</option>' +
+    wards.map(function (w, i) { return '<option value="' + i + '">' + esc(w.ward) + '</option>'; }).join('') +
+    '</select></div><div id="who"></div>' +
+    '<div class="card-ft"><a href="' + MG + 'mgMemberIndex.aspx" target="_blank" rel="noopener">All 67 councillors</a><small>Not sure of your ward? Search by postcode on the council site</small></div>';
+  function render(i) {
+    var w = wards[i];
+    if (!w) { $('who').innerHTML = ''; return; }
+    $('who').innerHTML = w.councillors.map(function (c) {
+      var photo = (c.photo || '').replace(/^http:/, 'https:');
+      return '<div class="cl">' + (photo ? '<img src="' + esc(photo) + '" alt="" loading="lazy">' : '') +
+        '<div><span class="c">' + esc(c.name) + '</span><div class="p">' + esc(c.party) + '</div>' +
+        (c.post ? '<div class="k">' + esc(c.post) + '</div>' : '') +
+        '<div class="x"><a href="' + MG + 'mgUserInfo.aspx?UID=' + encodeURIComponent(c.id) + '" target="_blank" rel="noopener">Profile and interests</a>' +
+        (c.email ? '<a href="mailto:' + esc(c.email) + '">Email</a>' : '') + '</div></div></div>';
+    }).join('');
+    try { localStorage.setItem('ds-ward', w.ward); } catch (e) {}
+  }
+  var sel = $('ward');
+  sel.addEventListener('change', function () { render(sel.value); });
+  try {
+    var saved = localStorage.getItem('ds-ward');
+    wards.forEach(function (w, i) { if (w.ward === saved) { sel.value = i; render(i); } });
+  } catch (e) {}
+}).catch(function () { $('p-cllr').innerHTML = '<p class="empty">Councillor details are unavailable right now. <a href="' + MG + 'mgMemberIndex.aspx" target="_blank" rel="noopener" style="color:var(--blue)">See all councillors</a></p>'; });
 </script>
 <script>
 (function () {
-  var el = document.getElementById('w'), key = 'council';
+  var el = $('w'), key = 'council';
   function post() { try { parent.postMessage({deesideWidget: key, height: Math.ceil(el.getBoundingClientRect().height) + 6}, '*'); } catch (e) {} }
   if (window.ResizeObserver) new ResizeObserver(post).observe(el);
   addEventListener('load', post); addEventListener('resize', post);

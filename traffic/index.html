@@ -75,8 +75,8 @@ h2 { font-size: 19px; font-weight: 800; color: var(--head); margin-bottom: 4px; 
   </ul></section>
   <div class="src">Traffic data from TomTom, checked every five minutes. Road closures and temporary lights from <a href="https://www.flintshire.gov.uk/en/Resident/Streetscene/Roadworks/Roadworks-List.aspx" target="_blank" rel="noopener">Flintshire Council's roadworks list</a>, checked hourly. Roadworks dates are planned dates and can change. Deeside.com is not responsible for the accuracy of third-party traffic data.</div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
+(function () { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'; s.async = true; s.onload = () => { if (data) drawMap(); }; document.head.appendChild(s); })();
 const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const COL = {now: '#b91c1c', queues: '#b45309', works: '#6c757d'};
 let data, map, layer, showAll = {now: false, queues: false, works: false};
@@ -147,6 +147,15 @@ function draw() {
       : `<p class="none">${k === 'now' ? 'No incidents or unplanned closures reported right now.' : k === 'queues' ? 'No queues reported right now.' : 'No roadworks listed.'}</p>`;
   }
   document.querySelectorAll('.more').forEach(b => b.onclick = () => { showAll[b.dataset.k] = true; draw(); });
+  drawCouncil();
+  document.getElementById('upd').textContent = 'Updated ' + tm(data.generated) + '. Checked every five minutes.';
+  size();
+  drawMap();
+}
+function drawMap() {
+  if (!window.L || !data) return;
+  const all = document.getElementById('border').checked;
+  const items = data.items.filter(i => all || i.tier === 1);
   if (!map) {
     map = L.map('map', {scrollWheelZoom: false}).setView([53.2, -3.05], 11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 18, attribution: '&copy; OpenStreetMap contributors'}).addTo(map);
@@ -156,9 +165,6 @@ function draw() {
     .bindPopup(`<b>${esc(i.road ? i.road + ': ' : '')}${esc(i.type)}</b><br>${esc(place(i))}${i.delay_min ? '<br>Adding about ' + i.delay_min + ' min' : ''}${i.group === 'works' && i.end ? '<br>Until ' + day(i.end) : ''}`))).addTo(map);
   council.filter(c => c.at).forEach(c => L.circleMarker(c.at, {radius: 5, weight: 2, color: c.closure ? COL.now : '#495057', fillColor: '#fff', fillOpacity: 1})
     .bindPopup(`<b>${esc(c.measure)}: ${esc(c.street)}</b><br>${esc(c.town || '')}<br>${esc(dd(c.start))} to ${esc(dd(c.end))}<br>${esc(c.work)}${c.contractor ? ', ' + esc(c.contractor) : ''}`).addTo(layer));
-  drawCouncil();
-  document.getElementById('upd').textContent = 'Updated ' + tm(data.generated) + '. Checked every five minutes.';
-  size();
 }
 function load(p) {
   const rw = window.__r || fetch('https://65-109-143-26.sslip.io/live/roadworks.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).catch(() => ({items: []}));

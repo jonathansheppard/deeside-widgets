@@ -43,6 +43,8 @@ li a:hover .c { text-decoration: underline; }
 .cl .x a { color: var(--blue); margin-right: 12px; }
 .cl .x a:hover { text-decoration: underline; }
 .empty { padding: 18px 14px; font-size: 13px; color: var(--muted); }
+.bare .card { border-top: 0; }
+.bare .card-hd { display: none; }
 </style>
 </head>
 <body>
@@ -64,6 +66,7 @@ var esc = function (s) { return String(s == null ? '' : s).replace(/&amp;/g, '&'
 var day = function (iso, o) { return new Date(iso.slice(0, 10) + 'T12:00:00Z').toLocaleDateString('en-GB', Object.assign({timeZone: 'Europe/London'}, o)); };
 var MG = 'https://committeemeetings.flintshire.gov.uk/';
 var $ = function (id) { return document.getElementById(id); };
+if (Q.get('hd') === '0') document.documentElement.className += ' bare';
 
 /* Tabs */
 var tabs = ['meet', 'vid', 'cllr'];

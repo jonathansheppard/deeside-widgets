@@ -30,7 +30,7 @@ li a:hover .c { text-decoration: underline; }
 </div>
 <script>
 var N = Math.min(12, parseInt(new URLSearchParams(location.search).get('n'), 10) || 6);
-var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+var esc = function (s) { return String(s).replace(/&amp;/g, '&').replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
 var day = function (iso, o) { return new Date(iso + 'T12:00:00Z').toLocaleDateString('en-GB', Object.assign({timeZone: 'Europe/London'}, o)); };
 window.__d.then(function (d) {
   var today = new Date().toISOString().slice(0, 10);

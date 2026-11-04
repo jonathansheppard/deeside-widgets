@@ -62,8 +62,8 @@ h2 { font-size: 19px; font-weight: 800; color: var(--head); margin-bottom: 4px; 
   <section><h2>Map</h2><p class="sub">Red: incidents and closures. Amber: queues. Grey: roadworks. White dots: council-listed closures (red ring) and temporary lights. Tap a dot for details.</p><div id="map"></div></section>
   <section><h2>Incidents and closures</h2><div id="g-now"></div></section>
   <section><h2>Queues</h2><p class="sub">Slow or stationary traffic, with the extra time it is adding where known.</p><div id="g-queues"></div></section>
-  <section id="council"><h2>Road closures and temporary lights this week</h2><p class="sub" id="c-sub">From Flintshire Council's weekly roadworks list, by town.</p>
-    <div class="filt" id="c-filt"><button data-f="all" class="on">All</button><button data-f="closed">Road closures</button><button data-f="lights">Temporary lights</button><button data-f="soon">Starting soon</button></div>
+  <section id="council"><h2>Road closures, lane closures and temporary lights this week</h2><p class="sub" id="c-sub">From Flintshire Council's roadworks list and other published roadworks notices, by town.</p>
+    <div class="filt" id="c-filt"><button data-f="all" class="on">All</button><button data-f="closed">Road closures</button><button data-f="lights">Temporary lights</button><button data-f="lanes">Lane closures</button><button data-f="soon">Starting soon</button></div>
     <div id="g-council"></div></section>
   <section><h2>Other roadworks and planned closures</h2><p class="sub">Main roads and the border, from TomTom.</p><div id="g-works"></div></section>
   <section><h2>Useful links</h2><ul class="links">
@@ -73,7 +73,7 @@ h2 { font-size: 19px; font-weight: 800; color: var(--head); margin-bottom: 4px; 
     <li><a href="https://www.deeside.com/wrexham-bidston-line/" target="_top">Wrexham to Bidston trains, live</a></li>
     <li><a href="https://www.waze.com/live-map/" target="_blank" rel="noopener">Waze live map</a> for congestion colours</li>
   </ul></section>
-  <div class="src">Traffic data from TomTom, checked every five minutes. Road closures and temporary lights from <a href="https://www.flintshire.gov.uk/en/Resident/Streetscene/Roadworks/Roadworks-List.aspx" target="_blank" rel="noopener">Flintshire Council's roadworks list</a>, checked hourly. Roadworks dates are planned dates and can change. Deeside.com is not responsible for the accuracy of third-party traffic data.</div>
+  <div class="src">Traffic data from TomTom, checked every five minutes. Road closures and temporary lights from <a href="https://www.flintshire.gov.uk/en/Resident/Streetscene/Roadworks/Roadworks-List.aspx" target="_blank" rel="noopener">Flintshire Council's roadworks list</a> and other published roadworks notices, checked hourly. Roadworks dates are planned dates and can change. Deeside.com is not responsible for the accuracy of third-party traffic data.</div>
 </div>
 <script>
 (function () { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'; s.async = true; s.onload = () => { if (data) drawMap(); }; document.head.appendChild(s); })();
@@ -122,7 +122,7 @@ function cline(c) {
 }
 function drawCouncil() {
   const box = document.getElementById('g-council');
-  const f = {all: () => true, closed: c => c.closure, lights: c => /lights|stop and go|give and take/i.test(c.measure), soon: c => !c.live}[cFilter];
+  const f = {all: () => true, closed: c => c.closure, lights: c => /lights|stop and go|give and take/i.test(c.measure), lanes: c => c.measure === 'Lane closed', soon: c => !c.live}[cFilter];
   const L = council.filter(f);
   if (!council.length) { box.innerHTML = '<p class="none">The council roadworks list is unavailable right now.</p>'; return; }
   if (!L.length) { box.innerHTML = '<p class="none">Nothing in this list right now.</p>'; return; }
@@ -130,8 +130,10 @@ function drawCouncil() {
   L.forEach(c => (towns[c.town || 'Other'] = towns[c.town || 'Other'] || []).push(c));
   box.innerHTML = Object.keys(towns).sort((a, b) => a === 'Other' ? 1 : b === 'Other' ? -1 : a.localeCompare(b))
     .map(t => `<div class="town">${esc(t)}</div>` + towns[t].map(cline).join('')).join('');
-  const nc = council.filter(c => c.live && c.closure).length, nl = council.filter(c => c.live && !c.closure).length, ns = council.filter(c => !c.live).length;
-  document.getElementById('c-sub').textContent = `${nc} road closure${nc === 1 ? '' : 's'} and ${nl} set${nl === 1 ? '' : 's'} of temporary lights in place, with ${ns} more starting soon. From Flintshire Council's weekly roadworks list, by town.`;
+  const nc = council.filter(c => c.live && c.closure).length, nn = council.filter(c => c.live && c.measure === 'Lane closed').length,
+    nl = council.filter(c => c.live && !c.closure && c.measure !== 'Lane closed').length, ns = council.filter(c => !c.live).length;
+  const bits = [`${nc} road closure${nc === 1 ? '' : 's'}`, `${nl} set${nl === 1 ? '' : 's'} of temporary lights`].concat(nn ? [`${nn} lane closure${nn === 1 ? '' : 's'}`] : []);
+  document.getElementById('c-sub').textContent = `${bits.slice(0, -1).join(', ')} and ${bits[bits.length - 1]} in place, with ${ns} more starting soon. From Flintshire Council's roadworks list and other published roadworks notices, by town.`;
 }
 document.addEventListener('click', e => { const b = e.target.closest('#c-filt button'); if (!b) return;
   cFilter = b.dataset.f; document.querySelectorAll('#c-filt button').forEach(x => x.classList.toggle('on', x === b)); drawCouncil(); size(); });

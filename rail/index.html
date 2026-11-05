@@ -62,6 +62,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .st.ok { color: var(--green-dk); } .st.late { color: var(--amber); } .st.can { color: var(--red); }
 .tr.can { background: var(--red-bg); } .tr.can .t { text-decoration: line-through; color: var(--muted); }
 .none { font-size: 14px; color: var(--muted); padding: 10px 16px; }
+.today { border-left: 4px solid var(--green); background: #f4f9f1; padding: 10px 12px; margin: 10px 0; font-size: 15px; line-height: 1.55; color: var(--head); }
+.today b { color: var(--green-dk); } .today small { display: block; font-size: 12px; color: var(--muted); margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -69,7 +71,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 <div id="wrap">
   <div class="top"><h1>Wrexham to Bidston line tracker</h1><p>How trains on the Wrexham to Bidston line, also known as the Borderlands line, are running day by day. Live departures every minute, and day-by-day performance updated every morning.</p></div>
   <section id="live"><div class="live-hd"><h2 style="font-size:24px">Live departures</h2><label>Station <select id="stn"></select></label></div>
-    <p class="upd2" id="lupd">Loading live departures…</p><div id="lcx"></div>
+    <p class="upd2" id="lupd">Loading live departures…</p><div class="today" id="today"></div><div id="lcx"></div>
     <div class="dirs"><div><div class="dir">Towards Bidston</div><div id="ln"></div></div><div><div class="dir">Towards Wrexham</div><div id="ls"></div></div></div><p class="lnote">Live data from National Rail Enquiries. Times are expected departure times and can change. Check before you travel. Cancelled trains stay listed so you can see what has gone.</p></section>
   <section><h2>The last seven days</h2><div class="stats" id="stats"><div class="s"><div class="lbl">Loading the latest figures…</div></div></div></section>
   <section><h2>Cancellations per day</h2><div id="chart"><p class="lbl">Loading…</p></div></section>
@@ -153,6 +155,23 @@ fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).th
   sel.onchange = () => { stn = sel.value; try { localStorage.setItem('dsRailStn', stn); } catch (e) {} draw(); };
   load(); setInterval(load, 60000);
   if (window.ResizeObserver) new ResizeObserver(() => { try { parent.postMessage({deesideWidget: 'rail-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {} }).observe(document.getElementById('wrap'));
+})();
+</script>
+<script>
+/* Today on the line: Network Rail TRUST movements recorded by Deeside.com, refreshed every five minutes */
+(function () {
+  const box = document.getElementById('today');
+  const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  function load() {
+    fetch('https://65-109-143-26.sslip.io/live/rail_today.json?t=' + Math.floor(Date.now() / 120000)).then(r => r.json()).then(d => {
+      const today = new Date().toLocaleDateString('en-CA', {timeZone: 'Europe/London'});
+      if (d.date !== today) { box.style.display = 'none'; return; }
+      const at = new Date(d.generated).toLocaleTimeString('en-GB', {timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit'});
+      box.style.display = '';
+      box.innerHTML = `<b>Today on the line:</b> ${esc(d.summary)}<small>On time means within three minutes at the end of the journey. From Network Rail train movements, recorded by Deeside.com. Updated ${at}.</small>`;
+    }).catch(() => { box.style.display = 'none'; });
+  }
+  load(); setInterval(load, 300000);
 })();
 </script>
 </body>

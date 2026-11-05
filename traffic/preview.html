@@ -169,12 +169,13 @@ function tSentence(i) {
   }
   const hrs = i.start ? (Date.now() - new Date(i.start)) / 3.6e6 : 0;
   if (/closed/i.test(i.type) && !/lane/i.test(i.type)) {
-    const when = !i.start ? '' : hrs < 12 ? `, reported at ${tm(i.start)}` : ` and has been since ${new Date(i.start).toLocaleDateString('en-GB', {timeZone: LON, weekday: 'long', day: 'numeric', month: 'long'})}`;
+    const when = !i.start ? '' : hrs < 12 ? `, reported at ${tm(i.start)}` : `${where ? ',' : ''} and has been since ${new Date(i.start).toLocaleDateString('en-GB', {timeZone: LON, weekday: 'long', day: 'numeric', month: 'long'})}`;
     return `${cap(name)} is closed${where}${when}.`;
   }
   return `${cap(lc(i.type))} on ${name}${where}${delay}${i.start ? `, reported at ${tm(i.start)}` : ''}.`;
 }
-const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+const NUM = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+const plural = (n, one, many) => `${n < 10 ? NUM[n] : n} ${n === 1 ? one : many}`;
 const listJoin = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
 function brief() {
   const now = new Date();
@@ -186,7 +187,7 @@ function brief() {
   const top = loc.filter(i => i.group === 'now').slice(0, 3).concat(loc.filter(i => i.group === 'queues').slice(0, 2));
   let nowTxt = top.length ? top.map(tSentence).join(' ') : "No collisions, closures or queues are reported on Flintshire's roads right now.";
   const extra = loc.length - top.length;
-  if (extra > 0) nowTxt += ` There ${extra === 1 ? 'is one more' : 'are ' + extra + ' more'} further down the page.`;
+  if (extra > 0) nowTxt += ` There ${extra === 1 ? 'is one more' : 'are ' + (extra < 10 ? NUM[extra] : extra) + ' more'} further down the page.`;
   if (document.getElementById('border').checked) {
     const bn = data.items.filter(i => i.tier === 2 && i.group === 'now').length, bq = data.items.filter(i => i.tier === 2 && i.group === 'queues').length;
     const b = [].concat(bn ? [plural(bn, 'closure or incident', 'closures or incidents')] : [], bq ? [plural(bq, 'queue', 'queues')] : []);
@@ -197,8 +198,9 @@ function brief() {
   const rwBox = document.getElementById('b-rw'), soonBox = document.getElementById('b-soon');
   if (!council.length) { rwBox.innerHTML = '<p><b>Roadworks:</b> The council roadworks list is unavailable right now.</p>'; soonBox.innerHTML = ''; document.getElementById('b-src').textContent = ''; return; }
   const wk = addD(7), wkAgo = addD(-7), live = council.filter(c => c.live);
-  const where = c => c.town ? `${c.street} in ${c.town}` : c.street;
-  const why = c => (c.work && c.work !== 'Works' ? ` for ${lc(c.work)}` : '') + (c.contractor ? ` by ${c.contractor}` : '');
+  const tidy = t => (t || '').replace(/\bXRDs?\b/gi, 'crossroads').replace(/\bJct\b\.?/gi, 'junction').replace(/\bRd\b\.?/g, 'Road').replace(/\bLTD\b/g, 'Ltd');
+  const where = c => { const st = tidy(c.street), nm = / to /.test(st) ? `The road from ${st}` : st; return c.town ? `${nm} in ${c.town}` : nm; };
+  const why = c => (c.work && c.work !== 'Works' ? ` for ${lc(c.work)}` : '') + (c.contractor ? ` by ${tidy(c.contractor)}` : '');
   const cl = live.filter(c => c.closure && c.end)
     .map(c => ({c, s: (c.start >= wkAgo ? 2 : 0) + (c.end <= wk ? 1 : 0)}))
     .sort((a, b) => b.s - a.s || b.c.start.localeCompare(a.c.start)).slice(0, 3).map(x => x.c);

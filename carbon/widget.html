@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<script>window.__c = fetch('https://65-109-143-26.sslip.io/live/carbon.json?t=' + Math.floor(Date.now() / 300000)).then(function (r) { return r.json(); });</script>
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How green is our electricity?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap"></noscript>
+<link rel="stylesheet" href="../house.css?v=4">
+<style>
+.row { padding: 11px 14px; border-bottom: 1px solid var(--rule); }
+.row h4 { font-size: 13px; font-weight: 700; color: var(--head); margin-bottom: 3px; }
+.big { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -1px; line-height: 1.1; }
+.big span { font-size: 15px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.lbl { font-size: 12px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
+.lbl b { color: var(--head); }
+.pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 7px; margin-left: 6px; vertical-align: middle; letter-spacing: 0; color: #fff; }
+.mixbar { display: flex; height: 10px; margin-top: 8px; }
+.mixbar i { display: block; height: 100%; }
+.key { display: flex; flex-wrap: wrap; gap: 3px 10px; margin-top: 6px; font-size: 11.5px; color: var(--muted); }
+.key span::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 4px; background: var(--c); }
+.spark { display: flex; align-items: flex-end; gap: 1px; height: 34px; margin-top: 8px; }
+.spark i { flex: 1; display: block; background: var(--rule); }
+.spark i.best { background: var(--green); }
+.ticks { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+.explain { padding: 9px 14px; font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+</style>
+</head>
+<body>
+<div class="card" id="w">
+  <div class="card-hd"><h3>How green is our electricity?</h3><span class="upd" id="upd"></span></div>
+  <div class="load" id="body">Loading…</div>
+</div>
+<script>
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const tm = s => new Date(s).toLocaleTimeString('en-GB', {timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit'});
+const day = s => {
+  const d = new Date(s), f = x => x.toLocaleDateString('en-GB', {timeZone: 'Europe/London'});
+  return f(d) === f(new Date()) ? 'today' : f(d) === f(new Date(Date.now() + 864e5)) ? 'tomorrow' : d.toLocaleDateString('en-GB', {timeZone: 'Europe/London', weekday: 'long'});
+};
+const IDX = {'very low': '#1a7f37', 'low': '#2e9d4b', 'moderate': '#b58105', 'high': '#c4501b', 'very high': '#a1201b'};
+const FUEL = {wind: ['Wind', '#2e9d4b'], solar: ['Solar', '#e0b400'], hydro: ['Hydro', '#3a8fd0'], nuclear: ['Nuclear', '#8a6fc4'],
+  biomass: ['Biomass', '#8c6d3f'], gas: ['Gas', '#9aa0a6'], coal: ['Coal', '#3c4043'], imports: ['Imports', '#c9ccd1'], other: ['Other', '#dadce0']};
+(window.__c || fetch('https://65-109-143-26.sslip.io/live/carbon.json?t=' + Math.floor(Date.now() / 300000)).then(r => r.json())).then(d => {
+  if ((Date.now() - new Date(d.updated)) / 60000 > 120) throw new Error('stale');
+  document.getElementById('upd').textContent = tm(d.updated);
+  const n = d.now, col = IDX[n.index] || '#777';
+  const cmp = d.gb && d.gb.g ? (n.g < d.gb.g ? `Cleaner than Britain as a whole (${d.gb.g}g)` : n.g > d.gb.g ? `Dirtier than Britain as a whole (${d.gb.g}g)` : 'The same as Britain as a whole') : '';
+  const mix = d.mix.filter(m => m.perc >= 0.5);
+  const bar = mix.map(m => `<i style="width:${m.perc}%;background:${(FUEL[m.fuel] || [m.fuel, '#ccc'])[1]}" title="${esc((FUEL[m.fuel] || [m.fuel])[0])} ${m.perc}%"></i>`).join('');
+  const key = mix.slice(0, 6).map(m => `<span style="--c:${(FUEL[m.fuel] || [m.fuel, '#ccc'])[1]}">${esc((FUEL[m.fuel] || [m.fuel])[0])} ${Math.round(m.perc)}%</span>`).join('');
+  const fc = d.forecast.slice(0, 48), mx = Math.max(...fc.map(x => x.g), 1);
+  const b = d.best, inBest = t => b && t >= b.from && t < b.to;
+  const spark = fc.map(x => `<i class="${inBest(x.from) ? 'best' : ''}" style="height:${Math.max(6, Math.round(x.g / mx * 100))}%" title="${tm(x.from)}: ${x.g}g"></i>`).join('');
+  const last = fc.length ? fc[fc.length - 1].from : d.updated;
+  document.getElementById('body').outerHTML =
+    `<div class="row"><h4>Right now in North Wales and Merseyside</h4>
+      <div class="big">${n.g}<span> g CO₂ per kWh</span><span class="pill" style="background:${col}">${esc(n.index)}</span></div>
+      <div class="lbl">${esc(cmp)}. <b>${d.renewables}%</b> from wind, solar and hydro.</div>
+      <div class="mixbar">${bar}</div><div class="key">${key}</div></div>
+    ${b ? `<div class="row"><h4>Best time to run the washing machine or charge the car</h4>
+      <div class="lbl"><b>${tm(b.from)} to ${tm(b.to)} ${day(b.from)}</b>, about ${b.g}g per kWh.</div>
+      <div class="spark">${spark}</div><div class="ticks"><span>Now</span><span>${tm(last)}</span></div></div>` : ''}
+    <div class="explain">How much carbon dioxide is given off for each unit of electricity used in our area, using the grid's forecast for this half hour. Lower is greener. Updated every half hour.</div>
+    <div class="card-ft"><span>Lower carbon when the wind blows off our coast</span><small>Source: NESO</small></div>`;
+}).catch(() => { document.getElementById('body').textContent = 'Figures are unavailable right now.'; });
+</script>
+<script>
+(function () {
+  var el = document.getElementById('w'), key = 'carbon';
+  function post() { try { parent.postMessage({deesideWidget: key, height: Math.ceil(el.getBoundingClientRect().height) + 6}, '*'); } catch (e) {} }
+  if (window.ResizeObserver) new ResizeObserver(post).observe(el);
+  addEventListener('load', post); addEventListener('resize', post);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(post);
+  setTimeout(post, 1500); setTimeout(post, 4000);
+})();
+</script>
+</body>
+</html>

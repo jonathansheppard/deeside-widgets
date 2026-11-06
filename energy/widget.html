@@ -53,7 +53,7 @@ fetch('https://65-109-143-26.sslip.io/live/grid.json?t=' + Math.floor(Date.now()
   if (!g.active || !g.active.length) return;
   var a = g.active[g.active.length - 1], el = document.createElement('div');
   el.className = 'note red';
-  el.innerHTML = 'National Grid warning: ' + a.title.replace(/[&<>]/g, '') +
+  el.innerHTML = (a.plain || a.title).replace(/[&<>]/g, '') +
     (g.cnq_mw != null ? '<small>Connah\'s Quay power station is generating ' + Number(g.cnq_mw).toLocaleString('en-GB') + ' MW right now.</small>' : '');
   document.querySelector('#w .card-hd').after(el);
 }).catch(function () {});

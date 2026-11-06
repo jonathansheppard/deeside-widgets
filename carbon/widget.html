@@ -60,11 +60,13 @@ const FUEL = {wind: ['Wind', '#2e9d4b'], solar: ['Solar', '#e0b400'], hydro: ['H
       <div class="big">${n.g}<span> g CO₂ per kWh</span><span class="pill" style="background:${col}">${esc(n.index)}</span></div>
       <div class="lbl">${esc(cmp)}. <b>${d.renewables}%</b> from wind, solar and hydro.</div>
       <div class="mixbar">${bar}</div><div class="key">${key}</div></div>
-    ${b ? `<div class="row"><h4>Best time to run the washing machine or charge the car</h4>
-      <div class="lbl"><b>${tm(b.from)} to ${tm(b.to)} ${day(b.from)}</b>, about ${b.g}g per kWh.</div>
-      <div class="spark">${spark}</div><div class="ticks"><span>Now</span><span>${tm(last)}</span></div></div>` : ''}
+    <div class="row"><h4>When to run the washing machine or charge the car</h4>
+      ${d.agile && d.agile.best ? `<div class="lbl">Cheapest on Octopus Agile: <b>${tm(d.agile.best.from)} to ${tm(d.agile.best.to)} ${day(d.agile.best.from)}</b>, about ${d.agile.best.p}p a unit (${d.agile.now_p}p right now).</div>` : ''}
+      ${b ? `<div class="lbl">Greenest: <b>${tm(b.from)} to ${tm(b.to)} ${day(b.from)}</b>, about ${b.g}g per kWh.</div>
+      <div class="spark">${spark}</div><div class="ticks"><span>Now</span><span>${tm(last)}</span></div>` : ''}
+      <div class="lbl" style="margin-top:6px">On a standard fixed tariff a unit costs the same at any hour, so timing won't save you money. Economy 7 is cheaper overnight: check your bill for your hours.</div></div>
     <div class="explain">How much carbon dioxide is given off for each unit of electricity used in our area, using the grid's forecast for this half hour. Lower is greener. Updated every half hour.</div>
-    <div class="card-ft"><span>Lower carbon when the wind blows off our coast</span><small>Source: NESO</small></div>`;
+    <div class="card-ft"><span>Lower carbon when the wind blows off our coast</span><small>Sources: NESO, Octopus Energy</small></div>`;
 }).catch(() => { document.getElementById('body').textContent = 'Figures are unavailable right now.'; });
 </script>
 <script>

@@ -38,7 +38,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', 
 const tm = s => new Date(s).toLocaleTimeString('en-GB', {timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit'});
 const day = s => {
   const d = new Date(s), f = x => x.toLocaleDateString('en-GB', {timeZone: 'Europe/London'});
-  return f(d) === f(new Date()) ? 'today' : f(d) === f(new Date(Date.now() + 864e5)) ? 'tomorrow' : d.toLocaleDateString('en-GB', {timeZone: 'Europe/London', weekday: 'long'});
+  return f(d) === f(new Date()) ? (+d.toLocaleTimeString('en-GB', {timeZone: 'Europe/London', hour: '2-digit', hour12: false}) >= 18 ? 'tonight' : 'today') : f(d) === f(new Date(Date.now() + 864e5)) ? 'tomorrow' : d.toLocaleDateString('en-GB', {timeZone: 'Europe/London', weekday: 'long'});
 };
 const IDX = {'very low': '#1a7f37', 'low': '#2e9d4b', 'moderate': '#b58105', 'high': '#c4501b', 'very high': '#a1201b'};
 const FUEL = {wind: ['Wind', '#2e9d4b'], solar: ['Solar', '#e0b400'], hydro: ['Hydro', '#3a8fd0'], nuclear: ['Nuclear', '#8a6fc4'],

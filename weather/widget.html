@@ -10,6 +10,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap"></noscript>
 <link rel="stylesheet" href="../house.css?v=4">
 <style>
+.obs { padding: 0 14px 8px; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+.obs b { color: var(--head); }
 .now { display: flex; align-items: center; gap: 10px; padding: 12px 14px 6px; }
 .temp { font-size: 46px; font-weight: 800; line-height: 1; color: var(--head); letter-spacing: -1.5px; }
 .temp sup { font-size: 18px; font-weight: 600; vertical-align: top; position: relative; top: 6px; letter-spacing: 0; color: var(--muted); }
@@ -44,6 +46,8 @@ function render(d) {
     const n = hs[0];
     out.push(`<div class="now">${icon(n.code, 46)}<div class="temp">${n.temp}<sup>°C</sup></div>
       <div class="cond">${esc(n.wx)}<small>Feels like ${n.feels}°. Gusts ${n.gust}mph</small></div></div>`);
+    const o = d.observed; if (o && o.temp != null && (Date.now() - new Date(o.time)) < 2 * 3600e3)
+      out.push(`<div class="obs">Measured at Hawarden Airport, ${fmtTime(o.time)}: <b>${o.temp}°C</b>, ${esc(o.weather.toLowerCase())}${o.wind_mph != null ? `, wind ${o.wind_mph}mph${o.wind_from && o.wind_from !== 'variable' ? ' from the ' + o.wind_from : ''}` : ''}${o.gust_mph ? `, gusts ${o.gust_mph}mph` : ''}</div>`);
     out.push('<div class="hours">' + [3, 6, 9, 12].map(i => hs[i]).filter(Boolean).map(h =>
       `<div class="h">${fmtHour(h.time)}${icon(h.code, 26)}<b>${h.temp}°</b><span class="r">${h.rain ?? 0}% rain</span></div>`).join('') + '</div>');
   }

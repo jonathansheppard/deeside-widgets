@@ -2,11 +2,12 @@
 <html lang="en-GB">
 <head>
 <meta charset="UTF-8">
+<script>window.__e = fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(function (r) { return r.json(); });</script>
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wrexham to Bidston line tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap"></noscript>
 <link rel="stylesheet" href="../house.css?v=4">
 <style>
 body { background: #fff; }
@@ -88,7 +89,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 const TZ = 'Europe/London';
 const fd = (iso, o) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-GB', {timeZone: TZ, ...o});
 const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
-fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json()).then(d => {
+(window.__e || fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json())).then(d => {
   const all = d.days, wk = all.slice(-7), cv = x => x.cancelled + x.part_cancelled;
   const sum = (a, f) => a.reduce((n, x) => n + f(x), 0);
   const tt = sum(wk, x => x.timetabled), c = sum(wk, cv), w3 = sum(wk, x => x.within_3);

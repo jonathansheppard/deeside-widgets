@@ -70,16 +70,6 @@ const FUEL = {wind: ['Wind', '#2e9d4b'], solar: ['Solar', '#e0b400'], hydro: ['H
 }).catch(() => { document.getElementById('body').textContent = 'Figures are unavailable right now.'; });
 </script>
 <script>
-fetch('https://65-109-143-26.sslip.io/live/grid.json?t=' + Math.floor(Date.now() / 300000)).then(function (r) { return r.json(); }).then(function (g) {
-  if (!g.active || !g.active.length) return;
-  var a = g.active[g.active.length - 1], el = document.createElement('div');
-  el.className = 'note red';
-  el.innerHTML = (a.plain || a.title).replace(/[&<>]/g, '') +
-    (g.cnq_mw != null ? '<small>Connah\'s Quay power station is generating ' + Number(g.cnq_mw).toLocaleString('en-GB') + ' MW right now.</small>' : '');
-  document.querySelector('#w .card-hd').after(el);
-}).catch(function () {});
-</script>
-<script>
 (function () {
   var el = document.getElementById('w'), key = 'carbon';
   function post() { try { parent.postMessage({deesideWidget: key, height: Math.ceil(el.getBoundingClientRect().height) + 6}, '*'); } catch (e) {} }

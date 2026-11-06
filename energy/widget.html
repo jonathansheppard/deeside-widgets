@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Local power right now</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="../house.css?v=4">
+<style>
+.row { padding: 11px 14px; border-bottom: 1px solid var(--rule); }
+.row h4 { font-size: 13px; font-weight: 700; color: var(--head); margin-bottom: 3px; }
+.big { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -1px; line-height: 1.1; }
+.big span { font-size: 15px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.big.off { color: var(--muted); }
+.lbl { font-size: 12px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
+.meter { height: 6px; background: var(--rule); margin-top: 7px; }
+.meter i { display: block; height: 100%; background: var(--green); }
+.explain { padding: 9px 14px; font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+</style>
+</head>
+<body>
+<div class="card" id="w">
+  <div class="card-hd"><h3>Local power right now</h3><span class="upd" id="upd"></span></div>
+  <div class="load" id="body">Loading…</div>
+</div>
+<script>
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const n = x => Number(x).toLocaleString('en-GB');
+fetch('https://65-109-143-26.sslip.io/live/energy.json?t=' + Math.floor(Date.now() / 300000)).then(r => r.json()).then(d => {
+  const age = (Date.now() - new Date(d.updated)) / 60000;
+  if (age > 90) throw new Error('stale');
+  document.getElementById('upd').textContent = new Date(d.updated).toLocaleTimeString('en-GB', {timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit'});
+  const rows = d.stations.map(s => {
+    const pct = s.capacity ? Math.round(s.mw / s.capacity * 100) : 0;
+    const lbl = s.kind === 'gas'
+      ? (s.mw > 5 ? `${s.units_running} of ${s.units} gas turbines running` : 'Not generating')
+      : `${pct}% of its ${n(s.capacity)} MW capacity`;
+    return `<div class="row"><h4>${esc(s.name)}</h4>
+      <div class="big ${s.mw > 5 ? '' : 'off'}">${n(s.mw)}<span> MW</span></div>
+      <div class="lbl">${lbl}</div>
+      <div class="meter"><i style="width:${Math.min(100, pct)}%"></i></div></div>`;
+  }).join('');
+  document.getElementById('body').outerHTML = rows +
+    `<div class="explain">Megawatts each site has told National Grid it is running at now. Updated every 10 minutes.</div>
+     <div class="card-ft"><span>Connah's Quay and the wind farms off our coast</span><small>Source: Elexon</small></div>`;
+}).catch(() => { document.getElementById('body').textContent = 'Figures are unavailable right now.'; });
+</script>
+<script>
+(function () {
+  var el = document.getElementById('w'), key = 'energy';
+  function post() { try { parent.postMessage({deesideWidget: key, height: Math.ceil(el.getBoundingClientRect().height) + 6}, '*'); } catch (e) {} }
+  if (window.ResizeObserver) new ResizeObserver(post).observe(el);
+  addEventListener('load', post); addEventListener('resize', post);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(post);
+  setTimeout(post, 1500); setTimeout(post, 4000);
+})();
+</script>
+</body>
+</html>

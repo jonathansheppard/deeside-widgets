@@ -2,11 +2,12 @@
 <html lang="en-GB">
 <head>
 <meta charset="UTF-8">
+<script>window.__e = fetch('https://65-109-143-26.sslip.io/live/energy.json?t=' + Math.floor(Date.now() / 300000)).then(function (r) { return r.json(); });</script>
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Local power right now</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap"></noscript>
 <link rel="stylesheet" href="../house.css?v=4">
 <style>
 .row { padding: 11px 14px; border-bottom: 1px solid var(--rule); }
@@ -28,7 +29,7 @@
 <script>
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const n = x => Number(x).toLocaleString('en-GB');
-fetch('https://65-109-143-26.sslip.io/live/energy.json?t=' + Math.floor(Date.now() / 300000)).then(r => r.json()).then(d => {
+(window.__e || fetch('https://65-109-143-26.sslip.io/live/energy.json?t=' + Math.floor(Date.now() / 300000)).then(r => r.json())).then(d => {
   const age = (Date.now() - new Date(d.updated)) / 60000;
   if (age > 90) throw new Error('stale');
   document.getElementById('upd').textContent = new Date(d.updated).toLocaleTimeString('en-GB', {timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit'});

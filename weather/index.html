@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Deeside right now: weather, warnings, tides and power cuts</title>
+<link rel="preload" href="weather.json" as="fetch" crossorigin>
+<script>window.__wx = fetch('weather.json?t=' + Math.floor(Date.now() / 60000)).then(function (r) { return r.json(); });</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap"></noscript>
 <link rel="stylesheet" href="../house.css?v=4">
 <style>
 body { background: #fff; }
@@ -102,7 +104,7 @@ function render(d) {
 }
 function size() { try { parent.postMessage({deesideWidget: 'weather-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {} }
 addEventListener('resize', size);
-function load() { fetch(DATA + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(render)
+function load() { const p = window.__wx || fetch(DATA + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()); window.__wx = null; p.then(render)
   .catch(() => { document.getElementById('upd').textContent = 'Could not load the latest data'; }); }
 load(); setInterval(load, 10 * 60 * 1000);
 </script>

@@ -47,7 +47,7 @@ function render(d) {
     out.push(`<div class="now">${icon(n.code, 46)}<div class="temp">${n.temp}<sup>°C</sup></div>
       <div class="cond">${esc(n.wx)}<small>Feels like ${n.feels}°. Gusts ${n.gust}mph</small></div></div>`);
     const o = d.observed; if (o && o.temp != null && (Date.now() - new Date(o.time)) < 2 * 3600e3)
-      out.push(`<div class="obs">Measured at Hawarden Airport, ${fmtTime(o.time)}: <b>${o.temp}°C</b>, ${esc(o.weather.toLowerCase())}${o.wind_mph != null ? `, wind ${o.wind_mph}mph${o.wind_from && o.wind_from !== 'variable' ? ' from the ' + o.wind_from : ''}` : ''}${o.gust_mph ? `, gusts ${o.gust_mph}mph` : ''}</div>`);
+      out.push(`<div class="obs" title="Why Hawarden? It is the nearest official weather station to Deeside, at Hawarden Airport beside the Airbus site at Broughton. Readings are taken every half hour while the airport is open, and it is the station used in Met Office records for this area, which is why Hawarden is the name you see when the area makes the hottest or coldest lists.">Measured at Hawarden Airport, ${fmtTime(o.time)}: <b>${o.temp}°C</b>, ${esc(o.weather.toLowerCase())}${o.wind_mph != null ? `, wind ${o.wind_mph}mph${o.wind_from && o.wind_from !== 'variable' ? ' from the ' + o.wind_from : ''}` : ''}${o.gust_mph ? `, gusts ${o.gust_mph}mph` : ''}</div>`);
     out.push('<div class="hours">' + [3, 6, 9, 12].map(i => hs[i]).filter(Boolean).map(h =>
       `<div class="h">${fmtHour(h.time)}${icon(h.code, 26)}<b>${h.temp}°</b><span class="r">${h.rain ?? 0}% rain</span></div>`).join('') + '</div>');
   }

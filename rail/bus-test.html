@@ -191,7 +191,7 @@ const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
   const OPS = {ACYM: 'Arriva', MHCO: 'M&H Coaches', PAOL: 'P&O Lloyd', TNLX: 'Townlynx'};
   function row(x) {
     const st = x.status === 'cancelled' ? '<span class="st can">Cancelled</span>'
-      : x.status === 'tracked' ? (x.late >= 2 ? `<span class="st late">Exp ${esc(x.exp)}</span>` : '<span class="st ok">On time</span>')
+      : x.status === 'delayed' ? '<span class="st late">Delayed</span>' : x.status === 'tracked' ? (x.late == null ? '<span class="st ok">Live</span>' : x.late >= 2 ? `<span class="st late">Exp ${esc(x.exp)}</span>` : '<span class="st ok">On time</span>')
       : x.status === 'no_signal' ? '<span class="st">No live signal</span>' : '<span class="st">Timetabled</span>';
     const sub = ['Route ' + x.route, OPS[x.op] || '', x.late >= 2 ? x.late + ' min late' : '',
                  x.stop !== 'Chester Rd West' ? 'From ' + x.stop : ''].filter(Boolean).join('. ');

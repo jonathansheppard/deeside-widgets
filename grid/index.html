@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<script>
+(function () {
+  var L = 'https://65-109-143-26.sslip.io/live/', t = Math.floor(Date.now() / 120000);
+  window.__g = Promise.all(['gridpage', 'grid', 'energy', 'carbon'].map(function (n) {
+    return fetch(L + n + '.json?t=' + t).then(function (r) { return r.json(); }).catch(function () { return null; });
+  }));
+})();
+</script>
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power and the grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap"></noscript>
+<link rel="stylesheet" href="../house.css?v=4">
+<style>
+body { background: #fff; }
+#wrap { max-width: 860px; }
+.top { padding: 4px 0 14px; border-bottom: 4px solid var(--green); }
+h1 { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -.5px; line-height: 1.15; }
+.top p { color: var(--ink); font-size: 15.5px; line-height: 1.55; margin-top: 6px; max-width: 680px; }
+.upd2 { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+section { padding: 20px 0; border-bottom: 1px solid var(--rule); }
+h2 { font-size: 20px; font-weight: 800; color: var(--head); margin-bottom: 4px; }
+.sub { font-size: 14px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+.status { padding: 13px 15px; font-size: 15.5px; line-height: 1.5; border-left: 5px solid var(--green); background: #f4f9f1; color: var(--head); }
+.status b { display: block; font-size: 17px; margin-bottom: 2px; }
+.status.amber { border-color: #f59e0b; background: var(--amber-bg); }
+.status.red { border-color: var(--red); background: var(--red-bg); }
+.status small { display: block; font-size: 13px; color: var(--muted); margin-top: 4px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); border: 1px solid var(--rule); border-right: 0; }
+.s { padding: 12px 14px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: -1px; }
+.s .lbl { font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.s .v { font-size: 27px; font-weight: 800; color: var(--head); letter-spacing: -.8px; line-height: 1.15; margin-top: 2px; }
+.s .v span { font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.s .d { font-size: 12.5px; color: var(--muted); line-height: 1.4; margin-top: 2px; }
+.mixbar { display: flex; height: 22px; margin: 14px 0 8px; }
+.mixbar i { display: block; height: 100%; }
+.mixlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2px 18px; }
+.mixlist div { display: flex; justify-content: space-between; font-size: 14px; padding: 5px 0; border-bottom: 1px solid var(--rule); }
+.mixlist div span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 7px; background: var(--c); vertical-align: -1px; }
+.mixlist div b { color: var(--head); }
+.mixlist div em { font-style: normal; color: var(--muted); font-size: 12.5px; margin-left: 6px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.tile { border: 1px solid var(--rule); border-top: 4px solid var(--c, var(--green)); padding: 12px 14px; }
+.tile h3 { font-size: 15px; font-weight: 800; color: var(--head); }
+.tile .v { font-size: 27px; font-weight: 800; color: var(--head); letter-spacing: -.8px; margin-top: 4px; }
+.tile .v span { font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.tile .d { font-size: 13px; color: var(--muted); line-height: 1.45; margin-top: 2px; }
+.gauge { height: 8px; background: #edf0f2; margin-top: 8px; position: relative; }
+.gauge i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--c, var(--green)); }
+.units { display: flex; gap: 4px; margin-top: 8px; }
+.units i { flex: 1; height: 8px; background: #edf0f2; }
+.units i.on { background: #9aa0a6; }
+.chart svg { width: 100%; height: auto; display: block; }
+.ckey { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+.ckey span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 5px; background: var(--c); vertical-align: -1px; }
+table.t { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.t th { text-align: left; font-size: 12.5px; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--rule); }
+.t td { padding: 7px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.t .n { text-align: right; white-space: nowrap; }
+.in { color: var(--green-dk); font-weight: 700; } .out { color: var(--blue); font-weight: 700; }
+.hz { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.hz .v { font-size: 34px; font-weight: 800; color: var(--head); letter-spacing: -1px; }
+.hzbar { position: relative; height: 26px; margin: 12px 0 4px; background: linear-gradient(90deg, #f3c9c9 0%, #fbe7c6 20%, #dcefc4 40%, #dcefc4 60%, #fbe7c6 80%, #f3c9c9 100%); }
+.hzbar i { position: absolute; top: -4px; bottom: -4px; width: 4px; margin-left: -2px; background: var(--head); }
+.hzticks { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); }
+.bars { display: flex; align-items: flex-end; gap: 4px; height: 150px; border-bottom: 1px solid #ced4da; }
+.bars div { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; font-size: 11px; color: var(--muted); }
+.bars i { display: block; width: 100%; background: #b7d98a; }
+.bars i.low { background: #f59e0b; }
+.blbl { display: flex; gap: 4px; }
+.blbl span { flex: 1; text-align: center; font-size: 11px; color: var(--muted); line-height: 1.3; }
+.explain { font-size: 13.5px; color: var(--muted); line-height: 1.55; margin-top: 10px; }
+.explain b { color: var(--head); }
+.wl { font-size: 14px; }
+.wl div { padding: 7px 0; border-bottom: 1px solid var(--rule); display: flex; gap: 12px; }
+.wl div time { flex: 0 0 120px; color: var(--muted); font-size: 13px; }
+details.faq { border-bottom: 1px solid var(--rule); padding: 11px 0; }
+details.faq summary { font-size: 15.5px; font-weight: 700; color: var(--head); cursor: pointer; }
+details.faq p { margin-top: 6px; font-size: 15px; line-height: 1.6; }
+.src { padding: 16px 0 4px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.src a { text-decoration: underline; }
+.lbl2 { font-size: 14px; color: var(--muted); }
+@media (max-width: 560px) { h1 { font-size: 25px; } .s .v, .tile .v { font-size: 23px; } .wl div time { flex-basis: 92px; } }
+</style>
+</head>
+<body>
+<script>if (self !== top) document.body.classList.add('embedded');</script>
+<div id="wrap">
+  <div class="top"><h1>Power and the grid</h1>
+    <p>Where Britain's electricity is coming from right now, how our local power station and wind farms are running, and whether National Grid is under any strain. Updated every five minutes.</p>
+    <p class="upd2" id="upd">Loading the latest figures…</p></div>
+
+  <section><div class="status" id="status"><b>Checking the grid…</b></div></section>
+
+  <section><h2>Britain's electricity right now</h2>
+    <p class="sub">Power from the big stations and wind farms on the national grid, and what is flowing through the cables to and from other countries.</p>
+    <div class="stats" id="stats"><div class="s"><div class="lbl">Loading…</div></div></div>
+    <div class="mixbar" id="mixbar"></div><div class="mixlist" id="mixlist"></div></section>
+
+  <section><h2>Our patch</h2>
+    <p class="sub">Connah's Quay gas power station and the wind farms off the North Wales and Wirral coast.</p>
+    <div class="tiles" id="local"><p class="lbl2">Loading…</p></div></section>
+
+  <section><h2>How green, and when is cheapest</h2>
+    <p class="sub">For the North Wales and Merseyside region, which covers Flintshire.</p>
+    <div class="tiles" id="carbon"><p class="lbl2">Loading…</p></div></section>
+
+  <section><h2>The last 24 hours</h2>
+    <p class="sub">What the national grid has been running on, every half hour.</p>
+    <div class="chart" id="chart"><p class="lbl2">Loading…</p></div></section>
+
+  <section><h2>The cables to other countries</h2>
+    <p class="sub">Britain buys and sells electricity through undersea cables. These are the flows right now.</p>
+    <div id="links"><p class="lbl2">Loading…</p></div></section>
+
+  <section><h2>The grid's heartbeat</h2>
+    <p class="sub">The frequency of the grid shows whether supply and demand are in balance, second by second.</p>
+    <div id="freq"><p class="lbl2">Loading…</p></div></section>
+
+  <section><h2>Spare power: the next fortnight</h2>
+    <p class="sub">National Grid's forecast of how much spare capacity there will be at the busiest time each day.</p>
+    <div id="margin"><p class="lbl2">Loading…</p></div></section>
+
+  <section><h2>The grid's tighter days</h2>
+    <p class="sub">Warnings issued by the National Energy System Operator (NESO), which runs the grid, over the past two years.</p>
+    <div id="warn"><p class="lbl2">Loading…</p></div></section>
+
+  <section><h2>Questions</h2>
+    <details class="faq"><summary>Will the lights go out?</summary><p>Very unlikely. When spare power gets tight, NESO's first steps are to ask power stations to be ready, pay large users to cut back, and buy power from abroad. Planned power cuts are a last resort and have not been used in Britain for decades. Power cuts in Flintshire are almost always down to faults on the local network, which you can follow on our <a href="https://www.deeside.com/power-cuts/" target="_top" style="color:var(--green-dk);font-weight:700;text-decoration:underline">power cuts page</a>.</p></details>
+    <details class="faq"><summary>What is an Electricity Margin Notice?</summary><p>A message from NESO to the power industry saying spare capacity looks thinner than it would like at a certain time, usually a cold, still evening. It asks generators to offer more power. It is a signal to the market, not a warning to households.</p></details>
+    <details class="faq"><summary>Why is so much of it gas?</summary><p>When the wind drops, gas power stations such as Connah's Quay fill the gap because they can be turned up quickly. On windy days wind can supply more than half of Britain's electricity and gas falls back.</p></details>
+    <details class="faq"><summary>Why is there no solar on the chart?</summary><p>The live national figures only include power stations and wind farms connected to the high-voltage grid. Solar panels on roofs and fields, and small wind farms, feed into local networks and are not measured live in the same way, so wind is a little higher than shown here and solar adds more on sunny days.</p></details>
+    <details class="faq"><summary>What does the frequency mean?</summary><p>The grid runs at 50 hertz. When more power is being used than made, it dips slightly; when there is too much, it rises. NESO keeps it between 49.8 and 50.2 almost all of the time. A big drop below 49.5 is rare and can trigger automatic disconnections, as happened in August 2019.</p></details>
+  </section>
+  <p class="src" id="src">Sources: Elexon BMRS (live generation, interconnector flows, frequency and NESO warnings, BMRS Data Licence); NESO Carbon Intensity API (CC BY 4.0); Octopus Energy Agile prices. Compiled by Deeside.com.</p>
+</div>
+<script>
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const TZ = {timeZone: 'Europe/London'};
+const tm = t => new Date(t).toLocaleTimeString('en-GB', {...TZ, hour: '2-digit', minute: '2-digit'});
+const dy = (t, o) => new Date(t).toLocaleDateString('en-GB', {...TZ, ...o});
+const gw = mw => (mw / 1000).toFixed(1);
+const GW = mw => `${(mw / 1000).toFixed(1)}<span> GW</span>`;
+const FUEL = {gas: ['Gas', '#9aa0a6'], wind: ['Wind', '#2e9d4b'], nuclear: ['Nuclear', '#8a6fc4'], biomass: ['Biomass', '#8c6d3f'],
+  imports: ['Imports', '#c9ccd1'], hydro: ['Hydro', '#3a8fd0'], storage: ['Pumped storage', '#6fb3e0'], coal: ['Coal', '#3c4043'],
+  other: ['Other', '#dadce0'], solar: ['Solar', '#e0b400']};
+const fname = f => (FUEL[f] || [f])[0];
+const fcol = f => (FUEL[f] || [0, '#dadce0'])[1];
+const resize = () => { try { parent.postMessage({deesideWidget: 'grid-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {} };
+
+window.__g.then(([gp, gr, en, cb]) => {
+  if (!gp) { document.getElementById('upd').textContent = 'The live figures are not available just now. Please try again in a few minutes.'; resize(); return; }
+  document.getElementById('upd').textContent = `Figures for ${tm(gp.at)}, ${dy(gp.at, {weekday: 'long', day: 'numeric', month: 'long'})}. The page refreshes itself every five minutes.`;
+
+  // ---------- Status ----------
+  const st = document.getElementById('status');
+  const active = (gr && gr.active) || [];
+  const margin = (gr && gr.margin) || [];
+  const low = margin.length ? margin.reduce((a, b) => b.mw < a.mw ? b : a) : null;
+  if (active.some(a => a.kind === 'demand')) {
+    st.className = 'status red';
+    st.innerHTML = `<b>National Grid has warned of possible power cuts</b>${esc(active.find(a => a.kind === 'demand').plain)} We will update this page and our live coverage as soon as we know more.`;
+  } else if (active.length) {
+    st.className = 'status amber';
+    st.innerHTML = `<b>The grid is tighter than usual</b>${active.map(a => esc(a.plain)).join(' ')} <small>This is a routine message to the power industry asking for more supply. No power cuts are expected.</small>`;
+  } else {
+    st.innerHTML = `<b>No National Grid warnings in force</b>The grid has enough spare power right now.${low ? ` <small>Tightest day in the next fortnight: ${dy(low.date + 'T12:00Z', {weekday: 'long', day: 'numeric', month: 'long'})}, with ${gw(low.mw)} GW to spare at the busiest time.</small>` : ''}`;
+  }
+
+  // ---------- National mix ----------
+  const share = f => (gp.mix.find(m => m.fuel === f) || {perc: 0}).perc;
+  const net = gp.imports_mw;
+  const pk = gp.peak_forecast;
+  document.getElementById('stats').innerHTML = `
+    <div class="s"><div class="lbl">Being used right now</div><div class="v">${GW(gp.total_mw)}</div><div class="d">${pk ? `Expected peak ${dy(pk.t, {weekday: 'short'})} ${tm(pk.t)}: ${gw(pk.mw)} GW` : ''}</div></div>
+    <div class="s"><div class="lbl">From wind</div><div class="v">${Math.round(share('wind'))}<span>%</span></div><div class="d">Highest in the last 24 hours: ${gw(gp.wind_peak.mw)} GW at ${tm(gp.wind_peak.t)}</div></div>
+    <div class="s"><div class="lbl">From gas</div><div class="v">${Math.round(share('gas'))}<span>%</span></div><div class="d">Highest in the last 24 hours: ${gw(gp.gas_peak.mw)} GW at ${tm(gp.gas_peak.t)}</div></div>
+    <div class="s"><div class="lbl">${net >= 0 ? 'Importing' : 'Exporting'}</div><div class="v">${GW(Math.abs(net))}</div><div class="d">${net >= 0 ? 'Net flow into Britain through the undersea cables' : 'Britain is selling more abroad than it is buying'}</div></div>`;
+  const pos = gp.mix.filter(m => m.mw > 0);
+  document.getElementById('mixbar').innerHTML = pos.map(m => `<i style="width:${m.perc}%;background:${fcol(m.fuel)}" title="${fname(m.fuel)} ${m.perc}%"></i>`).join('');
+  document.getElementById('mixlist').innerHTML = pos.map(m => `<div><span style="--c:${fcol(m.fuel)}">${fname(m.fuel)}</span><b>${gw(m.mw)} GW<em>${m.perc < 1 ? '<1' : Math.round(m.perc)}%</em></b></div>`).join('');
+
+  // ---------- Local stations ----------
+  const loc = document.getElementById('local');
+  if (en && en.stations) {
+    loc.innerHTML = en.stations.map(s => {
+      const pc = s.capacity ? Math.max(0, Math.min(100, Math.round(100 * s.mw / s.capacity))) : 0;
+      const c = s.kind === 'wind' ? '#2e9d4b' : '#9aa0a6';
+      const units = s.kind === 'gas' && s.units ? `<div class="units">${Array.from({length: s.units}, (_, i) => `<i class="${i < s.units_running ? 'on' : ''}"></i>`).join('')}</div><div class="d">${s.units_running} of ${s.units} gas turbines running</div>` : `<div class="gauge" style="--c:${c}"><i style="width:${pc}%"></i></div><div class="d">${pc}% of its ${s.capacity} MW capacity</div>`;
+      return `<div class="tile" style="--c:${c}"><h3>${esc(s.name)}</h3>${s.missing ? '<div class="d">No figures from this station just now.</div>' : `<div class="v">${Math.round(s.mw)}<span> MW</span></div>${units}`}</div>`;
+    }).join('') + `<p class="explain" style="grid-column:1/-1">Output is what each station has told the grid it is running at for this half hour.</p>`;
+  } else loc.innerHTML = '<p class="lbl2">Local station figures are not available just now.</p>';
+
+  // ---------- Carbon and Agile ----------
+  const cbx = document.getElementById('carbon');
+  if (cb && cb.now) {
+    const ag = cb.agile;
+    cbx.innerHTML = `
+      <div class="tile"><h3>Carbon right now</h3><div class="v">${cb.now.g}<span> g per kWh</span></div><div class="d">Rated ${esc(cb.now.index)}. Britain as a whole: ${cb.gb && cb.gb.g ? cb.gb.g + 'g' : 'n/a'}. ${cb.renewables}% renewable in our area.</div></div>
+      ${cb.best ? `<div class="tile"><h3>Greenest two hours</h3><div class="v">${tm(cb.best.from)}<span> to ${tm(cb.best.to)}</span></div><div class="d">${dy(cb.best.from, {weekday: 'long'})}, about ${cb.best.g}g per kWh. Good for the washing machine or charging the car, if you can wait.</div></div>` : ''}
+      ${ag && ag.best ? `<div class="tile" style="--c:#e8590c"><h3>Cheapest two hours on Octopus Agile</h3><div class="v">${tm(ag.best.from)}<span> to ${tm(ag.best.to)}</span></div><div class="d">About ${ag.best.p}p per kWh, against ${ag.now_p}p now. Only matters if your tariff changes every half hour. On a standard fixed tariff, every hour costs the same.</div></div>` : ''}`;
+  } else cbx.innerHTML = '<p class="lbl2">Carbon figures are not available just now.</p>';
+
+  // ---------- 24-hour stacked chart ----------
+  const H = gp.history, keys = ['nuclear', 'biomass', 'gas', 'wind', 'hydro', 'storage', 'imports', 'other'];
+  if (H.length > 2) {
+    const W = 860, HT = 260, padL = 34, padB = 22, w = W - padL, h = HT - padB;
+    const tot = H.map(r => keys.reduce((a, k) => a + Math.max(0, r[k] || 0), 0));
+    const max = Math.ceil(Math.max(...tot) / 5000) * 5000;
+    const x = i => padL + i * w / (H.length - 1), y = v => h - v / max * h;
+    let base = H.map(() => 0), paths = '';
+    keys.forEach(k => {
+      const top = H.map((r, i) => base[i] + Math.max(0, r[k] || 0));
+      if (top.every((v, i) => v === base[i])) return;
+      const d = 'M' + top.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('L') + 'L' + base.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).reverse().join('L') + 'Z';
+      paths += `<path d="${d}" fill="${fcol(k)}"><title>${fname(k)}</title></path>`;
+      base = top;
+    });
+    let grid = '';
+    for (let v = 0; v <= max; v += 10000) grid += `<line x1="${padL}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#e9ecef"/><text x="${padL - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="#6c757d">${v / 1000}</text>`;
+    let tk = '';
+    H.forEach((r, i) => { if (/T(00|06|12|18):00/.test(new Date(r.t).toLocaleString('sv-SE', TZ).replace(' ', 'T'))) tk += `<text x="${x(i)}" y="${HT - 6}" text-anchor="middle" font-size="11" fill="#6c757d">${tm(r.t)}</text>`; });
+    document.getElementById('chart').innerHTML = `<svg viewBox="0 0 ${W} ${HT}" role="img" aria-label="Electricity generation by type over the last 24 hours">${grid}${paths}${tk}<text x="2" y="12" font-size="11" fill="#6c757d">GW</text></svg>
+      <div class="ckey">${keys.filter(k => H.some(r => (r[k] || 0) > 0)).map(k => `<span style="--c:${fcol(k)}">${fname(k)}</span>`).join('')}</div>`;
+  }
+
+  // ---------- Interconnectors ----------
+  const L = gp.links.filter(l => l.mw !== 0);
+  document.getElementById('links').innerHTML = L.length ? `<table class="t"><tr><th>Cable</th><th>Country</th><th class="n">Right now</th></tr>${
+    gp.links.slice().sort((a, b) => b.mw - a.mw).map(l => `<tr><td>${esc(l.name)}</td><td>${esc(l.country)}</td><td class="n">${l.mw === 0 ? '<span style="color:var(--muted)">Idle</span>' : l.mw > 0 ? `<span class="in">${l.mw} MW in</span>` : `<span class="out">${-l.mw} MW out</span>`}</td></tr>`).join('')}</table>
+    <p class="explain"><b>In</b> means Britain is buying power from that country, <b>out</b> means selling. Flows swing round through the day depending on prices either side.</p>` : '<p class="lbl2">No flows recorded just now.</p>';
+
+  // ---------- Frequency ----------
+  const F = gp.freq;
+  if (F.length) {
+    const hz = F[F.length - 1].hz, pc = Math.max(0, Math.min(100, (hz - 49.5) / 1 * 100));
+    const lo = Math.min(...F.map(f => f.hz)), hi = Math.max(...F.map(f => f.hz));
+    const word = hz < 49.8 || hz > 50.2 ? 'outside its normal range' : Math.abs(hz - 50) < 0.05 ? 'right on target' : hz < 50 ? 'a touch low: a little more power is being used than made' : 'a touch high: a little more power is being made than used';
+    document.getElementById('freq').innerHTML = `<div class="hz"><span class="v">${hz.toFixed(3)} Hz</span><span class="lbl2">at ${tm(F[F.length - 1].t)}, ${word}</span></div>
+      <div class="hzbar"><i style="left:${pc}%"></i></div><div class="hzticks"><span>49.5</span><span>49.8</span><span>50.0</span><span>50.2</span><span>50.5</span></div>
+      <p class="explain">Over the last 15 minutes it has ranged from <b>${lo.toFixed(3)}</b> to <b>${hi.toFixed(3)} Hz</b>. NESO's job is to keep it close to 50.</p>`;
+  }
+
+  // ---------- Margin forecast ----------
+  if (margin.length) {
+    const mx = Math.max(...margin.map(m => m.mw));
+    document.getElementById('margin').innerHTML = `<div class="bars">${margin.map(m => `<div title="${gw(m.mw)} GW spare"><span>${gw(m.mw)}</span><i class="${m === low ? 'low' : ''}" style="height:${Math.round(m.mw / mx * 100)}%"></i></div>`).join('')}</div>
+      <div class="blbl">${margin.map(m => `<span>${dy(m.date + 'T12:00Z', {weekday: 'narrow'})}<br>${dy(m.date + 'T12:00Z', {day: 'numeric'})}</span>`).join('')}</div>
+      <p class="explain">Spare power in gigawatts (GW) at each day's busiest time. <b>The amber bar is the tightest day.</b> Cold, still days with little wind are usually the tightest. Lower does not mean power cuts: NESO has several steps it takes first.</p>`;
+  } else document.getElementById('margin').innerHTML = '<p class="lbl2">The forecast is not available just now.</p>';
+
+  // ---------- Warnings history ----------
+  const c = gp.warning_counts || {};
+  const W2 = (gp.warnings || []).filter(w => !w.cancel);
+  document.getElementById('warn').innerHTML = `<div class="stats">
+      <div class="s"><div class="lbl">Electricity Margin Notices</div><div class="v">${c.emn || 0}</div><div class="d">Spare capacity tighter than NESO would like</div></div>
+      <div class="s"><div class="lbl">Emergency imports</div><div class="v">${c.import || 0}</div><div class="d">Times NESO asked neighbouring grids for extra power</div></div>
+      <div class="s"><div class="lbl">Capacity Market Notices</div><div class="v">${c.cmn || 0}</div><div class="d">Supply forecast below the warning level</div></div>
+      <div class="s"><div class="lbl">Warnings of power cuts</div><div class="v">${c.demand || 0}</div><div class="d">Warnings of possible planned power cuts</div></div></div>
+    ${W2.length ? `<h3 style="font-size:15px;font-weight:800;color:var(--head);margin:16px 0 4px">Most recent</h3><div class="wl">${W2.slice(0, 8).map(w => `<div><time>${dy(w.t, {day: 'numeric', month: 'short', year: 'numeric'})}</time><span>${esc(w.title)}</span></div>`).join('')}</div>` : ''}`;
+
+  resize();
+});
+if (window.ResizeObserver) new ResizeObserver(resize).observe(document.getElementById('wrap'));
+document.addEventListener('toggle', resize, true);
+setTimeout(() => location.reload(), 5 * 60 * 1000);
+</script>
+</body>
+</html>

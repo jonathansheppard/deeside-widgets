@@ -80,6 +80,14 @@ section a { color: var(--green-dk); font-weight: 700; }
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
+/* ?map=1: map and checker only, for embedding in the gritting guide page, which has its own text */
+if (/[?&]map=1/.test(location.search)) {
+  document.querySelector(".top").style.display = "none";
+  document.querySelectorAll("#wrap > section").forEach(function (x) { x.style.display = "none"; });
+  document.querySelector(".check").style.marginTop = "0";
+}
+</script>
+<script>
 var map = L.map('map', { scrollWheelZoom: false }).setView([53.215, -3.135], 11);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
 var lines = [], here = null, link = null;

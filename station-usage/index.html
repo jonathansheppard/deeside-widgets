@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How busy are our stations? | Deeside.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../house.css?v=4">
+<style>
+body { background: #fff; }
+#wrap { max-width: 860px; }
+.top { padding: 4px 0 14px; border-bottom: 4px solid var(--green); }
+h1 { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -.5px; line-height: 1.15; }
+.top p { color: var(--ink); font-size: 15.5px; line-height: 1.55; margin-top: 6px; max-width: 680px; }
+.facts { margin: 14px 0 4px; padding: 12px 15px; background: #f4f9f1; border-left: 5px solid var(--green); font-size: 15.5px; line-height: 1.6; color: var(--head); }
+.facts p + p { margin-top: 6px; }
+.tabs { display: flex; gap: 8px; margin: 16px 0 6px; flex-wrap: wrap; }
+.tabs button { min-height: 40px; padding: 0 14px; border: 2px solid #000001; border-radius: 4px; background: #fff; font: 700 14px 'Open Sans', Arial, sans-serif; cursor: pointer; }
+.tabs button.on { background: #000001; color: #fff; }
+.row { display: grid; grid-template-columns: 150px 1fr 120px; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.nm { font-weight: 800; color: var(--head); font-size: 15px; line-height: 1.25; }
+.nm small { display: block; font-weight: 600; color: var(--muted); font-size: 12px; }
+.bar { height: 10px; background: #edf0f2; } .bar i { display: block; height: 100%; background: var(--green); }
+.nums { font-size: 13px; color: var(--muted); margin-top: 5px; line-height: 1.4; }
+.nums b { color: var(--head); font-size: 16px; }
+.up { color: var(--green-dk); font-weight: 700; } .down { color: var(--red); font-weight: 700; }
+.rec { display: inline-block; font-size: 11px; font-weight: 800; color: #fff; background: var(--green-dk); padding: 1px 6px; border-radius: 3px; margin-left: 4px; vertical-align: 1px; }
+.spark svg { width: 120px; height: 34px; display: block; }
+.spark small { display: block; font-size: 11px; color: var(--muted); }
+.ft { font-size: 12.5px; color: var(--muted); line-height: 1.55; padding: 14px 0 4px; }
+.ft a { color: var(--green-dk); }
+@media (max-width: 560px) { .row { grid-template-columns: 1fr 96px; } .row .mid { grid-column: 1 / -1; order: 3; } .spark svg { width: 96px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="top">
+    <h1>How busy are our stations?</h1>
+    <p>Official estimates of how many people used each station on the Wrexham to Bidston line and across Flintshire, from the Office of Rail and Road. <span id="yr"></span></p>
+  </div>
+  <div class="facts" id="facts"><p class="load">Loading</p></div>
+  <div class="tabs" role="tablist">
+    <button class="on" data-v="line" role="tab" aria-selected="true">Wrexham to Bidston line</button>
+    <button data-v="flint" role="tab" aria-selected="false">All Flintshire stations</button>
+  </div>
+  <div id="list"></div>
+  <p class="ft" id="ft"></p>
+</div>
+<script>
+var D, view = 'line';
+function f(n) { return n == null ? 'n/a' : n.toLocaleString('en-GB'); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function pct(a, b) { return (a == null || !b) ? null : Math.round((a - b) / b * 100); }
+function resize() { try { parent.postMessage({ deesideWidget: 'station-usage', height: document.getElementById('wrap').offsetHeight + 8 }, '*'); } catch (e) {} }
+function spark(s) {
+  var pts = s.series.filter(function (x) { return x.n != null; }), max = Math.max.apply(null, pts.map(function (x) { return x.n; })) || 1;
+  var W = 120, H = 30, n = s.series.length - 1;
+  var p = s.series.map(function (x, i) { return x.n == null ? null : [(i / n * W).toFixed(1), (H - x.n / max * (H - 3) + 1).toFixed(1)]; }).filter(Boolean);
+  var last = p[p.length - 1];
+  return '<svg viewBox="0 0 ' + W + ' ' + (H + 2) + '" aria-hidden="true"><polyline fill="none" stroke="#9aa5ad" stroke-width="1.5" points="' + p.map(function (q) { return q.join(','); }).join(' ') + '"/>' +
+    (last ? '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="2.8" fill="#4d7a0c"/>' : '') + '</svg><small>' + esc(s.series[0].year.slice(0, 4)) + ' to ' + esc(D.latest) + '</small>';
+}
+function render() {
+  var st = D.stations.filter(function (s) { return view === 'line' ? s.on_line : s.flintshire; });
+  if (view === 'flint') st = st.slice().sort(function (a, b) { return (b.latest || 0) - (a.latest || 0); });
+  var max = Math.max.apply(null, st.map(function (s) { return s.latest || 0; })) || 1;
+  document.getElementById('list').innerHTML = st.map(function (s) {
+    var c = pct(s.latest, s.prev), rec = s.best_year === D.latest;
+    return '<div class="row"><div class="nm">' + esc(s.name) + (rec ? '<span class="rec">Record</span>' : '') + '<small>' + esc(s.la.split(' - ')[0]) + (s.rank ? ' &middot; ranked ' + f(s.rank) + ' in Britain' : '') + '</small></div>' +
+      '<div class="mid"><div class="bar"><i style="width:' + Math.max(1, (s.latest || 0) / max * 100).toFixed(1) + '%"></i></div>' +
+      '<div class="nums"><b>' + f(s.latest) + '</b> entries and exits' + (c == null ? '' : ', <span class="' + (c >= 0 ? 'up' : 'down') + '">' + (c >= 0 ? 'up ' : 'down ') + Math.abs(c) + '%</span> on ' + esc(D.previous)) +
+      (s.top_dest ? '<br>Most common journey: to or from ' + esc(s.top_dest) : '') + '</div></div>' +
+      '<div class="spark">' + spark(s) + '</div></div>';
+  }).join('');
+  resize();
+}
+function facts() {
+  var fl = D.stations.filter(function (s) { return s.flintshire && s.latest; }).sort(function (a, b) { return b.latest - a.latest; });
+  var line = D.stations.filter(function (s) { return s.on_line && s.latest && s.prev; });
+  var rise = D.stations.filter(function (s) { return s.latest && s.prev; }).sort(function (a, b) { return pct(b.latest, b.prev) - pct(a.latest, a.prev); })[0];
+  var recs = D.stations.filter(function (s) { return s.best_year === D.latest; }).map(function (s) { return s.name; });
+  var lt = line.reduce(function (a, s) { return a + s.latest; }, 0), lp = line.reduce(function (a, s) { return a + s.prev; }, 0);
+  var out = ['<p><b>' + esc(fl[0].name) + '</b> was Flintshire\'s busiest station in ' + esc(D.latest) + ', with ' + f(fl[0].latest) + ' entries and exits, followed by ' + esc(fl[1].name) + ' (' + f(fl[1].latest) + ').</p>'];
+  out.push('<p>Across the ' + line.length + ' stations on the Wrexham to Bidston line, use was ' + (lt >= lp ? 'up ' : 'down ') + Math.abs(pct(lt, lp)) + '% on ' + esc(D.previous) + '. The biggest rise was at ' + esc(rise.name) + ', ' + (pct(rise.latest, rise.prev) >= 100 ? 'from ' + f(rise.prev) + ' to ' + f(rise.latest) : 'up ' + pct(rise.latest, rise.prev) + '%') + '.</p>');
+  if (recs.length) out.push('<p>' + (recs.length === 1 ? esc(recs[0]) + ' had its' : recs.slice(0, -1).map(esc).join(', ') + ' and ' + esc(recs[recs.length - 1]) + ' all had their') + ' busiest year on record.</p>');
+  document.getElementById('facts').innerHTML = out.join('');
+}
+document.querySelectorAll('.tabs button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    view = b.getAttribute('data-v');
+    document.querySelectorAll('.tabs button').forEach(function (x) { var on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', on); });
+    render();
+  });
+});
+fetch('stations.json?t=' + Math.floor(Date.now() / 3600000)).then(function (r) { return r.json(); }).then(function (d) {
+  D = d;
+  if (/[?&]v=flint/.test(location.search)) { view = 'flint'; document.querySelectorAll('.tabs button').forEach(function (x) { var on = x.getAttribute('data-v') === 'flint'; x.classList.toggle('on', on); x.setAttribute('aria-selected', on); }); }
+  document.getElementById('yr').textContent = 'Latest figures: April ' + d.latest.slice(0, 4) + ' to March 20' + d.latest.slice(5) + '.';
+  facts(); render();
+  document.getElementById('ft').innerHTML = esc(d.note) + ' Figures are estimates, not turnstile counts, and ORR changed its method in 2022-23, so very long-run comparisons are approximate. The small charts run from 1997-98; gaps are years with no figure. Source: <a href="' + esc(d.release) + '" target="_blank" rel="noopener">' + esc(d.source) + '</a>.';
+  resize();
+}).catch(function () { document.getElementById('facts').innerHTML = '<p>Not available right now.</p>'; resize(); });
+window.addEventListener('resize', resize);
+</script>
+</body>
+</html>

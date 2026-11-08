@@ -123,7 +123,7 @@ function show(lat, lng, label) {
     res.innerHTML = '<b class="yes">Yes, a Priority 1 gritting route runs right by ' + label + '.</b> Zoom in to check it is your street and not one round the corner.';
     map.setView([lat, lng], 16);
   } else if (d <= 150) {
-    res.innerHTML = "<b class="yes">Close: a Priority 1 gritting route passes about " + (Math.round(d / 10) * 10) + " metres from the middle of " + label + ".</b> A postcode covers several homes, so zoom in to see whether it is your street.";
+    res.innerHTML = '<b class="yes">Close: a Priority 1 gritting route passes about ' + (Math.round(d / 10) * 10) + ' metres from the middle of ' + label + '.</b> A postcode covers several homes, so zoom in to see whether it is your street.';
     link = L.polyline([[lat, lng], [n.lat, n.lng]], { color: "#000001", weight: 2, dashArray: "5 6" }).addTo(map);
     map.setView([lat, lng], 16);
   } else {

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flintshire gritting routes map | Deeside.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../house.css?v=4">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<style>
+body { background: #fff; }
+#wrap { max-width: 860px; }
+.top { padding: 4px 0 14px; border-bottom: 4px solid var(--green); }
+h1 { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -.5px; line-height: 1.15; }
+.top p { color: var(--ink); font-size: 15.5px; line-height: 1.55; margin-top: 6px; max-width: 700px; }
+.check { margin: 16px 0 10px; padding: 14px 16px; background: #f4f9f1; border-left: 5px solid var(--green); }
+.check label { display: block; font-weight: 800; color: var(--head); font-size: 16px; margin-bottom: 8px; }
+.check form { display: flex; gap: 8px; flex-wrap: wrap; }
+.check input { flex: 1 1 180px; min-height: 44px; padding: 0 12px; border: 2px solid #000001; border-radius: 4px; font-size: 16px; text-transform: uppercase; }
+.check button { min-height: 44px; padding: 0 16px; border: 0; border-radius: 4px; background: var(--green-dk); color: #fff; font: 700 15px 'Open Sans', Arial, sans-serif; cursor: pointer; }
+.check button.alt { background: #fff; color: #000001; border: 2px solid #000001; }
+#res { margin-top: 10px; font-size: 15.5px; line-height: 1.55; color: var(--head); }
+#res:empty { display: none; }
+#res b.yes { color: var(--green-dk); } #res b.no { color: #b45309; }
+#map { height: 520px; border: 1px solid var(--rule); margin-top: 6px; }
+.key { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+.key span::before { content: ""; display: inline-block; width: 22px; height: 4px; background: #e8590c; margin-right: 6px; vertical-align: 3px; }
+section { padding: 18px 0; border-bottom: 1px solid var(--rule); }
+h2 { font-size: 20px; font-weight: 800; color: var(--head); margin-bottom: 8px; }
+section p, section li { font-size: 15.5px; line-height: 1.6; color: var(--ink); }
+section p + p { margin-top: 8px; }
+section ul { padding-left: 20px; margin-top: 6px; } section li + li { margin-top: 4px; }
+section a { color: var(--green-dk); font-weight: 700; }
+.ft { font-size: 12.5px; color: var(--muted); line-height: 1.55; padding: 14px 0 4px; }
+.ft a { color: var(--green-dk); }
+@media (max-width: 560px) { #map { height: 420px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="top">
+    <h1>Flintshire gritting routes</h1>
+    <p>The roads Flintshire Council grits first when ice or snow is forecast. These Priority 1 routes are the main roads, busy bus routes and links between towns and villages: around 560km, or 45% of the county's roads.</p>
+  </div>
+
+  <div class="check">
+    <label for="pc">Is my road gritted?</label>
+    <form id="f"><input id="pc" placeholder="Postcode, e.g. CH5 4BP" autocomplete="postal-code" aria-label="Postcode"><button type="submit">Check</button><button type="button" class="alt" id="me">Use my location</button></form>
+    <div id="res" role="status" aria-live="polite"></div>
+  </div>
+
+  <div id="map" role="region" aria-label="Map of Flintshire gritting routes"></div>
+  <div class="key"><span>Priority 1 gritting route</span><em id="upd"></em></div>
+
+  <section>
+    <h2>Which roads get gritted?</h2>
+    <p>Flintshire Council sorts every road in the county into three groups.</p>
+    <ul>
+      <li><b>Priority 1</b> (on the map): the main road network, gritted as a precaution when ice or snow is forecast. All roads with eight or more buses an hour are in this group.</li>
+      <li><b>Priority 2</b>: treated in snow and long spells of ice once Priority 1 roads are done, if the council has enough people and salt.</li>
+      <li><b>Priority 3</b>: everything else. Treated only after Priority 1 and 2, and only during normal working hours.</li>
+    </ul>
+    <p>If conditions get worse, crews go back to the Priority 1 roads first. Pavements and cycle paths are not part of the gritting routes.</p>
+  </section>
+
+  <section>
+    <h2>Gritted does not mean ice-free</h2>
+    <p>Salt takes time and traffic to work. Rain can wash it away, and when rain turns to snow at rush hour the gritters get stuck in the same traffic as everyone else. On a wet night that clears quickly, gritting can only start once the rain stops. Drive carefully even on a gritted road.</p>
+    <p>Trunk roads such as the A55 and A494 are looked after by the North and Mid Wales Trunk Road Agent for the Welsh Government, not the council. Check them on our <a href="https://www.deeside.com/deeside-live-traffic-information/">roadworks and traffic page</a>.</p>
+  </section>
+
+  <section>
+    <h2>Grit bins, problems and requests</h2>
+    <p>Grit bins are for public roads and pavements, not private drives. To report an empty or damaged grit bin, a problem on a gritting route, or to ask for a road to be added, use <a href="https://www.flintshire.gov.uk/en/Resident/Streetscene/Gritting-and-Winter-Maintenance/Home.aspx" target="_blank" rel="noopener">Flintshire Council's gritting pages</a>. The council says every road is surveyed before winter to set its priority.</p>
+    <p>Before you set off, check the <a href="https://www.deeside.com/deeside-right-now/">weather and warnings</a>.</p>
+  </section>
+
+  <p class="ft" id="ft">Route map: Flintshire County Council, precautionary gritting routes, from the council's public mapping site. Contains OS data &copy; Crown copyright and database rights. Background map &copy; OpenStreetMap contributors. Postcode lookup: postcodes.io (Office for National Statistics data). A postcode covers several homes, so check the map for your exact street.</p>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+var map = L.map('map', { scrollWheelZoom: false }).setView([53.215, -3.135], 11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+var lines = [], here = null, link = null;
+function resize() { try { parent.postMessage({ deesideWidget: 'gritting', height: document.getElementById('wrap').offsetHeight + 8 }, '*'); } catch (e) {} }
+fetch('routes.geojson?t=' + Math.floor(Date.now() / 86400000)).then(function (r) { return r.json(); }).then(function (g) {
+  L.geoJSON(g, { style: { color: '#e8590c', weight: 3.5, opacity: .9 }, interactive: false }).addTo(map);
+  g.features.forEach(function (f) { lines = lines.concat(f.geometry.coordinates); });
+  return fetch('meta.json?t=' + Math.floor(Date.now() / 86400000)).then(function (r) { return r.json(); });
+}).then(function (m) {
+  if (m && m.updated) document.getElementById('upd').textContent = 'Routes checked against the council map ' + new Date(m.updated).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}).catch(function () { document.getElementById('res').textContent = 'The route map could not load. Try again shortly.'; });
+
+function nearest(lat, lng) {
+  var kx = 111320 * Math.cos(lat * Math.PI / 180), ky = 110540, best = { d: Infinity };
+  lines.forEach(function (ln) {
+    for (var i = 0; i < ln.length - 1; i++) {
+      var ax = (ln[i][0] - lng) * kx, ay = (ln[i][1] - lat) * ky, bx = (ln[i + 1][0] - lng) * kx, by = (ln[i + 1][1] - lat) * ky;
+      var dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy, t = l2 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / l2)) : 0;
+      var px = ax + t * dx, py = ay + t * dy, d = Math.sqrt(px * px + py * py);
+      if (d < best.d) best = { d: d, lat: lat + py / ky, lng: lng + px / kx };
+    }
+  });
+  return best;
+}
+function show(lat, lng, label) {
+  var res = document.getElementById('res');
+  if (!lines.length) { res.textContent = 'Still loading the routes, try again in a second.'; return; }
+  if (here) map.removeLayer(here); if (link) map.removeLayer(link);
+  here = L.circleMarker([lat, lng], { radius: 8, color: '#000001', weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(map);
+  var n = nearest(lat, lng), d = Math.round(n.d);
+  if (lat < 52.9 || lat > 53.45 || lng < -3.5 || lng > -2.85) { res.innerHTML = 'That looks to be outside Flintshire. This map only covers Flintshire Council\'s roads.'; map.setView([lat, lng], 12); return; }
+  if (d <= 30) {
+    res.innerHTML = '<b class="yes">Yes, a Priority 1 gritting route runs right by ' + label + '.</b> Zoom in to check it is your street and not one round the corner.';
+    map.setView([lat, lng], 16);
+  } else {
+    var dist = d < 1000 ? (Math.round(d / 10) * 10) + ' metres' : (d / 1000).toFixed(1) + 'km';
+    res.innerHTML = '<b class="no">Not on a Priority 1 route.</b> The nearest gritted road is about ' + dist + ' from ' + label + ' (in a straight line), shown by the dashed line.';
+    link = L.polyline([[lat, lng], [n.lat, n.lng]], { color: '#000001', weight: 2, dashArray: '5 6' }).addTo(map);
+    map.fitBounds(L.latLngBounds([[lat, lng], [n.lat, n.lng]]).pad(.6), { maxZoom: 17 });
+  }
+  resize();
+}
+document.getElementById('f').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var pc = document.getElementById('pc').value.trim(), res = document.getElementById('res');
+  if (!pc) { res.textContent = 'Type a postcode first.'; return; }
+  res.textContent = 'Looking that up…';
+  fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(pc)).then(function (r) { return r.json(); }).then(function (j) {
+    if (j.status !== 200 || !j.result) { res.textContent = 'We could not find that postcode. Check it and try again.'; return; }
+    show(j.result.latitude, j.result.longitude, j.result.postcode);
+  }).catch(function () { res.textContent = 'The postcode lookup is not working right now. Try the map instead.'; });
+});
+document.getElementById('me').addEventListener('click', function () {
+  var res = document.getElementById('res');
+  if (!navigator.geolocation) { res.textContent = 'Your browser cannot share your location. Type a postcode instead.'; return; }
+  res.textContent = 'Finding you…';
+  navigator.geolocation.getCurrentPosition(function (p) { show(p.coords.latitude, p.coords.longitude, 'you'); },
+    function () { res.textContent = 'We could not get your location. Type a postcode instead.'; }, { timeout: 10000 });
+});
+map.on('click', function (e) { show(e.latlng.lat, e.latlng.lng, 'that spot'); });
+window.addEventListener('load', resize); window.addEventListener('resize', resize); setTimeout(resize, 800);
+</script>
+</body>
+</html>

@@ -78,6 +78,15 @@ html, body { max-width: 100%; overflow-x: hidden; }
   <section><h2>The last seven days</h2><div class="stats" id="stats"><div class="s"><div class="lbl">Loading the latest figures…</div></div></div></section>
   <section><h2>Cancellations per day</h2><div id="chart"><p class="lbl">Loading…</p></div></section>
   <section><h2>Day by day</h2><div class="wrapt" id="table"><p class="lbl">Loading…</p></div></section>
+  <section id="usage" hidden style="border-bottom:0">
+    <div style="background:#f4f9f1;border-left:5px solid #4d7a0c;padding:16px 18px 12px">
+      <h2 style="margin:0 0 4px">How busy are the stations?</h2>
+      <p class="lbl" id="u-sub" style="margin:0 0 10px"></p>
+      <div id="u-facts" style="font-size:15px;line-height:1.55;color:#2d2d2d"></div>
+      <div id="u-list" style="margin-top:10px"></div>
+      <p style="margin:12px 0 0;font-size:14px"><a id="u-more" href="https://jonathansheppard.github.io/deeside-widgets/station-usage/" target="_blank" rel="noopener" style="color:#3a5c09;font-weight:700">Every station, with figures back to 1997</a></p>
+    </div>
+  </section>
   <section class="how"><h2>How we measure this</h2>
     <p>We count every passenger train timetabled to run between Wrexham General and Bidston, in both directions, each day. A train counts as cancelled if it did not run at all, and part-cancelled if it skipped some of its stops, for example by terminating early.</p>
     <p>"Within 3 minutes" means the train ran its full route and was never more than three minutes behind the timetable at any station where its time was recorded.</p>
@@ -207,6 +216,33 @@ const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
     }).catch(() => { box.hidden = true; });
   }
   load(); setInterval(load, 60000);
+})();
+
+/* Station usage box (8 Nov 2026): ORR estimates of station usage, built by ~/orr/build_orr.py on the Mini */
+(function () {
+  var box = document.getElementById('usage');
+  var f = function (n) { return n == null ? 'n/a' : n.toLocaleString('en-GB'); };
+  var e = function (x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  fetch('../station-usage/stations.json?t=' + Math.floor(Date.now() / 3600000)).then(function (r) { return r.json(); }).then(function (d) {
+    var st = d.stations.filter(function (s) { return s.on_line && s.latest; });
+    var line = st.filter(function (s) { return s.prev; });
+    var lt = line.reduce(function (a, s) { return a + s.latest; }, 0), lp = line.reduce(function (a, s) { return a + s.prev; }, 0);
+    var pc = function (a, b) { return Math.round((a - b) / b * 100); };
+    var rise = line.slice().sort(function (a, b) { return pc(b.latest, b.prev) - pc(a.latest, a.prev); })[0];
+    var max = Math.max.apply(null, st.map(function (s) { return s.latest; }));
+    document.getElementById('u-sub').textContent = 'Entries and exits, April ' + d.latest.slice(0, 4) + ' to March 20' + d.latest.slice(5) + '. Office of Rail and Road estimates.';
+    document.getElementById('u-facts').innerHTML = '<p style="margin:0">Use of the line\'s ' + st.length + ' stations was <b>' + (lt >= lp ? 'up ' : 'down ') + Math.abs(pc(lt, lp)) + '%</b> on ' + e(d.previous) +
+      '. The biggest rise was at ' + e(rise.name) + ', from ' + f(rise.prev) + ' to ' + f(rise.latest) + '.</p>';
+    document.getElementById('u-list').innerHTML = st.map(function (s) {
+      var c = s.prev ? pc(s.latest, s.prev) : null;
+      return '<div style="display:grid;grid-template-columns:120px 1fr 120px;gap:8px;align-items:center;padding:4px 0;font-size:13.5px">' +
+        '<b style="color:#2d2d2d">' + e(s.name) + '</b>' +
+        '<span style="height:8px;background:#dfe7d6;display:block"><i style="display:block;height:100%;background:#4d7a0c;width:' + Math.max(1, s.latest / max * 100).toFixed(1) + '%"></i></span>' +
+        '<span style="text-align:right">' + f(s.latest) + (c == null ? '' : ' <span style="color:' + (c >= 0 ? '#3a5c09' : '#b91c1c') + ';font-weight:700">' + (c >= 0 ? '+' : '') + c + '%</span>') + '</span></div>';
+    }).join('');
+    box.hidden = false;
+    if (typeof resize === 'function') resize();
+  }).catch(function () {});
 })();
 </script>
 </body>

@@ -82,6 +82,11 @@ table.t { width: 100%; border-collapse: collapse; font-size: 14.5px; }
 details.faq { border-bottom: 1px solid var(--rule); padding: 11px 0; }
 details.faq summary { font-size: 15.5px; font-weight: 700; color: var(--head); cursor: pointer; }
 details.faq p { margin-top: 6px; font-size: 15px; line-height: 1.6; }
+.callout { background: #f4f9f1; border-left: 5px solid var(--green); padding: 12px 15px; }
+.callout p { font-size: 15px; line-height: 1.6; margin-bottom: 9px; }
+.callout p b { color: var(--head); }
+.callout a { color: var(--green-dk); font-weight: 700; text-decoration: underline; }
+.callout .cred { font-size: 12.5px; color: var(--muted); margin: 4px 0 0; }
 .src { padding: 16px 0 4px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
 .src a { text-decoration: underline; }
 .lbl2 { font-size: 14px; color: var(--muted); }
@@ -129,6 +134,14 @@ details.faq p { margin-top: 6px; font-size: 15px; line-height: 1.6; }
   <section><h2>The grid's tighter days</h2>
     <p class="sub">Warnings issued by the National Energy System Operator (NESO), which runs the grid, over the past two years.</p>
     <div id="warn"><p class="lbl2">Loading…</p></div></section>
+
+  <section><h2>If the power goes off</h2>
+    <div class="callout">
+      <p><b>Report a power cut by calling 105.</b> It is free and puts you through to your local network operator, SP Energy Networks in Flintshire. You can also follow cuts in your area on our <a href="https://www.deeside.com/power-cuts/" target="_top">power cuts page</a>.</p>
+      <p><b>Join the Priority Services Register</b> if someone in your home relies on power for medical equipment, has a disability, or needs extra help. Network operators use it to support people during a cut. It is free: <a href="https://www.thepsr.co.uk/" target="_blank" rel="noopener">thepsr.co.uk</a>.</p>
+      <p><b>Have the basics ready:</b> a torch with spare batteries, a charged power bank, a battery or wind-up radio, some cash in small notes, and water and food that keep for about three days.</p>
+      <p class="cred">Advice from the government's <a href="https://beready.campaign.gov.uk/be-ready-for-emergencies/" target="_blank" rel="noopener">Be Ready</a> campaign, which has a full checklist and a printable household emergency plan. Contains public sector information licensed under the Open Government Licence v3.0.</p>
+    </div></section>
 
   <section><h2>Questions</h2>
     <details class="faq"><summary>Will the lights go out?</summary><p>Very unlikely. When spare power gets tight, NESO's first steps are to ask power stations to be ready, pay large users to cut back, and buy power from abroad. Planned power cuts are a last resort and have not been used in Britain for decades. Power cuts in Flintshire are almost always down to faults on the local network, which you can follow on our <a href="https://www.deeside.com/power-cuts/" target="_top" style="color:var(--green-dk);font-weight:700;text-decoration:underline">power cuts page</a>.</p></details>

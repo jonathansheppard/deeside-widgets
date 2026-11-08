@@ -78,7 +78,7 @@ function render() {
 function facts() {
   var fl = D.stations.filter(function (s) { return s.flintshire && s.latest; }).sort(function (a, b) { return b.latest - a.latest; });
   var line = D.stations.filter(function (s) { return s.on_line && s.latest && s.prev; });
-  var rise = D.stations.filter(function (s) { return s.latest && s.prev; }).sort(function (a, b) { return pct(b.latest, b.prev) - pct(a.latest, a.prev); })[0];
+  var rise = line.slice().sort(function (a, b) { return pct(b.latest, b.prev) - pct(a.latest, a.prev); })[0];
   var recs = D.stations.filter(function (s) { return s.best_year === D.latest; }).map(function (s) { return s.name; });
   var lt = line.reduce(function (a, s) { return a + s.latest; }, 0), lp = line.reduce(function (a, s) { return a + s.prev; }, 0);
   var out = ['<p><b>' + esc(fl[0].name) + '</b> was Flintshire\'s busiest station in ' + esc(D.latest) + ', with ' + f(fl[0].latest) + ' entries and exits, followed by ' + esc(fl[1].name) + ' (' + f(fl[1].latest) + ').</p>'];

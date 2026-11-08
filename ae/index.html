@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<script>window.__a = fetch('https://65-109-143-26.sslip.io/live/ae.json?t=' + Math.floor(Date.now() / 3600000)).then(function (r) { return r.json(); });</script>
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maelor or the Countess? A&amp;E waits compared</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap"></noscript>
+<link rel="stylesheet" href="../house.css?v=4">
+<style>
+body { background: #fff; }
+#wrap { max-width: 860px; }
+:root { --wm: #c8102e; --coc: #005eb8; }
+.top { padding: 4px 0 14px; border-bottom: 4px solid var(--green); }
+h1 { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -.5px; line-height: 1.15; }
+.top p { color: var(--ink); font-size: 15.5px; line-height: 1.55; margin-top: 6px; max-width: 680px; }
+.upd2 { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+section { padding: 20px 0; border-bottom: 1px solid var(--rule); }
+h2 { font-size: 20px; font-weight: 800; color: var(--head); margin-bottom: 4px; }
+.sub { font-size: 14px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+.vs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.h { border: 1px solid var(--rule); border-top: 5px solid var(--c); padding: 13px 15px; }
+.h h3 { font-size: 17px; font-weight: 800; color: var(--head); }
+.h .where { font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
+.m { padding: 9px 0; border-top: 1px solid var(--rule); }
+.m .lbl { font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.m .v { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -1px; line-height: 1.1; }
+.m .v span { font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.m .d { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+.m .ch { font-weight: 700; } .better { color: var(--green-dk); } .worse { color: var(--red); }
+.bar { height: 8px; background: #edf0f2; margin-top: 6px; } .bar i { display: block; height: 100%; background: var(--c); }
+.verdict { margin-top: 14px; padding: 12px 15px; background: #f4f9f1; border-left: 5px solid var(--green); font-size: 15.5px; line-height: 1.55; color: var(--head); }
+.chart svg { width: 100%; height: auto; display: block; }
+.ckey { display: flex; gap: 16px; font-size: 13px; color: var(--muted); margin-top: 6px; }
+.ckey span::before { content: ""; display: inline-block; width: 14px; height: 3px; margin-right: 6px; background: var(--c); vertical-align: 3px; }
+table.t { width: 100%; border-collapse: collapse; font-size: 14px; }
+.t th { text-align: right; font-size: 12px; color: var(--muted); padding: 6px 6px; border-bottom: 2px solid var(--rule); line-height: 1.3; }
+.t th:first-child, .t td:first-child { text-align: left; }
+.t td { padding: 6px 6px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
+.t .wm { color: var(--wm); font-weight: 700; } .t .coc { color: var(--coc); font-weight: 700; }
+.wrapt { overflow-x: auto; }
+.explain { font-size: 13.5px; color: var(--muted); line-height: 1.55; margin-top: 10px; }
+.explain b { color: var(--head); }
+details.faq { border-bottom: 1px solid var(--rule); padding: 11px 0; }
+details.faq summary { font-size: 15.5px; font-weight: 700; color: var(--head); cursor: pointer; }
+details.faq p { margin-top: 6px; font-size: 15px; line-height: 1.6; }
+.src { padding: 16px 0 4px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.lbl2 { font-size: 14px; color: var(--muted); }
+@media (max-width: 560px) { h1 { font-size: 25px; } .vs { grid-template-columns: 1fr; } .m .v { font-size: 26px; } }
+</style>
+</head>
+<body>
+<script>if (self !== top) document.body.classList.add('embedded');</script>
+<div id="wrap">
+  <div class="top"><h1>Maelor or the Countess?</h1>
+    <p>How long people wait in A&amp;E at Wrexham Maelor Hospital and the Countess of Chester Hospital, side by side, month by month. Many people in Deeside live within reach of both, but one is run by the NHS in Wales and the other by the NHS in England, and they report their figures separately.</p>
+    <p class="upd2" id="upd">Loading the latest figures…</p></div>
+
+  <section><h2 id="mh">The latest month</h2>
+    <div class="vs" id="vs"><p class="lbl2">Loading…</p></div>
+    <div class="verdict" id="verdict" hidden></div></section>
+
+  <section><h2>Seen within four hours, month by month</h2>
+    <p class="sub">The share of patients admitted, transferred or sent home within four hours of arriving. The long-standing standard in both countries is 95%.</p>
+    <div class="chart" id="c4"></div></section>
+
+  <section><h2>Waiting 12 hours or more</h2>
+    <p class="sub">The share of patients who spent 12 hours or longer in the emergency department from arrival.</p>
+    <div class="chart" id="c12"></div></section>
+
+  <section><h2>Every month</h2>
+    <div class="wrapt" id="table"><p class="lbl2">Loading…</p></div></section>
+
+  <section><h2>How we compare them</h2>
+    <details class="faq" open><summary>Is this a fair comparison?</summary><p>As fair as the published figures allow. For both hospitals we use the main, consultant-led emergency department only (Wales calls it a major emergency department, England a Type 1 A&amp;E), not minor injury units. Both count the time from arrival to being admitted, transferred or discharged.</p></details>
+    <details class="faq"><summary>Where do the 12-hour figures come from?</summary><p>For Wrexham Maelor, from the Welsh Government's monthly emergency department figures. For the Countess, from NHS England's Emergency Care Data Set analysis, which NHS England publishes as experimental, rounds to the nearest five patients, and first issues as provisional before confirming it a month later. NHS England's headline 12-hour figure measures something different (the wait after a decision to admit), so we do not use it here.</p></details>
+    <details class="faq"><summary>When do the figures update?</summary><p>England publishes on the second Thursday of each month and Wales usually later in the month. This page checks every day and shows the most recent month both have published.</p></details>
+    <details class="faq"><summary>Which hospital should I go to?</summary><p>In an emergency, call 999 or go to your nearest emergency department. For anything less urgent, NHS 111 (or NHS 111 Wales online) can tell you where to go. These figures are monthly averages and do not tell you how busy either department is today.</p></details>
+  </section>
+  <p class="src">Sources: StatsWales, Emergency departments: performance against waiting times targets; NHS England, A&amp;E Attendances and Emergency Admissions and ECDS supplementary analysis. Both contain public sector information licensed under the Open Government Licence v3.0. Compiled by Deeside.com.</p>
+</div>
+<script>
+const MON = k => new Date(k + '-15T12:00:00Z').toLocaleDateString('en-GB', {month: 'long', year: 'numeric'});
+const MS = k => new Date(k + '-15T12:00:00Z').toLocaleDateString('en-GB', {month: 'short'});
+const pct = v => v == null ? 'n/a' : (Math.round(v * 10) / 10).toFixed(1).replace(/\.0$/, '');
+const num = v => v == null ? 'n/a' : Math.round(v).toLocaleString('en-GB');
+const resize = () => { try { parent.postMessage({deesideWidget: 'ae-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {} };
+
+function lineChart(el, rows, key, opts) {
+  const W = 860, H = 230, pl = 36, pb = 24, pt = 8, w = W - pl - 10, h = H - pb - pt;
+  const vals = rows.flatMap(r => [r.maelor[key], r.countess[key]]).filter(v => v != null);
+  const lo = opts.min != null ? opts.min : Math.floor(Math.min(...vals) / 10) * 10, hi = Math.ceil(Math.max(...vals) / 10) * 10;
+  const x = i => pl + i * w / Math.max(1, rows.length - 1), y = v => pt + h - (v - lo) / (hi - lo) * h;
+  let g = '';
+  for (let v = lo; v <= hi; v += 10) g += `<line x1="${pl}" x2="${W - 10}" y1="${y(v)}" y2="${y(v)}" stroke="#e9ecef"/><text x="${pl - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="#6c757d">${v}%</text>`;
+  const line = (who, c) => {
+    const pts = rows.map((r, i) => r[who][key] == null ? null : [x(i), y(r[who][key])]);
+    let d = '', dots = '';
+    pts.forEach((p, i) => { if (!p) return; d += (d && pts[i - 1] ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1); dots += `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${c}"><title>${MON(rows[i].month)}: ${pct(rows[i][who][key])}%</title></circle>`; });
+    return `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.5"/>${dots}`;
+  };
+  const tk = rows.map((r, i) => `<text x="${x(i)}" y="${H - 6}" text-anchor="middle" font-size="11" fill="#6c757d">${MS(r.month)}</text>`).join('');
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.label}">${g}${line('maelor', '#c8102e')}${line('countess', '#005eb8')}${tk}</svg>
+    <div class="ckey"><span style="--c:#c8102e">Wrexham Maelor</span><span style="--c:#005eb8">Countess of Chester</span></div>`;
+}
+
+window.__a.then(d => {
+  const R = d.months, L = R[R.length - 1], P = R.length > 12 ? R[R.length - 13] : null, prev = R[R.length - 2];
+  document.getElementById('upd').textContent = `Latest figures: ${MON(L.month)}. Checked ${new Date(d.updated).toLocaleDateString('en-GB', {day: 'numeric', month: 'long'})}.`;
+  document.getElementById('mh').textContent = MON(L.month);
+  const ch = (now, was, upGood) => {
+    if (now == null || was == null) return '';
+    const dlt = now - was; if (Math.abs(dlt) < 0.05) return 'same as a year earlier';
+    const good = upGood ? dlt > 0 : dlt < 0;
+    return `<span class="ch ${good ? 'better' : 'worse'}">${dlt > 0 ? 'up' : 'down'} ${pct(Math.abs(dlt))} points</span> on a year earlier`;
+  };
+  const card = (who, name, where, c) => {
+    const m = L[who], p = P ? P[who] : {};
+    return `<div class="h" style="--c:${c}"><h3>${name}</h3><div class="where">${where}</div>
+      <div class="m"><div class="lbl">Seen within 4 hours</div><div class="v">${pct(m.in4)}<span>%</span></div><div class="bar"><i style="width:${m.in4 || 0}%"></i></div><div class="d">${ch(m.in4, p.in4, true)}</div></div>
+      <div class="m"><div class="lbl">Waited 12 hours or more</div><div class="v">${pct(m.over12)}<span>%</span></div><div class="d">${m.n12 != null ? `About ${num(m.n12)} people. ` : m.over12 != null && m.att ? `About ${num(m.att * m.over12 / 100)} people. ` : ''}${ch(m.over12, p.over12, false)}${who === 'countess' && m.over12_status === 'Provisional' ? ' (provisional)' : ''}</div></div>
+      <div class="m"><div class="lbl">Attendances</div><div class="v">${num(m.att)}</div><div class="d">at the main emergency department</div></div></div>`;
+  };
+  document.getElementById('vs').innerHTML = card('maelor', 'Wrexham Maelor', 'Betsi Cadwaladr health board, NHS Wales', '#c8102e') + card('countess', 'Countess of Chester', 'Countess of Chester Hospital NHS Foundation Trust, NHS England', '#005eb8');
+  const a = L.maelor.in4, b = L.countess.in4;
+  if (a != null && b != null) {
+    const v = document.getElementById('verdict'); v.hidden = false;
+    const better = b > a ? ['the Countess', 'Wrexham Maelor'] : ['Wrexham Maelor', 'the Countess'];
+    const run = R.filter(r => r.countess.in4 != null && r.maelor.in4 != null && (r.countess.in4 > r.maelor.in4) === (b > a)).length;
+    v.innerHTML = `In ${MON(L.month)}, <b>${better[0]}</b> saw a bigger share of patients within four hours than ${better[1]}: ${pct(Math.max(a, b))}% against ${pct(Math.min(a, b))}%. That has been the case in ${run} of the ${R.length} months shown. Neither hospital is close to the 95% standard.`;
+  }
+  lineChart(document.getElementById('c4'), R, 'in4', {label: 'Share seen within four hours by month'});
+  lineChart(document.getElementById('c12'), R, 'over12', {min: 0, label: 'Share waiting 12 hours or more by month'});
+  document.getElementById('table').innerHTML = `<table class="t"><tr><th>Month</th><th>Maelor<br>within 4 hrs</th><th>Countess<br>within 4 hrs</th><th>Maelor<br>12 hrs+</th><th>Countess<br>12 hrs+</th><th>Maelor<br>attendances</th><th>Countess<br>attendances</th></tr>${
+    R.slice().reverse().map(r => `<tr><td>${MON(r.month)}</td><td class="wm">${pct(r.maelor.in4)}%</td><td class="coc">${pct(r.countess.in4)}%</td><td>${pct(r.maelor.over12)}${r.maelor.over12 != null ? '%' : ''}</td><td>${pct(r.countess.over12)}${r.countess.over12 != null ? '%' : ''}${r.countess.over12_status === 'Provisional' ? '*' : ''}</td><td>${num(r.maelor.att)}</td><td>${num(r.countess.att)}</td></tr>`).join('')}</table>
+    ${R.some(r => r.countess.over12_status === 'Provisional') ? '<p class="explain">* Provisional, confirmed by NHS England the following month.</p>' : ''}`;
+  resize();
+}).catch(() => { document.getElementById('upd').textContent = 'The figures are not available just now. Please try again later.'; resize(); });
+if (window.ResizeObserver) new ResizeObserver(resize).observe(document.getElementById('wrap'));
+document.addEventListener('toggle', resize, true);
+</script>
+</body>
+</html>

@@ -86,7 +86,7 @@ function load() {
     st.innerHTML = `<b>${head}</b>${body}${extra}`;
 
     const w = d.wind, rk = document.getElementById('risk'), ch = document.getElementById('chart');
-    if (!w) { rk.innerHTML = ''; ch.innerHTML = ''; resize(); return; }
+    if (!w) { rk.innerHTML = '<b>Chance of a wind closure in the next 24 hours:</b> the forecast is not available right now. Check our <a href="https://www.deeside.com/deeside-right-now/" target="_top">weather page</a> for Met Office warnings.'; ch.innerHTML = ''; resize(); return; }
     const lim = w.peak_limit;
     const words = {
       low: `<span class="lv low">Low.</span> The strongest gust forecast is ${w.peak_gust}mph, around ${hr(w.peak_at)}${today(w.peak_at) ? '' : ' ' + day(w.peak_at)}. That is well below the council's ${lim}mph limit.`,

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Is the Flintshire Bridge open?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="../house.css?v=4">
+<style>
+/* Flintshire Bridge live status box (9 Nov 2026). Data: /live/bridge.json on the Deeside server, every 5 minutes. */
+body { background: transparent; margin: 0; }
+#wrap { max-width: 760px; margin: 0; padding: 0; }
+.box { border: 1px solid var(--rule); border-top: 4px solid var(--green); background: #fff; }
+.box.red { border-top-color: var(--red); }
+.box.amber { border-top-color: #f59e0b; }
+.box.grey { border-top-color: #9aa0a6; }
+.hd { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 12px 14px 0; }
+.hd h2 { font-size: 18px; font-weight: 800; color: var(--head); margin: 0; }
+.hd .t { font-size: 12.5px; color: var(--muted); }
+.status { margin: 10px 14px 0; padding: 11px 12px; font-size: 14.5px; line-height: 1.45; border-left: 6px solid var(--green); background: #f4f9f1; color: var(--head); }
+.status b { display: block; font-size: 22px; font-weight: 800; letter-spacing: -.4px; line-height: 1.2; margin-bottom: 2px; }
+.status.amber { border-color: #f59e0b; background: var(--amber-bg); }
+.status.red { border-color: var(--red); background: var(--red-bg); }
+.status.grey { border-color: #9aa0a6; background: #f3f4f5; }
+.risk { margin: 12px 14px 0; font-size: 14px; line-height: 1.45; color: var(--head); }
+.risk .lv { font-weight: 800; }
+.risk .lv.low { color: var(--green-dk, #3a5c09); }
+.risk .lv.possible { color: #b45309; }
+.risk .lv.likely { color: var(--red); }
+.bars { display: flex; align-items: flex-end; gap: 2px; height: 46px; margin: 8px 14px 0; border-bottom: 1px solid var(--rule); position: relative; }
+.bars i { flex: 1; background: #cfe3b8; min-height: 2px; }
+.bars i.possible { background: #f8c77e; }
+.bars i.likely { background: #e57373; }
+.bars .lim { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--red); }
+.bars .lim span { position: absolute; right: 0; top: -15px; font-size: 10.5px; color: var(--red); background: #fff; padding: 0 2px; }
+.ticks { display: flex; justify-content: space-between; margin: 3px 14px 0; font-size: 11px; color: var(--muted); }
+.ft { margin-top: 12px; padding: 10px 14px; border-top: 1px solid var(--rule); font-size: 12px; line-height: 1.45; color: var(--muted); }
+.ft a { font-weight: 700; color: var(--green-dk, #3a5c09); text-decoration: none; }
+.ft a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div id="wrap"><div class="box" id="box">
+  <div class="hd"><h2>Is the Flintshire Bridge open?</h2><span class="t" id="upd">Checking...</span></div>
+  <div class="status grey" id="status"><b>Checking the bridge</b>Loading live traffic data.</div>
+  <div class="risk" id="risk"></div>
+  <div id="chart"></div>
+  <div class="ft">Based on live TomTom traffic data and the Met Office forecast, checked every five minutes. This is not an official council notice: the council's limits are 55mph gusts (60mph for a wind along the bridge). <a href="https://www.deeside.com/flintshire-bridge/" target="_top">How closures work</a></div>
+</div></div>
+<script>
+const SRC = 'https://65-109-143-26.sslip.io/live/bridge.json';
+const TZ = {timeZone: 'Europe/London'};
+const tm = t => new Date(t).toLocaleTimeString('en-GB', {...TZ, hour: '2-digit', minute: '2-digit'});
+const hr = t => new Date(t).toLocaleTimeString('en-GB', {...TZ, hour: 'numeric', hour12: true}).replace(' ', '').replace(':00', '');
+const day = t => new Date(t).toLocaleDateString('en-GB', {...TZ, weekday: 'long'});
+const today = t => new Date(t).toLocaleDateString('en-GB', TZ) === new Date().toLocaleDateString('en-GB', TZ);
+const when = t => (today(t) ? '' : day(t) + ' ') + tm(t);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const resize = () => { try { parent.postMessage({deesideWidget: 'bridge-box', height: document.getElementById('wrap').offsetHeight + 4}, '*'); } catch (e) {} };
+
+const STATES = {
+  open: ['', 'Open', 'Traffic is moving normally across the bridge in both directions.'],
+  lanes: ['amber', 'Open, with lane closures', 'Traffic data shows lanes closed on the bridge. Expect slower traffic.'],
+  slow: ['amber', 'Open, but very slow', 'Traffic is crawling across the bridge. This can be an incident, or the bridge about to close.'],
+  closed: ['red', 'Closed', 'Live traffic data shows the A548 Flintshire Bridge as closed. Follow the signed diversion.'],
+  unknown: ['grey', 'Not known right now', 'Live traffic data is not available at the moment. Check our roadworks and traffic page.']
+};
+
+function load() {
+  fetch(SRC + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(d => {
+    document.getElementById('upd').textContent = 'Checked at ' + tm(d.checked);
+    const stale = Date.now() - new Date(d.checked) > 20 * 60000;
+    const [cls, head, body] = STATES[stale ? 'unknown' : d.status] || STATES.unknown;
+    document.getElementById('box').className = 'box ' + cls;
+    const st = document.getElementById('status');
+    st.className = 'status ' + (cls || '');
+    let extra = '';
+    if (!stale && d.status !== 'unknown' && d.since && Date.now() - new Date(d.since) < 36 * 3600000) extra = ` Since ${when(d.since)}.`;
+    if (d.source === 'deeside' && d.note) extra = ' ' + esc(d.note);
+    st.innerHTML = `<b>${head}</b>${body}${extra}`;
+
+    const w = d.wind, rk = document.getElementById('risk'), ch = document.getElementById('chart');
+    if (!w) { rk.innerHTML = ''; ch.innerHTML = ''; resize(); return; }
+    const lim = w.peak_limit;
+    const words = {
+      low: `<span class="lv low">Low.</span> The strongest gust forecast is ${w.peak_gust}mph, around ${hr(w.peak_at)}${today(w.peak_at) ? '' : ' ' + day(w.peak_at)}. That is well below the council's ${lim}mph limit.`,
+      possible: `<span class="lv possible">Possible.</span> Gusts of up to ${w.peak_gust}mph are forecast around ${hr(w.peak_at)}${today(w.peak_at) ? '' : ' ' + day(w.peak_at)}. The council starts watching wind speeds at 50mph and closes the bridge at ${lim}mph.`,
+      likely: `<span class="lv likely">Likely.</span> Gusts of ${w.peak_gust}mph are forecast around ${hr(w.peak_at)}${today(w.peak_at) ? '' : ' ' + day(w.peak_at)}, at or above the council's ${lim}mph limit, from about ${hr(w.from)}. The council usually announces closures shortly before they happen.`
+    };
+    rk.innerHTML = `<b>Chance of a wind closure in the next 24 hours:</b> ${words[w.level]}`;
+    const H = w.hours || [], top = Math.max(65, ...H.map(h => h.gust));
+    ch.innerHTML = `<div class="bars">${H.map(h => `<i class="${h.level}" style="height:${Math.max(2, 100 * h.gust / top)}%" title="${tm(h.at)}: ${h.gust}mph"></i>`).join('')}
+      <div class="lim" style="bottom:${100 * 55 / top}%"><span>55mph</span></div></div>
+      <div class="ticks"><span>${H.length ? tm(H[0].at) : ''}</span><span>Forecast gusts, next 24 hours</span><span>${H.length ? tm(H[H.length - 1].at) : ''}</span></div>`;
+    resize();
+  }).catch(() => {
+    document.getElementById('upd').textContent = '';
+    document.getElementById('box').className = 'box grey';
+    document.getElementById('status').className = 'status grey';
+    document.getElementById('status').innerHTML = '<b>Not known right now</b>Live data is not available at the moment. Check our roadworks and traffic page.';
+    resize();
+  });
+}
+load();
+setInterval(load, 300000);
+window.addEventListener('resize', resize);
+</script>
+</body>
+</html>

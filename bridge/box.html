@@ -77,7 +77,11 @@ function load() {
     const st = document.getElementById('status');
     st.className = 'status ' + (cls || '');
     let extra = '';
-    if (!stale && d.status !== 'unknown' && d.since && Date.now() - new Date(d.since) < 36 * 3600000) extra = ` Since ${when(d.since)}.`;
+    const recent = d.since && Date.now() - new Date(d.since) < 36 * 3600000;
+    if (!stale && recent && d.changed_from && d.changed_from !== 'unknown') {
+      if (d.status === 'open' && d.changed_from !== 'open') extra = ` Reopened at ${when(d.since)}.`;
+      else if (d.status !== 'open' && d.status !== 'unknown') extra = ` Since ${when(d.since)}.`;
+    }
     if (d.source === 'deeside' && d.note) extra = ' ' + esc(d.note);
     st.innerHTML = `<b>${head}</b>${body}${extra}`;
 

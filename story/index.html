@@ -114,7 +114,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #9fc3d8;border-color:v
 <div class="row">
 <div><label for="name">Your name <span class="opt">optional</span></label><input id="name" name="name" type="text" autocomplete="name"></div>
 <div><label for="naming">Can we use your name in the story?</label>
-<select id="naming" name="naming"><option>Yes, use my name</option><option>First name and area only</option><option selected>No, keep me anonymous</option></select></div>
+<select id="naming" name="naming"><option selected>Yes, use my name</option><option>First name and area only</option><option>No, please don't name me</option></select></div>
 <div><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email"></div>
 <div><label for="phone">Phone <span class="opt">email or phone, at least one</span></label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
 </div>
@@ -161,7 +161,7 @@ TOPICS.forEach(function(t, i){
 });
 f.addEventListener("change", function(e){
   if (e.target.name === "topic") Array.prototype.forEach.call(f.querySelectorAll("input[name=topic]"), function(i){ i.parentNode.classList.toggle("on", i.checked); });
-  if (e.target.id === "confidential" && e.target.checked) document.getElementById("naming").value = "No, keep me anonymous";
+  if (e.target.id === "confidential" && e.target.checked) document.getElementById("naming").value = "No, please don't name me";
 });
 
 var drop = document.getElementById("drop"), file = document.getElementById("file"), pw = document.getElementById("photos");

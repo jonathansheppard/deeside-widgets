@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Send us your story | Deeside.com</title>
+<link rel="stylesheet" href="https://www.deeside.com/wp-content/themes/deeside-news/fonts/open-sans.css">
+<style>
+:root{--ink:#1d1f1c;--muted:#5d6458;--line:#d6dbe0;--blue:#1d4861;--red:#b94a2c;--err:#b3261e;--soft:#eef3f6}
+*{box-sizing:border-box}
+html,body{margin:0;background:transparent}
+body{font-family:"Open Sans",Arial,sans-serif;color:var(--ink);font-size:16px;line-height:1.5}
+#wrap{padding:2px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:16px}
+.card h2{font-size:19px;margin:0 0 4px;color:var(--blue)}
+.card .lead{color:var(--muted);margin:0 0 12px;font-size:15px}
+.step{display:inline-block;background:var(--blue);color:#fff;font-weight:700;font-size:12px;border-radius:20px;padding:2px 10px;margin-bottom:8px;letter-spacing:.3px}
+.warn{background:#fdf1ec;border-left:4px solid var(--red);padding:10px 14px;border-radius:0 6px 6px 0;font-size:14px;margin-bottom:16px}
+label{display:block;font-weight:600;margin:14px 0 4px;font-size:15px}
+label .opt{font-weight:400;color:var(--muted);font-size:13px}
+.hint{color:var(--muted);font-size:13px;margin:2px 0 6px}
+input[type=text],input[type=email],input[type=tel],input[type=url],select,textarea{width:100%;padding:10px 12px;border:1px solid #b8c1c9;border-radius:6px;font:inherit;background:#fff}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid #9fc3d8;border-color:var(--blue)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+@media(max-width:600px){.row{grid-template-columns:1fr}}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{margin:0;font-weight:400;border:1px solid #b8c1c9;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:14px;background:#fff;position:relative}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips label.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.photo{border:1px dashed #b8c1c9;border-radius:8px;padding:12px 14px;margin-top:12px;position:relative;display:grid;grid-template-columns:120px 1fr;gap:14px}
+@media(max-width:480px){.photo{grid-template-columns:1fr}}
+.photo img{width:120px;height:90px;object-fit:cover;border-radius:6px;background:#eee}
+.photo label{margin-top:0}
+.photo .meta{font-size:12px;color:var(--muted);margin-top:4px}
+.rm{position:absolute;top:8px;right:10px;background:none;border:0;color:var(--err);cursor:pointer;font-size:13px}
+.drop{border:2px dashed #b8c1c9;border-radius:10px;padding:18px;text-align:center;color:var(--muted);cursor:pointer;margin-top:8px}
+.drop.on{border-color:var(--blue);background:var(--soft)}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:10px 0}
+.check input{margin-top:4px;width:18px;height:18px;flex:none}
+.conf{background:var(--soft);border-radius:8px;padding:10px 14px;margin-top:14px}
+.conf .check{margin:4px 0}
+.hp{position:absolute;left:-5000px;width:1px;height:1px;overflow:hidden}
+.send{background:var(--red);color:#fff;border:0;border-radius:8px;padding:14px 26px;font:inherit;font-size:17px;font-weight:700;cursor:pointer}
+.send:disabled{opacity:.6;cursor:wait}
+.msg{margin-top:14px;padding:12px 14px;border-radius:8px;display:none}
+.msg.err{display:block;background:#fdecea;color:var(--err)}
+.done{text-align:center;padding:36px 22px}
+.done h2{font-size:24px}
+</style>
+</head>
+<body>
+<div id="wrap">
+<form id="f" novalidate>
+<div class="hp" aria-hidden="true"><label>Leave this empty <input type="text" name="website_url_hp" tabindex="-1" autocomplete="off"></label></div>
+
+<div class="warn"><b>If someone is in danger, call 999.</b> For non-emergency police matters, call 101 or report online to North Wales Police. We read every message, but we can't reply to all of them.</div>
+
+<div class="card">
+<span class="step">STEP 1</span>
+<h2>What's it about?</h2>
+<div class="chips" id="topics"></div>
+</div>
+
+<div class="card">
+<span class="step">STEP 2</span>
+<h2>Tell us what's happened</h2>
+<p class="lead">Short, plain answers are perfect. Facts help us most: dates, places, names, numbers.</p>
+<label for="what">What has happened?</label>
+<div class="hint">The main thing, in a few sentences.</div>
+<textarea id="what" name="what" style="min-height:130px"></textarea>
+<div class="row">
+<div><label for="where">Where? <span class="opt">street, village or town</span></label><input id="where" name="where" type="text"></div>
+<div><label for="when">When? <span class="opt">date and time if you know</span></label><input id="when" name="when" type="text" placeholder="e.g. Tuesday morning, about 8am"></div>
+</div>
+<label for="who">Who is involved? <span class="opt">optional</span></label>
+<div class="hint">People, businesses, the council, police, a school.</div>
+<textarea id="who" name="who" style="min-height:70px"></textarea>
+<label for="how_know">How do you know about it? <span class="opt">optional</span></label>
+<select id="how_know" name="how_know">
+<option value="">Choose one</option>
+<option>I saw it happen</option>
+<option>It happened to me or my family</option>
+<option>I work there or am involved</option>
+<option>Someone told me</option>
+<option>I have documents, letters or emails</option>
+<option>I saw it online or on social media</option>
+</select>
+<label for="told">Have you told anyone else? <span class="opt">optional</span></label>
+<div class="hint">For example the council, police, your councillor or MS. What did they say?</div>
+<textarea id="told" name="told" style="min-height:70px"></textarea>
+<label for="link">A link we should see <span class="opt">optional</span></label>
+<input id="link" name="link" type="url" placeholder="https://">
+<label for="extra">Anything else? <span class="opt">optional</span></label>
+<textarea id="extra" name="extra" style="min-height:70px"></textarea>
+</div>
+
+<div class="card">
+<span class="step">STEP 3</span>
+<h2>Photos or video</h2>
+<p class="lead">Up to three photos. Only send photos you took yourself, or have permission to share.</p>
+<div class="drop" id="drop" tabindex="0" role="button">Tap to choose photos, or drag them here<br><small>JPEG, PNG or WebP. We resize them on your device before sending.</small></div>
+<input type="file" id="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+<div id="photos"></div>
+<label class="check" id="photoRights" hidden><input type="checkbox" name="consent_photos"> <span>I took these photos, or I have permission to share them, and Deeside.com can publish them.</span></label>
+<label for="video">Video <span class="opt">optional: a link to it (YouTube, Facebook, Google Drive, WeTransfer)</span></label>
+<input id="video" name="video" type="url" placeholder="https://">
+</div>
+
+<div class="card">
+<span class="step">STEP 4</span>
+<h2>Your details</h2>
+<p class="lead">So we can check the facts with you. We never publish your email address or phone number.</p>
+<div class="row">
+<div><label for="name">Your name <span class="opt">optional</span></label><input id="name" name="name" type="text" autocomplete="name"></div>
+<div><label for="naming">Can we use your name in the story?</label>
+<select id="naming" name="naming"><option>Yes, use my name</option><option>First name and area only</option><option selected>No, keep me anonymous</option></select></div>
+<div><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email"></div>
+<div><label for="phone">Phone <span class="opt">email or phone, at least one</span></label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
+</div>
+<div class="conf">
+<label class="check"><input type="checkbox" name="confidential" id="confidential"> <span><b>This is sensitive.</b> I want my identity kept confidential. We won't record your connection details, and only the editor sees who sent it.</span></label>
+</div>
+</div>
+
+<div class="card">
+<span class="step">STEP 5</span>
+<h2>Before you send</h2>
+<label class="check"><input type="checkbox" name="consent_accurate"> <span>To the best of my knowledge, what I've told you is accurate.</span></label>
+<label class="check"><input type="checkbox" name="consent_contact"> <span>Deeside.com can contact me about this, and may use the information in a story.</span></label>
+<p class="hint">Sending us something doesn't mean we'll publish it. We check everything first.</p>
+<button class="send" id="send" type="submit">Send my story</button>
+<div class="msg" id="msg" role="alert"></div>
+</div>
+</form>
+
+<div class="card done" id="done" hidden>
+<h2>Thank you, that's with us</h2>
+<p>We'll read it and get in touch if we need to know more. If it's urgent, email <a href="mailto:newsdesk@deeside.com">newsdesk@deeside.com</a> and quote reference <b id="ref"></b>.</p>
+<p><a href="#" id="again">Send another story</a></p>
+</div>
+</div>
+
+<script>
+(function(){
+var ENDPOINT = "https://65-109-143-26.sslip.io/story";
+var TOPICS = ["Something's happened","A problem where I live","Council or public services","Crime or police","Roads and travel","Health or schools","Business","Good news or community","Other"];
+var MAXP = 3, MAXSIDE = 2400, QUALITY = 0.85;
+var f = document.getElementById("f"), photos = [];
+
+function resizeFrame(top){ try { parent.postMessage({deesideWidget: "story-form", height: document.getElementById("wrap").offsetHeight + 4, top: !!top}, "*"); } catch(e){} }
+window.addEventListener("load", function(){ resizeFrame(); });
+if (window.ResizeObserver) new ResizeObserver(function(){ resizeFrame(); }).observe(document.getElementById("wrap"));
+else setInterval(resizeFrame, 1000);
+
+var tw = document.getElementById("topics");
+TOPICS.forEach(function(t, i){
+  var l = document.createElement("label"); if (i === 0) l.className = "on";
+  var r = document.createElement("input"); r.type = "radio"; r.name = "topic"; r.value = t; r.checked = i === 0;
+  l.appendChild(r); l.appendChild(document.createTextNode(t)); tw.appendChild(l);
+});
+f.addEventListener("change", function(e){
+  if (e.target.name === "topic") Array.prototype.forEach.call(f.querySelectorAll("input[name=topic]"), function(i){ i.parentNode.classList.toggle("on", i.checked); });
+  if (e.target.id === "confidential" && e.target.checked) document.getElementById("naming").value = "No, keep me anonymous";
+});
+
+var drop = document.getElementById("drop"), file = document.getElementById("file"), pw = document.getElementById("photos");
+drop.onclick = function(){ file.click(); };
+drop.onkeydown = function(e){ if (e.key === "Enter" || e.key === " ") { e.preventDefault(); file.click(); } };
+["dragenter","dragover"].forEach(function(n){ drop.addEventListener(n, function(e){ e.preventDefault(); drop.classList.add("on"); }); });
+["dragleave","drop"].forEach(function(n){ drop.addEventListener(n, function(e){ e.preventDefault(); drop.classList.remove("on"); }); });
+drop.addEventListener("drop", function(e){ addFiles(e.dataTransfer.files); });
+file.onchange = function(){ addFiles(file.files); file.value = ""; };
+
+function addFiles(list){
+  Array.prototype.slice.call(list).forEach(function(fl){
+    if (photos.length >= MAXP) return;
+    if (!/^image\/(jpeg|png|webp)$/.test(fl.type)) { showErr('"' + fl.name + '" isn\'t a JPEG, PNG or WebP photo. iPhone HEIC photos: share them as JPEG, or email them to us.'); return; }
+    var p = {name: fl.name, data: null}; photos.push(p);
+    var d = document.createElement("div"); d.className = "photo";
+    d.innerHTML = '<div><img alt=""><div class="meta">Preparing…</div></div><div><button type="button" class="rm">Remove</button>'+
+      '<label>What does it show?</label><input type="text" class="pc" placeholder="Where and when it was taken"></div>';
+    d.querySelector(".rm").onclick = function(){ photos.splice(photos.indexOf(p), 1); d.remove(); syncP(); };
+    p.el = d; pw.appendChild(d); syncP();
+    resize(fl).then(function(r){
+      p.data = r.data; p.width = r.w; p.height = r.h;
+      d.querySelector("img").src = r.data;
+      var kb = Math.round(r.data.length * 0.75 / 1024);
+      d.querySelector(".meta").textContent = r.w + " × " + r.h + " px, " + (kb > 1024 ? (kb/1024).toFixed(1) + " MB" : kb + " KB");
+    }).catch(function(){ d.querySelector(".meta").textContent = "Couldn't read this photo. Try another, or email it to us."; p.bad = true; });
+  });
+}
+function syncP(){ drop.style.display = photos.length >= MAXP ? "none" : ""; document.getElementById("photoRights").hidden = !photos.length; }
+
+function resize(fl){
+  return new Promise(function(ok, bad){
+    var url = URL.createObjectURL(fl), img = new Image();
+    img.onload = function(){
+      var w = img.naturalWidth, h = img.naturalHeight, s = Math.min(1, MAXSIDE / Math.max(w, h));
+      var c = document.createElement("canvas"); c.width = Math.round(w*s); c.height = Math.round(h*s);
+      var x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); ok({data: c.toDataURL("image/jpeg", QUALITY), w: c.width, h: c.height});
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); bad(); };
+    img.src = url;
+  });
+}
+
+function val(n){ var el = f.elements[n]; return el ? (el.value || "").trim() : ""; }
+function showErr(t){ var m = document.getElementById("msg"); m.className = "msg err"; m.textContent = t; }
+
+f.addEventListener("submit", function(e){
+  e.preventDefault();
+  var data = {};
+  ["what","where","when","who","how_know","told","link","video","extra","name","email","phone","naming","website_url_hp"].forEach(function(k){ data[k] = val(k); });
+  data.topic = (f.querySelector("input[name=topic]:checked") || {}).value || "Other";
+  ["confidential","consent_accurate","consent_contact","consent_photos"].forEach(function(k){ data[k] = f.elements[k].checked; });
+
+  var miss = [];
+  if (!data.what) miss.push("what has happened");
+  if (data.email && !/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(data.email)) miss.push("a valid email address");
+  if (!data.email && !data.phone) miss.push("an email address or phone number");
+  if (photos.length && !data.consent_photos) miss.push("the photo permission tick");
+  if (!(data.consent_accurate && data.consent_contact)) miss.push("the two confirmations at the end");
+  if (photos.some(function(p){ return !p.data && !p.bad; })) { showErr("Your photos are still being prepared. Give it a moment and try again."); return; }
+  if (miss.length) { showErr("Please add " + miss.join(", ") + "."); return; }
+
+  data.photos = photos.filter(function(p){ return p.data; }).map(function(p){
+    return {data: p.data, caption: p.el.querySelector(".pc").value.trim(), width: p.width, height: p.height};
+  });
+
+  var btn = document.getElementById("send"); btn.disabled = true; btn.textContent = "Sending…";
+  document.getElementById("msg").className = "msg";
+  fetch(ENDPOINT, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)})
+    .then(function(r){ return r.json().catch(function(){ return {ok: false}; }); })
+    .then(function(r){
+      if (r.ok) {
+        f.hidden = true; document.getElementById("done").hidden = false;
+        document.getElementById("ref").textContent = r.id || "";
+        resizeFrame(true);
+      } else {
+        showErr(r.error || "Sorry, that didn't send. Please try again, or email newsdesk@deeside.com.");
+        btn.disabled = false; btn.textContent = "Send my story";
+      }
+    })
+    .catch(function(){
+      showErr("Sorry, that didn't send. Check your connection and try again, or email newsdesk@deeside.com.");
+      btn.disabled = false; btn.textContent = "Send my story";
+    });
+});
+document.getElementById("again").onclick = function(e){ e.preventDefault(); location.reload(); };
+})();
+</script>
+</body>
+</html>

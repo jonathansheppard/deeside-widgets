@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Send us your business news | Deeside Business</title>
+<meta name="description" content="Share good news from your business with Deeside.com: new jobs, contract wins, openings, awards and more.">
+<style>
+:root{--ink:#1d1f1c;--muted:#5d6458;--line:#d9ddd4;--bg:#f6f7f3;--green:#232821;--accent:#b9d98a;--deep:#3d5a1e;--err:#b3261e}
+*{box-sizing:border-box}
+html,body{background:transparent}body{margin:0;font-family:"Open Sans",-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);font-size:16px;line-height:1.5}
+a{color:var(--deep)}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px}
+.sub{background:var(--green);color:#fff}
+.sub .wrap{display:flex;align-items:center;gap:10px;height:46px}
+.sub .sect{font-size:20px;font-weight:800;margin:0;color:#fff;text-decoration:none;text-transform:uppercase;letter-spacing:.5px}
+.sub small{color:#cfd6c6;font-size:13px}
+.hero{background:var(--green);color:#fff;padding:26px 0 30px;border-top:1px solid #33402c}
+.hero h1{font-size:32px;line-height:1.15;margin:0 0 10px}
+.hero p{color:#dfe5d8;margin:0;max-width:640px}
+main{padding:2px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:18px}
+.card h2{font-size:20px;margin:0 0 4px}
+.card .lead{color:var(--muted);margin:0 0 16px;font-size:15px}
+.step{display:inline-block;background:var(--green);color:var(--accent);font-weight:700;font-size:12px;border-radius:20px;padding:2px 10px;margin-bottom:8px;letter-spacing:.3px}
+label{display:block;font-weight:600;margin:14px 0 4px;font-size:15px}
+label .opt{font-weight:400;color:var(--muted);font-size:13px}
+.hint{color:var(--muted);font-size:13px;margin:2px 0 6px}
+input[type=text],input[type=email],input[type=tel],input[type=url],select,textarea{width:100%;padding:10px 12px;border:1px solid #bfc6b8;border-radius:6px;font:inherit;background:#fff}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);border-color:var(--deep)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.routes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.row,.routes{grid-template-columns:1fr}.hero h1{font-size:26px}}
+.route{border:2px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;display:block;margin:0;font-weight:400}
+.route input{margin-right:6px}
+.route strong{font-size:16px}
+.route p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.route.on{border-color:var(--deep);background:#f2f7ea}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{margin:0;font-weight:400;border:1px solid #bfc6b8;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:14px;background:#fff;position:relative}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips label.on{background:var(--green);color:#fff;border-color:var(--green)}
+.quote,.photo{border:1px dashed #bfc6b8;border-radius:8px;padding:12px 14px;margin-top:12px;position:relative}
+.rm{position:absolute;top:8px;right:10px;background:none;border:0;color:var(--err);cursor:pointer;font-size:13px}
+.btn2{background:#fff;border:1px solid var(--deep);color:var(--deep);border-radius:6px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer;margin-top:12px}
+.photo{display:grid;grid-template-columns:120px 1fr;gap:14px}
+@media(max-width:480px){.photo{grid-template-columns:1fr}}
+.photo img{width:120px;height:90px;object-fit:cover;border-radius:6px;background:#eee}
+.photo label:first-of-type{margin-top:0}
+.photo .meta{font-size:12px;color:var(--muted);margin-top:4px}
+.drop{border:2px dashed #bfc6b8;border-radius:10px;padding:18px;text-align:center;color:var(--muted);cursor:pointer;margin-top:8px}
+.drop.on{border-color:var(--deep);background:#f2f7ea}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:10px 0}
+.check input{margin-top:4px;width:18px;height:18px;flex:none}
+.hp{position:absolute;left:-5000px;width:1px;height:1px;overflow:hidden}
+.send{background:var(--green);color:#fff;border:0;border-radius:8px;padding:14px 26px;font:inherit;font-size:17px;font-weight:700;cursor:pointer}
+.send:disabled{opacity:.6;cursor:wait}
+.msg{margin-top:14px;padding:12px 14px;border-radius:8px;display:none}
+.msg.err{display:block;background:#fdecea;color:var(--err)}
+.done{text-align:center;padding:40px 22px}
+.done h2{font-size:26px}
+.only-write,.only-own{display:none}
+form.write .only-write,form.own .only-own{display:block}
+.tips{background:#f2f7ea;border-left:4px solid var(--deep);padding:10px 14px;border-radius:0 6px 6px 0;font-size:14px;margin-top:6px}
+.foot{background:#000;color:#aaa;font-size:13px;padding:18px 0}
+.foot a{color:#ddd}
+
+</style>
+</head>
+<body>
+<main id="wrap">
+<form id="f" class="write" novalidate>
+<div class="hp" aria-hidden="true"><label>Leave this empty <input type="text" name="website_url_hp" tabindex="-1" autocomplete="off"></label></div>
+
+<div class="card">
+<span class="step">STEP 1</span>
+<h2>How would you like to send it?</h2>
+<p class="lead">Either way, a Deeside.com journalist reads every submission and may edit it to fit our style, or come back to you with questions.</p>
+<div class="routes">
+<label class="route on"><input type="radio" name="route" value="write" checked><strong>Write it for us</strong><p>Answer a few quick questions and we'll write the story.</p></label>
+<label class="route"><input type="radio" name="route" value="own"><strong>We've written it</strong><p>Paste in your press release or story.</p></label>
+</div>
+</div>
+
+<div class="card">
+<span class="step">STEP 2</span>
+<h2>About the business</h2>
+<div class="row">
+<div><label for="business">Business name</label><input id="business" name="business" type="text" autocomplete="organization"></div>
+<div><label for="town">Where are you based? <span class="opt">town or site</span></label><input id="town" name="town" type="text" placeholder="e.g. Deeside Industrial Park"></div>
+</div>
+<label for="website">Website <span class="opt">optional</span></label><input id="website" name="website" type="url" placeholder="https://">
+<label>What kind of news is it?</label>
+<div class="chips" id="types"></div>
+</div>
+
+<div class="card">
+<span class="step">STEP 3</span>
+<h2>The story</h2>
+<label for="headline">Sum it up in one line <span class="opt">optional</span></label>
+<div class="hint">Like a headline. For example: "Queensferry firm creates 25 jobs after £2m contract win".</div>
+<input id="headline" name="headline" type="text" maxlength="160">
+
+<div class="only-own">
+<label for="story">Your story or press release</label>
+<div class="hint">Paste it in full. Please include the names and job titles of anyone quoted.</div>
+<textarea id="story" name="story" style="min-height:260px"></textarea>
+</div>
+
+<div class="only-write">
+<div class="tips"><b>Tip:</b> short, plain answers are perfect. Facts and numbers help us most.</div>
+<label for="what">What has happened?</label>
+<div class="hint">The news itself, in a sentence or two.</div>
+<textarea id="what" name="what"></textarea>
+<div class="row">
+<div><label for="when">When? <span class="opt">optional</span></label><input id="when" name="when" type="text" placeholder="e.g. Opens Monday 1 December"></div>
+<div><label for="where">Where? <span class="opt">optional</span></label><input id="where" name="where" type="text" placeholder="Address or site"></div>
+</div>
+<label for="who">Who is involved? <span class="opt">optional</span></label>
+<div class="hint">People, partners, customers, funders.</div>
+<textarea id="who" name="who" style="min-height:70px"></textarea>
+<label for="numbers">The numbers <span class="opt">optional</span></label>
+<div class="hint">Jobs created, money invested, contract value, size of the site, years in business, staff numbers.</div>
+<textarea id="numbers" name="numbers" style="min-height:70px"></textarea>
+<label for="why">Why does it matter? <span class="opt">optional</span></label>
+<div class="hint">What it means for the business, its staff, customers or the area.</div>
+<textarea id="why" name="why" style="min-height:70px"></textarea>
+<label for="extra">Anything else? <span class="opt">optional</span></label>
+<div class="hint">Background, the history of the business, what's next, how people can apply or find out more.</div>
+<textarea id="extra" name="extra" style="min-height:70px"></textarea>
+</div>
+
+<label for="embargo">Can we publish straight away?</label>
+<select id="embargo" name="embargo">
+<option value="">Yes, publish when ready</option>
+<option value="Embargoed until">No, it's embargoed</option>
+</select>
+<input id="embargo_detail" type="text" placeholder="Embargoed until, e.g. 00:01 Thursday 20 November" style="margin-top:8px;display:none">
+</div>
+
+<div class="card">
+<span class="step">STEP 4</span>
+<h2>Quotes</h2>
+<p class="lead">A quote from someone involved makes the story. Add up to three, each with the person's name and job title.</p>
+<div id="quotes"></div>
+<button type="button" class="btn2" id="addq">+ Add another quote</button>
+</div>
+
+<div class="card">
+<span class="step">STEP 5</span>
+<h2>Photos</h2>
+<p class="lead">Up to three. Landscape photos work best: real people, the team, the site, the product. Please don't send logos or posters with text on them.</p>
+<div class="drop" id="drop" tabindex="0" role="button">Tap to choose photos, or drag them here<br><small>JPEG, PNG or WebP. We resize them on your device before sending.</small></div>
+<input type="file" id="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+<div id="photos"></div>
+</div>
+
+<div class="card">
+<span class="step">STEP 6</span>
+<h2>Your details</h2>
+<p class="lead">So we can check the facts. We won't publish your phone number or email address.</p>
+<div class="row">
+<div><label for="name">Your name</label><input id="name" name="name" type="text" autocomplete="name"></div>
+<div><label for="role">Your job title <span class="opt">optional</span></label><input id="role" name="role" type="text" autocomplete="organization-title"></div>
+<div><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email"></div>
+<div><label for="phone">Phone <span class="opt">optional</span></label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
+</div>
+</div>
+
+<div class="card">
+<span class="step">STEP 7</span>
+<h2>Before you send</h2>
+<label class="check"><input type="checkbox" name="consent_rights"> <span>I own the photos, or have permission to share them, and Deeside.com can publish them with the credit given.</span></label>
+<label class="check"><input type="checkbox" name="consent_publish"> <span>Everyone quoted or pictured has agreed to appear, and I'm happy for Deeside.com to publish, edit and share this story on its website, newsletters and social media.</span></label>
+<label class="check"><input type="checkbox" name="consent_accurate"> <span>To the best of my knowledge, the information is accurate.</span></label>
+<p class="hint">Sending a story doesn't guarantee we'll publish it. Paid promotion is separate: see <a href="https://www.deeside.com/advertise/">advertising</a>.</p>
+<button class="send" id="send" type="submit">Send my news</button>
+<div class="msg" id="msg" role="alert"></div>
+</div>
+</form>
+
+<div class="card done" id="done" hidden>
+<h2>Thank you, that's with us</h2>
+<p>A journalist will read it and get in touch if we have questions. If it's time-sensitive, email <a href="mailto:newsdesk@deeside.com">newsdesk@deeside.com</a> and quote reference <b id="ref"></b>.</p>
+<p><a href="#" onclick="location.reload();return false">Send another story</a></p>
+</div>
+</main>
+<script>
+(function(){
+function resizeFrame(top){ try { parent.postMessage({deesideWidget: "business-form", height: document.getElementById("wrap").offsetHeight + 4, top: !!top}, "*"); } catch(e){} }
+window.addEventListener("load", function(){ resizeFrame(); });
+if (window.ResizeObserver) new ResizeObserver(function(){ resizeFrame(); }).observe(document.getElementById("wrap")); else setInterval(resizeFrame, 1000);
+var ENDPOINT = "https://65-109-143-26.sslip.io/business";
+var TYPES = ["New jobs","Contract win","Opening or expansion","Investment","Appointment or promotion","Award","Milestone or anniversary","New product or service","Apprentices and training","Charity or community","Other"];
+var MAXQ = 3, MAXP = 3, MAXSIDE = 2400, QUALITY = 0.85;
+var f = document.getElementById("f"), photos = [];
+
+var tw = document.getElementById("types");
+TYPES.forEach(function(t, i){
+  var l = document.createElement("label"); if (i === 0) l.className = "on";
+  var r = document.createElement("input"); r.type = "radio"; r.name = "type"; r.value = t; r.checked = i === 0;
+  l.appendChild(r); l.appendChild(document.createTextNode(t)); tw.appendChild(l);
+});
+function mark(name){
+  Array.prototype.forEach.call(f.querySelectorAll('input[name='+name+']'), function(i){ i.parentNode.classList.toggle("on", i.checked); });
+}
+f.addEventListener("change", function(e){
+  var t = e.target;
+  if (t.name === "route") { f.className = t.value; mark("route"); }
+  if (t.name === "type") mark("type");
+  if (t.id === "embargo") document.getElementById("embargo_detail").style.display = t.value ? "block" : "none";
+});
+
+var qw = document.getElementById("quotes"), addq = document.getElementById("addq");
+function addQuote(){
+  if (qw.children.length >= MAXQ) return;
+  var d = document.createElement("div"); d.className = "quote";
+  d.innerHTML = '<button type="button" class="rm">Remove</button>'+
+    '<label>What did they say?</label><textarea class="qt" maxlength="2000" placeholder="In their own words"></textarea>'+
+    '<div class="row"><div><label>Their name</label><input type="text" class="qb"></div>'+
+    '<div><label>Their job title</label><input type="text" class="qr" placeholder="e.g. Managing director"></div></div>';
+  d.querySelector(".rm").onclick = function(){ d.remove(); syncQ(); };
+  qw.appendChild(d); syncQ();
+}
+function syncQ(){ addq.style.display = qw.children.length >= MAXQ ? "none" : ""; addq.textContent = qw.children.length ? "+ Add another quote" : "+ Add a quote"; }
+addq.onclick = addQuote;
+addQuote();
+
+var drop = document.getElementById("drop"), file = document.getElementById("file"), pw = document.getElementById("photos");
+drop.onclick = function(){ file.click(); };
+drop.onkeydown = function(e){ if (e.key === "Enter" || e.key === " ") { e.preventDefault(); file.click(); } };
+["dragenter","dragover"].forEach(function(n){ drop.addEventListener(n, function(e){ e.preventDefault(); drop.classList.add("on"); }); });
+["dragleave","drop"].forEach(function(n){ drop.addEventListener(n, function(e){ e.preventDefault(); drop.classList.remove("on"); }); });
+drop.addEventListener("drop", function(e){ addFiles(e.dataTransfer.files); });
+file.onchange = function(){ addFiles(file.files); file.value = ""; };
+
+function addFiles(list){
+  Array.prototype.slice.call(list).forEach(function(fl){
+    if (photos.length >= MAXP) return;
+    if (!/^image\/(jpeg|png|webp)$/.test(fl.type)) { showErr('"' + fl.name + '" isn\'t a JPEG, PNG or WebP photo. iPhone HEIC photos: share them as JPEG, or email them to us.'); return; }
+    var p = {name: fl.name, data: null}; photos.push(p);
+    var d = document.createElement("div"); d.className = "photo";
+    d.innerHTML = '<div><img alt=""><div class="meta">Preparing…</div></div><div><button type="button" class="rm">Remove</button>'+
+      '<label>Caption</label><input type="text" class="pc" placeholder="Who or what is in the photo, left to right">'+
+      '<label>Photo credit</label><input type="text" class="pr" placeholder="Photographer or business name"></div>';
+    d.querySelector(".rm").onclick = function(){ photos.splice(photos.indexOf(p), 1); d.remove(); syncP(); };
+    p.el = d; pw.appendChild(d); syncP();
+    resize(fl).then(function(r){
+      p.data = r.data; p.width = r.w; p.height = r.h;
+      d.querySelector("img").src = r.data;
+      var kb = Math.round(r.data.length * 0.75 / 1024);
+      d.querySelector(".meta").textContent = r.w + " × " + r.h + " px, " + (kb > 1024 ? (kb/1024).toFixed(1) + " MB" : kb + " KB") +
+        (Math.max(r.w, r.h) < 1200 ? ". Small: a bigger photo would be better." : "");
+    }).catch(function(){
+      d.querySelector(".meta").textContent = "Couldn't read this photo. Try another, or email it to us.";
+      p.bad = true;
+    });
+  });
+}
+function syncP(){ drop.style.display = photos.length >= MAXP ? "none" : ""; }
+
+function resize(fl){
+  return new Promise(function(ok, bad){
+    var url = URL.createObjectURL(fl), img = new Image();
+    img.onload = function(){
+      var w = img.naturalWidth, h = img.naturalHeight, s = Math.min(1, MAXSIDE / Math.max(w, h));
+      var c = document.createElement("canvas"); c.width = Math.round(w*s); c.height = Math.round(h*s);
+      var x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      ok({data: c.toDataURL("image/jpeg", QUALITY), w: c.width, h: c.height});
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); bad(); };
+    img.src = url;
+  });
+}
+
+function val(n){ var el = f.elements[n]; return el ? (el.value || "").trim() : ""; }
+function showErr(t){ var m = document.getElementById("msg"); m.className = "msg err"; m.textContent = t; }
+
+f.addEventListener("submit", function(e){
+  e.preventDefault();
+  var route = f.querySelector('input[name=route]:checked').value;
+  var data = {route: route === "own" ? "We've written it" : "Write it for us"};
+  ["business","website","town","headline","name","role","email","phone","website_url_hp"].forEach(function(k){ data[k] = val(k); });
+  data.type = (f.querySelector('input[name=type]:checked') || {}).value || "Other";
+  data.embargo = val("embargo") ? "Embargoed until " + (document.getElementById("embargo_detail").value.trim() || "(time not given)") : "";
+  if (route === "own") data.story = val("story");
+  else ["what","when","where","who","numbers","why","extra"].forEach(function(k){ data[k] = val(k); });
+  data.quotes = Array.prototype.map.call(qw.children, function(q){
+    return {text: q.querySelector(".qt").value.trim(), by: q.querySelector(".qb").value.trim(), role: q.querySelector(".qr").value.trim()};
+  }).filter(function(q){ return q.text; });
+  ["consent_rights","consent_publish","consent_accurate"].forEach(function(k){ data[k] = f.elements[k].checked; });
+
+  var miss = [];
+  if (!data.business) miss.push("the business name");
+  if (route === "own" ? !data.story : !data.what) miss.push(route === "own" ? "your story" : "what has happened");
+  if (!data.name) miss.push("your name");
+  if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(data.email)) miss.push("a valid email address");
+  if (data.quotes.some(function(q){ return !q.by; })) miss.push("the name of each person quoted");
+  if (!(data.consent_rights && data.consent_publish && data.consent_accurate)) miss.push("the three confirmations");
+  if (photos.some(function(p){ return !p.data && !p.bad; })) { showErr("Your photos are still being prepared. Give it a moment and try again."); return; }
+  if (miss.length) { showErr("Please add " + miss.join(", ") + "."); return; }
+
+  data.photos = photos.filter(function(p){ return p.data; }).map(function(p){
+    return {data: p.data, caption: p.el.querySelector(".pc").value.trim(), credit: p.el.querySelector(".pr").value.trim(), width: p.width, height: p.height, name: p.name};
+  });
+
+  var btn = document.getElementById("send"); btn.disabled = true; btn.textContent = "Sending…";
+  document.getElementById("msg").className = "msg";
+  fetch(ENDPOINT, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)})
+    .then(function(r){ return r.json().catch(function(){ return {ok: false}; }); })
+    .then(function(r){
+      if (r.ok) {
+        f.hidden = true; document.getElementById("done").hidden = false;
+        document.getElementById("ref").textContent = r.id || "";
+        resizeFrame(true);
+      } else {
+        showErr(r.error || "Sorry, that didn't send. Please try again, or email newsdesk@deeside.com.");
+        btn.disabled = false; btn.textContent = "Send my news";
+      }
+    })
+    .catch(function(){
+      showErr("Sorry, that didn't send. Check your connection and try again, or email newsdesk@deeside.com.");
+      btn.disabled = false; btn.textContent = "Send my news";
+    });
+});
+})();
+</script>
+</body>
+</html>

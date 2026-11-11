@@ -108,7 +108,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
   <section><h2>Cancellations per day</h2><div id="chart"><p class="lbl">Loading…</p></div></section>
   <section><details class="dbd"><summary><h2>Day by day</h2><span class="dbd-t">Show every day</span></summary><div class="wrapt" id="table"><p class="lbl">Loading…</p></div></details></section>
   <section class="how"><h2>How we measure this</h2>
-    <p>We count every passenger train timetabled to run between Wrexham General and Bidston, in both directions, each day. A train counts as cancelled if it did not run at all, and part-cancelled if it skipped some of its stops, for example by terminating early.</p>
+    <p>We count every passenger train timetabled to run between Wrexham General and Bidston, in both directions, each day. A train counts as cancelled if it did not run at all, and part-cancelled if it skipped some of its stops, for example by terminating early. Some trains are taken out of the timetable before the day. Those do not appear as cancellations in the industry data, so we count them by comparing each day's trains with the normal timetable, and include them in the cancelled totals as removed in advance.</p>
     <p>"Within 3 minutes" means the train ran its full route and was never more than three minutes behind the timetable at any station where its time was recorded.</p>
     <p>The figures come from National Rail's Historical Service Performance data. It does not include some trains that were changed at short notice on the day, so the cancellation figures here are a minimum: the true number can be a little higher.</p>
   </section>
@@ -135,22 +135,22 @@ const TZ = 'Europe/London';
 const fd = (iso, o) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-GB', {timeZone: TZ, ...o});
 const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
 (window.__e || fetch('widget.json?t=' + Math.floor(Date.now() / 600000)).then(r => r.json())).then(d => {
-  const all = d.days, wk = all.slice(-7), cv = x => x.cancelled + x.part_cancelled;
+  const all = d.days, wk = all.slice(-7), ra = x => x.removed_in_advance || 0, cv = x => x.cancelled + x.part_cancelled + ra(x);
   const sum = (a, f) => a.reduce((n, x) => n + f(x), 0);
   const tt = sum(wk, x => x.timetabled), c = sum(wk, cv), w3 = sum(wk, x => x.within_3);
-  const ttA = sum(all, x => x.timetabled), cA = sum(all, cv);
+  const ttA = sum(all, x => x.timetabled), cA = sum(all, cv), raW = sum(wk, ra), raA = sum(all, ra);
   document.getElementById('stats').innerHTML = `
-    <div class="s"><div class="big ${c ? 'bad' : ''}">${c}<span> of ${tt}</span></div><div class="lbl">trains cancelled in full or in part</div></div>
+    <div class="s"><div class="big ${c ? 'bad' : ''}">${c}<span> of ${tt}</span></div><div class="lbl">trains cancelled in full or in part${raW ? `, ${raW} of them removed from the timetable in advance` : ''}</div></div>
     <div class="s"><div class="big">${pct(w3, tt)}<span>%</span></div><div class="lbl">ran within 3 minutes of the timetable</div></div>
-    <div class="s"><div class="big">${cA}<span> of ${ttA}</span></div><div class="lbl">cancelled since tracking began on ${fd(all[0].day, {day: 'numeric', month: 'long'})}</div></div>`;
+    <div class="s"><div class="big">${cA}<span> of ${ttA}</span></div><div class="lbl">cancelled since tracking began on ${fd(all[0].day, {day: 'numeric', month: 'long'})}${raA ? `, ${raA} of them removed in advance` : ''}</div></div>`;
   const days = all.slice(-28), max = Math.max(4, ...days.map(cv));
   document.getElementById('chart').innerHTML = `
-    <div class="bars">${days.map(x => { const n = cv(x); return `<div class="bar" title="${fd(x.day, {weekday: 'long', day: 'numeric', month: 'short'})}: ${n} of ${x.timetabled} cancelled">${n ? `<b>${n}</b><i style="height:${Math.round(n / max * 100)}%"></i>` : '<i class="zero"></i>'}</div>`; }).join('')}</div>
+    <div class="bars">${days.map(x => { const n = cv(x); return `<div class="bar" title="${fd(x.day, {weekday: 'long', day: 'numeric', month: 'short'})}: ${n} of ${x.timetabled} cancelled${ra(x) ? `, ${ra(x)} removed in advance` : ''}">${n ? `<b>${n}</b><i style="height:${Math.round(n / max * 100)}%"></i>` : '<i class="zero"></i>'}</div>`; }).join('')}</div>
     <div class="days">${days.map(x => `<span>${fd(x.day, {weekday: 'narrow'})}<br>${fd(x.day, {day: 'numeric'})}</span>`).join('')}</div>
-    <p class="explain">Each bar is one day. <b>The taller the red bar, the more trains were cancelled</b>, and the number above it is the count. A flat <em>green line</em> means every timetabled train ran.</p>`;
-  document.getElementById('table').innerHTML = `<table><tr><th>Day</th><th class="n">Timetabled</th><th class="n">Cancelled</th><th class="n">Part-cancelled</th><th class="n">Within 3 min</th></tr>${
+    <p class="explain">Each bar is one day. <b>The taller the red bar, the more trains were cancelled</b>, and the number above it is the count. A flat <em>green line</em> means every timetabled train ran. Counts include trains removed from the timetable before the day.</p>`;
+  document.getElementById('table').innerHTML = `<table><tr><th>Day</th><th class="n">Timetabled</th><th class="n">Removed in advance</th><th class="n">Cancelled</th><th class="n">Part-cancelled</th><th class="n">Within 3 min</th></tr>${
     all.slice().reverse().map(x => { const we = /Sat|Sun/.test(fd(x.day, {weekday: 'short'}));
-      return `<tr class="${we ? 'we' : ''}"><td>${fd(x.day, {weekday: 'short', day: 'numeric', month: 'short'})}</td><td class="n">${x.timetabled}</td><td class="n ${x.cancelled ? 'bad' : ''}">${x.cancelled}</td><td class="n ${x.part_cancelled ? 'bad' : ''}">${x.part_cancelled}</td><td class="n">${pct(x.within_3, x.timetabled)}%</td></tr>`; }).join('')}</table>`;
+      return `<tr class="${we ? 'we' : ''}"><td>${fd(x.day, {weekday: 'short', day: 'numeric', month: 'short'})}</td><td class="n">${x.timetabled}</td><td class="n ${ra(x) ? 'bad' : ''}">${ra(x)}</td><td class="n ${x.cancelled ? 'bad' : ''}">${x.cancelled}</td><td class="n ${x.part_cancelled ? 'bad' : ''}">${x.part_cancelled}</td><td class="n">${pct(x.within_3, x.timetabled)}%</td></tr>`; }).join('')}</table>`;
   document.getElementById('src').textContent = `Powered by National Rail Enquiries. Figures compiled by Deeside.com, latest day ${fd(all[all.length - 1].day, {weekday: 'long', day: 'numeric', month: 'long'})}.`;
   try { parent.postMessage({deesideWidget: 'rail-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {}
 });

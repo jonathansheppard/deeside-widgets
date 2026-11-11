@@ -47,6 +47,8 @@ tr.we td:first-child { color: var(--muted); }
 .upd2 { font-size: 12.5px; color: var(--muted); margin: -4px 0 10px; }
 .cxl { background: var(--red-bg); color: #7f1212; font-size: 13.5px; padding: 9px 12px; margin-bottom: 12px; line-height: 1.45; }
 .cxl b { display: block; }
+.rmv { background: #fbeccb; color: #5c3b00; font-size: 13.5px; padding: 9px 12px; margin: 0 0 12px; line-height: 1.45; }
+.rmv b { display: block; } .rmv small { display: block; font-size: 12px; margin-top: 4px; }
 #live { border: 1px solid var(--rule); border-top: 4px solid var(--green); padding: 16px 0 0; margin-top: 18px; }
 #live .live-hd, #live .upd2, #live #lcx { padding-left: 16px; padding-right: 16px; }
 #live #lcx .cxl { margin: 0 0 12px; }
@@ -102,7 +104,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 <div id="wrap">
   <div class="top"><h1>Wrexham to Bidston line tracker</h1><p>How trains on the Wrexham to Bidston line, also known as the Borderlands line, are running day by day. Live departures every minute, and day-by-day performance updated every morning.</p></div>
   <section id="live"><div class="live-hd"><h2 style="font-size:24px">Live departures</h2><label>Station <select id="stn"></select></label></div>
-    <p class="upd2" id="lupd">Loading live departures…</p><div class="today" id="today"></div><div id="lcx"></div>
+    <p class="upd2" id="lupd">Loading live departures…</p><div class="today" id="today"></div><div id="lcx"></div><div id="lrm"></div>
     <div class="dirs"><div><div class="dir">Towards Bidston</div><div id="ln"></div></div><div><div class="dir">Towards Wrexham</div><div id="ls"></div></div></div><p class="lnote">Live data from National Rail Enquiries. Times are expected departure times and can change. Check before you travel. Cancelled trains stay listed so you can see what has gone.</p></section>
   <section><h2>The last seven days</h2><div class="stats" id="stats"><div class="s"><div class="lbl">Loading the latest figures…</div></div></div></section>
   <section><h2>Cancellations per day</h2><div id="chart"><p class="lbl">Loading…</p></div></section>
@@ -212,7 +214,10 @@ const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
   function load() {
     fetch('https://65-109-143-26.sslip.io/live/rail_today.json?t=' + Math.floor(Date.now() / 120000)).then(r => r.json()).then(d => {
       const today = new Date().toLocaleDateString('en-CA', {timeZone: 'Europe/London'});
-      if (d.date !== today) { box.style.display = 'none'; return; }
+      const lrm = document.getElementById('lrm');
+      if (d.date !== today) { box.style.display = 'none'; lrm.innerHTML = ''; return; }
+      const rm = (d.trains || []).filter(t => t.status === 'cancelled' && t.canx_reason === 'PD');
+      lrm.innerHTML = rm.length ? `<div class="rmv"><b>${rm.length} train${rm.length > 1 ? 's' : ''} removed from today's timetable in advance</b>${rm.map(t => esc(t.from ? `${t.dep} ${t.from} to ${t.to}` : `${t.dep} towards ${t.to}`)).join(', ')}<small>These trains were taken out before today, so journey planners do not show them as cancelled. Listed as Network Rail records them, about an hour before each was due to leave.</small></div>` : '';
       const at = new Date(d.generated).toLocaleTimeString('en-GB', {timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit'});
       box.style.display = '';
       box.innerHTML = `<b>Today on the line:</b> ${esc(d.summary)}<small>On time means within three minutes at the end of the journey. From Network Rail train movements, recorded by Deeside.com. Updated ${at}.</small>`;

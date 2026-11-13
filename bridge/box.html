@@ -52,7 +52,7 @@ body { background: transparent; margin: 0; }
 <script>
 const SRC = 'https://65-109-143-26.sslip.io/live/bridge.json';
 // MANUAL OVERRIDE (13 Nov 2026). Set OVERRIDE to null to go back to automatic.
-const OVERRIDE = { status: 'closed', since: '2026-11-13T14:30:00Z', body: 'The bridge is closed because of a police incident. This is a manual update from the Deeside.com newsroom, not from live traffic data.' };
+const OVERRIDE = null;
 const TZ = {timeZone: 'Europe/London'};
 const tm = t => new Date(t).toLocaleTimeString('en-GB', {...TZ, hour: '2-digit', minute: '2-digit'});
 const hr = t => new Date(t).toLocaleTimeString('en-GB', {...TZ, hour: 'numeric', hour12: true}).replace(' ', '').replace(':00', '');

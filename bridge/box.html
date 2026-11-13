@@ -51,6 +51,8 @@ body { background: transparent; margin: 0; }
 </div></div>
 <script>
 const SRC = 'https://65-109-143-26.sslip.io/live/bridge.json';
+// MANUAL OVERRIDE (13 Nov 2026). Set OVERRIDE to null to go back to automatic.
+const OVERRIDE = { status: 'closed', since: '2026-11-13T14:30:00Z', body: 'The bridge is closed because of a police incident. This is a manual update from the Deeside.com newsroom, not from live traffic data.' };
 const TZ = {timeZone: 'Europe/London'};
 const tm = t => new Date(t).toLocaleTimeString('en-GB', {...TZ, hour: '2-digit', minute: '2-digit'});
 const hr = t => new Date(t).toLocaleTimeString('en-GB', {...TZ, hour: 'numeric', hour12: true}).replace(' ', '').replace(':00', '');
@@ -70,6 +72,7 @@ const STATES = {
 
 function load() {
   fetch(SRC + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(d => {
+    if (OVERRIDE) { d.status = OVERRIDE.status; d.since = OVERRIDE.since; d.changed_from = 'open'; STATES[OVERRIDE.status] = [STATES[OVERRIDE.status][0], STATES[OVERRIDE.status][1], OVERRIDE.body]; }
     document.getElementById('upd').textContent = 'Checked at ' + tm(d.checked);
     const stale = Date.now() - new Date(d.checked) > 20 * 60000;
     const [cls, head, body] = STATES[stale ? 'unknown' : d.status] || STATES.unknown;

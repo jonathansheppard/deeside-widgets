@@ -12,45 +12,73 @@
 <link rel="stylesheet" href="../house.css?v=4">
 <style>
 body { background: #fff; }
-.wrap { background: #fff; }
-.top { padding: 4px 0 14px; border-bottom: 4px solid var(--green); display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.wrap { background: #fff; display: flex; flex-direction: column; gap: 18px; padding-bottom: 8px; }
+.top { padding: 4px 0 12px; border-bottom: 4px solid var(--green); display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 h1 { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -.5px; line-height: 1.15; }
 .top p { color: var(--muted); font-size: 14px; margin-top: 4px; }
 .upd { font-size: 12.5px; color: var(--muted); }
-section { padding: 20px 0; border-bottom: 1px solid var(--rule); }
-h2 { font-size: 19px; font-weight: 800; color: var(--head); margin-bottom: 12px; }
-.alert { padding: 11px 14px; margin-bottom: 8px; font-size: 14.5px; font-weight: 700; line-height: 1.4; border-left: 4px solid; }
+.lbl { font-size: 12.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.lbl.g { color: var(--green-dk); }
+.alert { padding: 11px 14px; margin-bottom: 8px; font-size: 14.5px; font-weight: 700; line-height: 1.4; border-radius: 8px; }
 .alert small { display: block; font-weight: 400; font-size: 13px; margin-top: 2px; }
 .alert a { font-weight: 600; font-size: 13px; text-decoration: underline; }
-.alert.red { background: var(--red-bg); color: #7f1212; border-color: var(--red); }
-.alert.amber { background: var(--amber-bg); color: #7c3a03; border-color: #f59e0b; }
-.alert.info { background: #f8f9fa; color: var(--ink); border-color: #ced4da; font-weight: 600; }
-.ok { color: var(--green-dk); font-size: 15px; font-weight: 600; margin-bottom: 8px; }
-.now { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.temp { font-size: 64px; font-weight: 800; color: var(--head); letter-spacing: -2px; line-height: 1; }
-.temp sup { font-size: 24px; font-weight: 600; color: var(--muted); letter-spacing: 0; position: relative; top: 8px; vertical-align: top; }
-.cond b { font-size: 20px; display: block; color: var(--head); }
-.cond span { color: var(--muted); font-size: 14px; line-height: 1.6; display: block; }
-.hours { display: flex; overflow-x: auto; margin-top: 16px; border: 1px solid var(--rule); scrollbar-width: thin; }
-.h { flex: 0 0 64px; text-align: center; padding: 8px 2px; font-size: 12px; color: var(--muted); border-right: 1px solid var(--rule); }
-.h svg { display: block; margin: 3px auto; }
-.h b { display: block; color: var(--head); font-size: 16px; }
-.h .r { color: var(--blue); font-size: 11.5px; display: block; }
-.h .g { font-size: 11px; display: block; margin-top: 1px; }
-.days { border-top: 1px solid var(--rule); }
-.d { display: grid; grid-template-columns: 96px 36px 1fr auto 72px; gap: 10px; align-items: center; padding: 8px 4px; border-bottom: 1px solid var(--rule); font-size: 15px; }
-.d .n { font-weight: 700; color: var(--head); } .d .w { color: var(--muted); font-size: 14px; }
-.d .t b { font-size: 16px; color: var(--head); } .d .t span { color: var(--muted); }
-.d .r { color: var(--blue); font-size: 13px; text-align: right; }
+.alert.red { background: var(--red-bg); color: #7f1212; border: 1px solid #f3c1c1; }
+.alert.amber { background: var(--amber-bg); color: #7c3a03; border: 1px solid #f3d29a; }
+.alert.info { background: #f8f9fa; color: var(--ink); border: 1px solid #dee2e6; font-weight: 600; }
+.allclear { font-size: 15px; font-weight: 600; color: var(--green-dk); }
+.row { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; }
+.box { background: #f3f5f7; border: 1px solid #dde2e7; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+.box.blue { background: #eaf2fb; border-color: #c9dcf0; }
+.box.blue .lbl { color: var(--blue); }
+.big { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.temp { font-size: 60px; font-weight: 800; color: var(--head); letter-spacing: -2px; line-height: 1; }
+.cond { font-size: 19px; font-weight: 700; color: var(--head); }
+.say { font-size: 15.5px; line-height: 1.5; color: var(--ink); }
+.say.lead { font-size: 21px; font-weight: 800; line-height: 1.3; color: var(--head); }
+.small { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.bars { display: flex; align-items: flex-end; gap: 3px; height: 54px; }
+.bars i { flex: 1 1 0; border-radius: 2px 2px 0 0; background: var(--blue); min-height: 3px; }
+.bars i.lo { background: #b9cde3; }
+.ticks { display: flex; justify-content: space-between; font-size: 12px; color: #4b5157; }
+.panel { border: 1px solid #dde2e7; border-radius: 10px; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.hours { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: thin; padding-bottom: 4px; }
+.h { flex: 0 0 62px; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 2px; border-radius: 8px; background: #f3f5f7; font-size: 12.5px; color: var(--muted); }
+.h b { color: var(--head); font-size: 16px; }
+.h .r { color: var(--blue); font-size: 12px; font-weight: 700; min-height: 16px; }
+.h.sun { background: #fdf4e6; color: #8a5300; justify-content: center; font-weight: 700; }
+.h.sun b { color: #8a5300; font-size: 14px; }
+.split { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+.split > .panel { flex: 1 1 360px; }
+.split > .local { flex: 2 1 540px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.d { display: grid; grid-template-columns: 74px 30px 44px 30px minmax(0, 1fr) 30px; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid #eef1f4; font-size: 15px; }
+.d .n { font-weight: 700; color: var(--head); }
+.d .rn { color: var(--blue); font-size: 13px; font-weight: 700; }
+.d .lo { color: var(--muted); text-align: right; }
+.d .hi { font-weight: 800; color: var(--head); }
+.track { position: relative; height: 6px; border-radius: 3px; background: #e6eaee; }
+.track span { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, #1d6fb8, #4d7a0c); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.tiles.std { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.tile { border: 1px solid #dde2e7; border-radius: 10px; padding: 15px; display: flex; flex-direction: column; gap: 6px; }
+.tile.loc { background: #f1f6ea; border-color: #d3e3be; }
+.tile.loc .tl { color: #3b5f09; }
+.tile.warn { background: #fdf4e6; border-color: #f0d7ae; }
+.tile.warn .tl { color: #8a5300; }
+.tile.bad { background: var(--red-bg); border-color: #f3c1c1; }
+.tile.bad .tl { color: #7f1212; }
+.tl { font-size: 13px; font-weight: 700; color: var(--muted); }
+.tv { font-size: 25px; font-weight: 800; color: var(--head); line-height: 1.15; }
+.tile a { font-size: 13px; font-weight: 600; color: var(--blue); text-decoration: underline; }
+.scale { position: relative; height: 6px; border-radius: 3px; background: #e6eaee; margin: 2px 0; }
+.scale span { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: var(--blue); }
 .tides { width: 100%; border-collapse: collapse; font-size: 15px; }
 .tides th { text-align: left; font-size: 12.5px; font-weight: 700; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--rule); }
 .tides td { padding: 8px; border-bottom: 1px solid var(--rule); }
 .tides td.hw { color: var(--blue); font-weight: 700; }
 .tides tr.next td { background: #f6faee; }
-.tnote { color: var(--muted); font-size: 13px; line-height: 1.5; margin-top: 10px; }
-.src { padding: 16px 0 4px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.src { padding: 8px 0 4px; font-size: 12.5px; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--rule); }
 .src a { text-decoration: underline; }
-@media (max-width: 520px) { .d { grid-template-columns: 78px 30px 1fr auto; } .d .w, .d .r { display: none; } h1 { font-size: 25px; } .temp { font-size: 54px; } }
+@media (max-width: 520px) { .tiles, .tiles.std { grid-template-columns: 1fr 1fr; gap: 10px; } .tile { padding: 12px; } .tv { font-size: 20px; } .tile .say { font-size: 14px; } h1 { font-size: 25px; } .temp { font-size: 52px; } .d { grid-template-columns: 62px 28px 40px 26px minmax(0, 1fr) 26px; font-size: 14px; } }
 </style>
 </head>
 <body>
@@ -60,54 +88,183 @@ h2 { font-size: 19px; font-weight: 800; color: var(--head); margin-bottom: 12px;
     <div><h1>Deeside right now</h1><p>Weather, warnings, flood alerts, tides and power cuts for Deeside and Flintshire</p></div>
     <div class="upd" id="upd">Loading…</div>
   </div>
-  <section><h2>Warnings and disruption</h2><div id="alerts"><p class="upd">Loading the latest warnings…</p></div></section>
-  <section id="nowsec"><h2>Weather now and the next 24 hours</h2><div id="now"><p class="upd">Loading the forecast…</p></div></section>
-  <section id="weeksec"><h2>The next seven days</h2><div class="days" id="days"></div></section>
-  <section id="tidesec"><h2>Tides at Connah's Quay</h2><div id="tides"></div></section>
+  <div id="alerts"><p class="upd">Loading the latest warnings…</p></div>
+  <div class="row" id="toprow"></div>
+  <div class="panel" id="hourpanel"><span class="lbl">Hour by hour</span><div class="hours" id="hours"></div></div>
+  <div class="split">
+    <div class="panel"><span class="lbl">Next seven days</span><div id="days"></div><p class="say" id="dayline"></p></div>
+    <div class="local"><span class="lbl g">Only on Deeside.com</span><div class="tiles" id="local"></div></div>
+  </div>
+  <div class="tiles std" id="std"></div>
+  <div class="panel" id="tidesec"><span class="lbl">Tides at Connah's Quay</span><div id="tides"></div></div>
   <div class="src">
-    Forecast and weather warnings from the <a href="https://www.metoffice.gov.uk/" target="_blank" rel="noopener">Met Office</a>.
+    Forecast and weather warnings from the <a href="https://www.metoffice.gov.uk/" target="_blank" rel="noopener">Met Office</a>. Observations from Hawarden Airport.
     Flood alerts and warnings: contains Natural Resources Wales information © Natural Resources Wales and database right.
     Tidal predictions © Crown copyright, UK Hydrographic Office (ADMIRALTY).
     Power cut information from <a href="https://powercuts.spenergynetworks.co.uk/" target="_blank" rel="noopener">SP Energy Networks</a>.
+    Sunrise and sunset calculated for Deeside.
     Updated every 10 minutes by Deeside.com. Always follow official advice in an emergency.
   </div>
 </div>
 <script src="common.js?v=4"></script>
 <script>
+const BRIDGE = 'https://65-109-143-26.sslip.io/live/bridge.json';
+const SHOW_BRIDGE = false; /* switch to true once the bridge status is trusted */
+const LAT = 53.21, LON = -3.03;
+let BR = null;
+
+/* Sunrise and sunset for Deeside (NOAA method), as Date objects */
+function sunTimes(date) {
+  const rad = Math.PI / 180, day = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+  const n = Math.floor((day - Date.UTC(2000, 0, 1, 12)) / 864e5) + 1;
+  const Js = n - LON / 360, M = (357.5291 + 0.98560028 * Js) % 360;
+  const C = 1.9148 * Math.sin(M * rad) + 0.02 * Math.sin(2 * M * rad) + 0.0003 * Math.sin(3 * M * rad);
+  const lam = (M + C + 180 + 102.9372) % 360;
+  const Jt = 2451545 + Js + 0.0053 * Math.sin(M * rad) - 0.0069 * Math.sin(2 * lam * rad);
+  const dec = Math.asin(Math.sin(lam * rad) * Math.sin(23.44 * rad));
+  const w = Math.acos((Math.sin(-0.833 * rad) - Math.sin(LAT * rad) * Math.sin(dec)) / (Math.cos(LAT * rad) * Math.cos(dec))) / rad;
+  const toDate = j => new Date((j - 2440587.5) * 864e5);
+  return { rise: toDate(Jt - w / 360), set: toDate(Jt + w / 360) };
+}
+const hm = d => d.toLocaleTimeString('en-GB', {timeZone: TZ, hour: '2-digit', minute: '2-digit'});
+const hourWord = iso => fmtHour(iso);
+
+/* The plain sentences: fixed rules on the numbers, nothing made up */
+function rainLine(hs) {
+  const next = hs.slice(0, 13);
+  if (!next.length) return '';
+  if ((next[0].rain ?? 0) >= 50) {
+    const si = next.findIndex((h, i) => i > 0 && (h.rain ?? 0) < 40);
+    if (si < 0) return 'Rain likely now, and it looks set to stay wet for the next 12 hours.';
+    const back = next.slice(si + 1).find(h => (h.rain ?? 0) >= 50);
+    return back ? `Rain likely now. A drier spell around ${hourWord(next[si].time)}, then more rain from ${hourWord(back.time)}.` : `Rain likely now, easing around ${hourWord(next[si].time)}.`;
+  }
+  const start = next.slice(1).find(h => (h.rain ?? 0) >= 50);
+  return start ? `Mostly dry until around ${hourWord(start.time)}, when rain becomes likely.` : 'Looking mostly dry for the next 12 hours.';
+}
+function feelsLine(h) {
+  const diff = h.temp - h.feels;
+  return diff >= 3 ? 'The wind is making it feel colder.' : diff >= 1 ? 'Feels a little colder than it is.' : 'Feels about the same as the temperature.';
+}
+function windLine(hs) {
+  const day = hs.slice(0, 24); if (!day.length) return '';
+  const pk = day.reduce((a, b) => (b.gust > a.gust ? b : a));
+  if (pk.gust >= 40) return `Gusty: up to ${pk.gust}mph around ${hourWord(pk.time)}.`;
+  if (pk.gust >= 25) return `Breezier later, with gusts up to ${pk.gust}mph around ${hourWord(pk.time)}.`;
+  return `Light winds, with gusts no more than ${pk.gust}mph in the next 24 hours.`;
+}
+function pressureLine(p) {
+  return p < 1000 ? 'Low pressure: unsettled, changeable weather.' : p > 1020 ? 'High pressure: settled weather is more likely.' : 'Around average for the time of year.';
+}
+
 function render(d) {
   document.getElementById('upd').textContent = 'Updated ' + fmtTime(d.generated);
+
+  /* Warnings and disruption: only shown when there is something */
   const a = alerts(d), box = [];
   a.forEach(x => box.push(`<div class="alert ${x.lvl}">${esc(x.text)}${x.sub ? `<small>${esc(x.sub)}</small>` : ''}${x.list && x.list.length ? `<small>Postcodes: ${esc(x.list.join(', '))}</small>` : ''}${x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener">Details</a>` : ''}</div>`));
-  (d.powercuts || []).filter(p => p.planned).forEach(p => box.push(`<div class="alert info">Planned power work: ${esc(p.outcodes)} ${esc(p.town)}<small>${p.postcodes} postcodes. Due to finish ${esc(p.eta)}</small>${(p.postcode_list || []).length ? `<small>Postcodes: ${esc(p.postcode_list.join(', '))}</small>` : ''}<a href="${esc(p.link)}" target="_blank" rel="noopener">Details</a></div>`));
+  (d.powercuts || []).filter(p => p.planned).forEach(p => box.push(`<div class="alert info">Planned power work: ${esc(p.outcodes)} ${esc(p.town)}<small>${p.postcodes} postcodes. Due to finish ${esc(p.eta)}</small><a href="${esc(p.link)}" target="_blank" rel="noopener">Details</a></div>`));
   (d.warnings || []).filter(w => !w.local).forEach(w => box.push(`<div class="alert info">${esc(w.title)}, not including Flintshire<small>${esc(w.from)} to ${esc(w.to)}. ${esc(w.areas)}</small><a href="${esc(w.link)}" target="_blank" rel="noopener">Met Office details</a></div>`));
-  document.getElementById('alerts').innerHTML = (a.length ? '' : '<p class="ok">No Met Office warnings, flood alerts or unplanned power cuts for Deeside right now.</p>') + box.join('');
-  const f = d.forecast, hs = upcoming(f);
-  if (hs.length) {
-    const n = hs[0];
-    document.getElementById('now').innerHTML = `<div class="now">${icon(n.code, 72)}<div class="temp">${n.temp}<sup>°C</sup></div>
-      <div class="cond"><b>${esc(n.wx)}</b><span>Feels like ${n.feels}°C. Wind ${n.wind}mph, gusting ${n.gust}mph. ${n.rain ?? 0}% chance of rain</span></div></div>
-      <div class="hours">${hs.slice(1, 25).map(h => `<div class="h">${fmtHour(h.time)}${icon(h.code, 30)}<b>${h.temp}°</b><span class="r">${h.rain ?? 0}%</span><span class="g">${h.gust}mph</span></div>`).join('')}</div>`;
-    const o = d.observed; if (o && o.temp != null && (Date.now() - new Date(o.time)) < 2 * 3600e3) document.getElementById('now').insertAdjacentHTML('beforeend', `<p class="upd">Measured at Hawarden Airport at ${fmtTime(o.time)}: <b>${o.temp}°C</b>, ${esc(o.weather.toLowerCase())}${o.wind_mph != null ? `, wind ${o.wind_mph}mph${o.wind_from && o.wind_from !== 'variable' ? ' from the ' + o.wind_from : ''}` : ''}${o.gust_mph ? `, gusts ${o.gust_mph}mph` : ''}.${o.yesterday ? ` Yesterday: high of ${o.yesterday.high}°C${o.yesterday.rain_reported ? ', with some rain' : ', dry during the day'}.` : ''}</p><p class="upd"><b>Why Hawarden?</b> It is the nearest official weather station to Deeside, at Hawarden Airport beside the Airbus site at Broughton. Readings are taken every half hour while the airport is open, and it is the station used in Met Office records for this area, which is why Hawarden is the name you see when the area makes the hottest or coldest lists.</p>`);
-    document.getElementById('days').innerHTML = (f.days || []).map(x => `<div class="d"><span class="n">${dayName(x.date)}</span>${icon(x.code, 32)}<span class="w">${esc(x.wx)}</span><span class="t"><b>${x.max}°</b> <span>${x.min}°</span></span><span class="r">${x.rain ?? 0}% rain</span></div>`).join('');
-  } else {
-    document.getElementById('nowsec').style.display = document.getElementById('weeksec').style.display = 'none';
+  document.getElementById('alerts').innerHTML = (a.length ? '' : '<p class="allclear">No Met Office warnings, flood alerts or unplanned power cuts for Deeside right now.</p>') + box.join('');
+
+  const f = d.forecast || {}, hs = upcoming(f), o = d.observed, obsOk = o && o.temp != null && (Date.now() - new Date(o.time)) < 2 * 3600e3;
+  if (!hs.length) { ['toprow', 'hourpanel', 'std'].forEach(id => document.getElementById(id).style.display = 'none'); }
+  else {
+    const n = hs[0], t = obsOk ? o.temp : n.temp;
+    const today = (f.days || [])[0];
+    document.getElementById('toprow').innerHTML = `
+      <div class="box"><span class="lbl">Right now</span>
+        <div class="big">${icon(n.code, 64)}<span class="temp">${t}°</span><span class="cond">${esc(n.wx)}</span></div>
+        <p class="say">Feels like ${n.feels}°. ${feelsLine(n)}${today ? ` High of ${today.max}°, low of ${today.min}°.` : ''}</p>
+        ${obsOk ? `<p class="small">Measured at Hawarden Airport at ${fmtTime(o.time)}${o.wind_mph != null ? `, wind ${o.wind_mph}mph${o.wind_from && o.wind_from !== 'variable' ? ' from the ' + esc(o.wind_from) : ''}` : ''}.</p>` : ''}
+      </div>
+      <div class="box blue"><span class="lbl">Rain, next 12 hours</span>
+        <p class="say lead">${rainLine(hs)}</p>
+        <div class="bars" role="img" aria-label="Chance of rain each hour for the next 12 hours">${hs.slice(0, 12).map(h => `<i class="${(h.rain ?? 0) < 50 ? 'lo' : ''}" style="height:${Math.max(4, h.rain ?? 0)}%" title="${fmtHour(h.time)}: ${h.rain ?? 0}%"></i>`).join('')}</div>
+        <div class="ticks"><span>${fmtHour(hs[0].time)}</span><span>Chance of rain each hour</span><span>${fmtHour(hs[Math.min(11, hs.length - 1)].time)}</span></div>
+      </div>`;
+
+    /* Hour strip, with sunrise and sunset dropped into place */
+    const cells = [], first = new Date(hs[0].time), events = [];
+    [0, 1].forEach(k => { const s = sunTimes(new Date(first.getTime() + k * 864e5)); events.push({t: s.rise, w: 'Sunrise'}, {t: s.set, w: 'Sunset'}); });
+    const win = hs.slice(0, 24);
+    win.forEach((h, i) => {
+      cells.push(`<div class="h">${i === 0 ? 'Now' : fmtHour(h.time)}${icon(h.code, 28)}<b>${h.temp}°</b><span class="r">${(h.rain ?? 0) >= 20 ? (h.rain + '%') : ''}</span></div>`);
+      const nxt = win[i + 1]; if (!nxt) return;
+      events.filter(e => e.t > new Date(h.time) && e.t <= new Date(nxt.time)).forEach(e => cells.push(`<div class="h sun">${e.w}<b>${hm(e.t)}</b></div>`));
+    });
+    document.getElementById('hours').innerHTML = cells.join('');
+
+    /* Standard tiles */
+    const day24 = hs.slice(0, 24), wet = day24.filter(h => (h.rain ?? 0) >= 50).length;
+    const now = new Date(), s0 = sunTimes(now), s1 = sunTimes(new Date(now.getTime() - 864e5));
+    const len = (s0.set - s0.rise) / 6e4, lenY = (s1.set - s1.rise) / 6e4, lost = Math.round(lenY - len);
+    const yest = obsOk && o.yesterday && today ? today.max - o.yesterday.high : null;
+    const std = [];
+    std.push(`<div class="tile"><span class="tl">Wind</span><span class="tv">${n.wind}mph</span><span class="say">${windLine(hs)}</span></div>`);
+    std.push(`<div class="tile"><span class="tl">Feels like</span><span class="tv">${n.feels}°</span><span class="say">Actual ${n.temp}°. ${feelsLine(n)}</span></div>`);
+    std.push(`<div class="tile"><span class="tl">Rain, next 24 hours</span><span class="tv">${wet ? wet + (wet === 1 ? ' hour' : ' hours') : 'Dry'}</span><span class="say">${wet ? `Rain likely for about ${wet} of the next 24 hours.` : 'No hours with a high chance of rain.'}</span></div>`);
+    if (obsOk && o.pressure) std.push(`<div class="tile"><span class="tl">Pressure</span><span class="tv">${o.pressure}mb</span><span class="say">${pressureLine(o.pressure)}</span></div>`);
+    std.push(`<div class="tile"><span class="tl">Daylight</span><span class="tv">${hm(s0.rise)} to ${hm(s0.set)}</span><span class="say">${Math.floor(len / 60)} hours ${Math.round(len % 60)} minutes of daylight${lost > 0 ? `, ${lost} minutes less than yesterday` : lost < 0 ? `, ${-lost} minutes more than yesterday` : ''}.</span></div>`);
+    if (yest != null) std.push(`<div class="tile"><span class="tl">Versus yesterday</span><span class="tv">${yest === 0 ? 'Same' : Math.abs(yest) + '° ' + (yest < 0 ? 'colder' : 'warmer')}</span><span class="say">Today's high ${today.max}°. Yesterday reached ${o.yesterday.high}° at Hawarden${o.yesterday.rain_reported ? ', with some rain' : ' and stayed dry by day'}.</span></div>`);
+    document.getElementById('std').innerHTML = std.join('');
   }
+
+  /* Seven days: range bars on one shared scale */
+  const days = (f.days || []).slice(0, 7);
+  if (days.length) {
+    const lo = Math.min(...days.map(x => x.min)), hi = Math.max(...days.map(x => x.max)), span = Math.max(1, hi - lo);
+    document.getElementById('days').innerHTML = days.map(x => `<div class="d"><span class="n">${dayName(x.date)}</span>${icon(x.code, 28)}<span class="rn">${(x.rain ?? 0) >= 20 ? x.rain + '%' : ''}</span><span class="lo">${x.min}°</span><span class="track"><span style="left:${(x.min - lo) / span * 100}%;width:${Math.max(3, (x.max - x.min) / span * 100)}%"></span></span><span class="hi">${x.max}°</span></div>`).join('');
+    const mild = days.reduce((a, b) => (b.max > a.max ? b : a)), cold = days.reduce((a, b) => (b.min < a.min ? b : a)), wetD = days.reduce((a, b) => ((b.rain ?? 0) > (a.rain ?? 0) ? b : a));
+    const bits = [`${dayName(mild.date)} looks the mildest at ${mild.max}°.`, `Coldest night ${dayLabel(cold.date) === 'today' ? 'tonight' : dayLabel(cold.date) === 'tomorrow' ? 'tomorrow night' : dayName(cold.date) + ' night'}, down to ${cold.min}°.`];
+    if ((wetD.rain ?? 0) >= 60) bits.push(`${dayName(wetD.date)} looks the wettest.`);
+    document.getElementById('dayline').textContent = bits.join(' ');
+  }
+
+  /* Only on Deeside.com */
+  const loc = [];
+  if (SHOW_BRIDGE && BR && BR.status && BR.status !== 'unknown') {
+    const st = {open: ['loc', 'Open'], lanes: ['warn', 'Open, lanes closed'], slow: ['warn', 'Open, very slow'], closed: ['bad', 'Closed']}[BR.status] || ['loc', esc(BR.status)];
+    const w = BR.wind, rl = w ? {low: 'Wind closure risk is low.', possible: `A wind closure is possible: gusts up to ${w.peak_gust}mph forecast.`, likely: `A wind closure is likely: gusts of ${w.peak_gust}mph forecast.`}[w.level] : '';
+    loc.push(`<div class="tile ${st[0]}"><span class="tl">Flintshire Bridge</span><span class="tv">${st[1]}</span><span class="say">${rl || ''}</span><a href="https://www.deeside.com/flintshire-bridge/" target="_top">Bridge status</a></div>`);
+  }
+  const fl = d.floods || [];
+  if (d.floods_ok) loc.push(`<div class="tile ${fl.length ? (fl.some(x => x.sev <= 2) ? 'bad' : 'warn') : 'loc'}"><span class="tl">Flood alerts</span><span class="tv">${fl.length ? fl.length + ' in force' : 'None'}</span><span class="say">${fl.length ? esc(fl.map(x => x.area).slice(0, 2).join('; ')) : 'No flood alerts or warnings for Flintshire.'}</span><a href="https://flood-warning.naturalresources.wales/?culture=en-GB" target="_blank" rel="noopener">NRW flood warnings</a></div>`);
+  const wl = (d.warnings || []).filter(x => x.local);
+  if (d.warnings_ok) loc.push(`<div class="tile ${wl.length ? 'warn' : 'loc'}"><span class="tl">Met Office warnings</span><span class="tv">${wl.length ? wl.length + ' for Flintshire' : 'None'}</span><span class="say">${wl.length ? esc(wl.map(x => x.level + ' ' + x.type).join('; ')) : 'No weather warnings for Flintshire.'}</span></div>`);
+  const pc = (d.powercuts || []).filter(p => !p.planned);
+  if (d.powercuts_ok) loc.push(`<div class="tile ${pc.length ? 'warn' : 'loc'}"><span class="tl">Power cuts</span><span class="tv">${pc.length ? pc.length + ' live' : 'None'}</span><span class="say">${pc.length ? esc(pc.map(p => p.outcodes).join(', ')) : 'No unplanned power cuts in Deeside.'}</span></div>`);
+  if (hs.length) {
+    const night = hs.filter(h => { const hr = +new Date(h.time).toLocaleString('en-GB', {timeZone: TZ, hour: 'numeric', hour12: false}); return hr >= 18 || hr <= 9; }).slice(0, 16);
+    const low = night.length ? Math.min(...night.map(h => h.temp)) : null, wetBefore = hs.slice(0, 16).some(h => (h.rain ?? 0) >= 40);
+    if (low != null) {
+      const ice = low <= 0 ? ['warn', 'Frost likely', `Down to ${low}° overnight.${wetBefore ? ' Wet surfaces could freeze.' : ''}`] : (low <= 2 && wetBefore) ? ['warn', 'Ice possible', `Down to ${low}° overnight after rain. Take care on untreated paths.`] : ['loc', 'Unlikely', `Lowest overnight around ${low}°.`];
+      loc.push(`<div class="tile ${ice[0]}"><span class="tl">Ice and gritting</span><span class="tv">${ice[1]}</span><span class="say">${ice[2]}</span><a href="https://www.deeside.com/flintshire-gritting-routes/" target="_top">Is my road gritted?</a></div>`);
+    }
+  }
+  const ht = nextTide(d, 'High');
+  if (ht) loc.push(`<div class="tile loc"><span class="tl">Next high tide</span><span class="tv">${fmtTime(ht.time)}</span><span class="say">${dayName(ht.time)} at Connah's Quay${ht.height ? `, ${ht.height.toFixed(1)}m` : ''}.</span></div>`);
+  document.getElementById('local').innerHTML = loc.join('');
+
+  /* Tides table, as before */
   const t = d.tides;
   if (t && t.events && t.events.length) {
     const nowMs = Date.now(), nextIdx = t.events.findIndex(e => new Date(e.time) > nowMs);
-    const rows = t.events.filter((e, i) => i >= Math.max(0, nextIdx - 1)).slice(0, 12);
+    const rows = t.events.filter((e, i) => i >= Math.max(0, nextIdx - 1)).slice(0, 8);
     document.getElementById('tides').innerHTML = `<table class="tides"><tr><th>Day</th><th>Tide</th><th>Time</th><th>Height</th></tr>${rows.map(e =>
       `<tr class="${t.events.indexOf(e) === nextIdx ? 'next' : ''}"><td>${dayName(e.time)}</td><td class="${e.type === 'High' ? 'hw' : ''}">${e.type} water</td><td>${fmtTime(e.time)}</td><td>${e.height ? e.height.toFixed(1) + 'm' : ''}</td></tr>`).join('')}</table>
-      <p class="tnote">Predicted times and heights. Strong winds and low pressure can push real tides higher than predicted. The Dee at Connah's Quay largely dries at low water, so no low water height is given.</p>`;
-  } else {
-    document.getElementById('tidesec').style.display = 'none';
-  }
+      <p class="small">Predicted times and heights. Strong winds and low pressure can push real tides higher than predicted. The Dee at Connah's Quay largely dries at low water, so no low water height is given.</p>`;
+  } else document.getElementById('tidesec').style.display = 'none';
   size();
 }
 function size() { try { parent.postMessage({deesideWidget: 'weather-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {} }
 addEventListener('resize', size);
-function load() { const p = window.__wx || fetch(DATA + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()); window.__wx = null; p.then(render)
-  .catch(() => { document.getElementById('upd').textContent = 'Could not load the latest data'; }); }
+let LAST = null;
+function load() {
+  const p = window.__wx || fetch(DATA + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()); window.__wx = null;
+  p.then(d => { LAST = d; render(d); }).catch(() => { document.getElementById('upd').textContent = 'Could not load the latest data'; });
+  if (SHOW_BRIDGE) fetch(BRIDGE + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(b => { BR = b; if (LAST) render(LAST); }).catch(() => {});
+}
 load(); setInterval(load, 10 * 60 * 1000);
 </script>
 </body>

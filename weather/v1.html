@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deeside right now: weather, warnings, tides and power cuts</title>
+<link rel="preload" href="weather.json" as="fetch" crossorigin>
+<script>window.__wx = fetch('weather.json?t=' + Math.floor(Date.now() / 60000)).then(function (r) { return r.json(); });</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap"></noscript>
+<link rel="stylesheet" href="../house.css?v=4">
+<style>
+body { background: #fff; }
+.wrap { background: #fff; }
+.top { padding: 4px 0 14px; border-bottom: 4px solid var(--green); display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+h1 { font-size: 30px; font-weight: 800; color: var(--head); letter-spacing: -.5px; line-height: 1.15; }
+.top p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.upd { font-size: 12.5px; color: var(--muted); }
+section { padding: 20px 0; border-bottom: 1px solid var(--rule); }
+h2 { font-size: 19px; font-weight: 800; color: var(--head); margin-bottom: 12px; }
+.alert { padding: 11px 14px; margin-bottom: 8px; font-size: 14.5px; font-weight: 700; line-height: 1.4; border-left: 4px solid; }
+.alert small { display: block; font-weight: 400; font-size: 13px; margin-top: 2px; }
+.alert a { font-weight: 600; font-size: 13px; text-decoration: underline; }
+.alert.red { background: var(--red-bg); color: #7f1212; border-color: var(--red); }
+.alert.amber { background: var(--amber-bg); color: #7c3a03; border-color: #f59e0b; }
+.alert.info { background: #f8f9fa; color: var(--ink); border-color: #ced4da; font-weight: 600; }
+.ok { color: var(--green-dk); font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.now { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.temp { font-size: 64px; font-weight: 800; color: var(--head); letter-spacing: -2px; line-height: 1; }
+.temp sup { font-size: 24px; font-weight: 600; color: var(--muted); letter-spacing: 0; position: relative; top: 8px; vertical-align: top; }
+.cond b { font-size: 20px; display: block; color: var(--head); }
+.cond span { color: var(--muted); font-size: 14px; line-height: 1.6; display: block; }
+.hours { display: flex; overflow-x: auto; margin-top: 16px; border: 1px solid var(--rule); scrollbar-width: thin; }
+.h { flex: 0 0 64px; text-align: center; padding: 8px 2px; font-size: 12px; color: var(--muted); border-right: 1px solid var(--rule); }
+.h svg { display: block; margin: 3px auto; }
+.h b { display: block; color: var(--head); font-size: 16px; }
+.h .r { color: var(--blue); font-size: 11.5px; display: block; }
+.h .g { font-size: 11px; display: block; margin-top: 1px; }
+.days { border-top: 1px solid var(--rule); }
+.d { display: grid; grid-template-columns: 96px 36px 1fr auto 72px; gap: 10px; align-items: center; padding: 8px 4px; border-bottom: 1px solid var(--rule); font-size: 15px; }
+.d .n { font-weight: 700; color: var(--head); } .d .w { color: var(--muted); font-size: 14px; }
+.d .t b { font-size: 16px; color: var(--head); } .d .t span { color: var(--muted); }
+.d .r { color: var(--blue); font-size: 13px; text-align: right; }
+.tides { width: 100%; border-collapse: collapse; font-size: 15px; }
+.tides th { text-align: left; font-size: 12.5px; font-weight: 700; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--rule); }
+.tides td { padding: 8px; border-bottom: 1px solid var(--rule); }
+.tides td.hw { color: var(--blue); font-weight: 700; }
+.tides tr.next td { background: #f6faee; }
+.tnote { color: var(--muted); font-size: 13px; line-height: 1.5; margin-top: 10px; }
+.src { padding: 16px 0 4px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.src a { text-decoration: underline; }
+@media (max-width: 520px) { .d { grid-template-columns: 78px 30px 1fr auto; } .d .w, .d .r { display: none; } h1 { font-size: 25px; } .temp { font-size: 54px; } }
+</style>
+</head>
+<body>
+<script>if (self !== top) document.body.classList.add('embedded');</script>
+<div class="wrap" id="wrap">
+  <div class="top">
+    <div><h1>Deeside right now</h1><p>Weather, warnings, flood alerts, tides and power cuts for Deeside and Flintshire</p></div>
+    <div class="upd" id="upd">Loading…</div>
+  </div>
+  <section><h2>Warnings and disruption</h2><div id="alerts"><p class="upd">Loading the latest warnings…</p></div></section>
+  <section id="nowsec"><h2>Weather now and the next 24 hours</h2><div id="now"><p class="upd">Loading the forecast…</p></div></section>
+  <section id="weeksec"><h2>The next seven days</h2><div class="days" id="days"></div></section>
+  <section id="tidesec"><h2>Tides at Connah's Quay</h2><div id="tides"></div></section>
+  <div class="src">
+    Forecast and weather warnings from the <a href="https://www.metoffice.gov.uk/" target="_blank" rel="noopener">Met Office</a>.
+    Flood alerts and warnings: contains Natural Resources Wales information © Natural Resources Wales and database right.
+    Tidal predictions © Crown copyright, UK Hydrographic Office (ADMIRALTY).
+    Power cut information from <a href="https://powercuts.spenergynetworks.co.uk/" target="_blank" rel="noopener">SP Energy Networks</a>.
+    Updated every 10 minutes by Deeside.com. Always follow official advice in an emergency.
+  </div>
+</div>
+<script src="common.js?v=4"></script>
+<script>
+function render(d) {
+  document.getElementById('upd').textContent = 'Updated ' + fmtTime(d.generated);
+  const a = alerts(d), box = [];
+  a.forEach(x => box.push(`<div class="alert ${x.lvl}">${esc(x.text)}${x.sub ? `<small>${esc(x.sub)}</small>` : ''}${x.list && x.list.length ? `<small>Postcodes: ${esc(x.list.join(', '))}</small>` : ''}${x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener">Details</a>` : ''}</div>`));
+  (d.powercuts || []).filter(p => p.planned).forEach(p => box.push(`<div class="alert info">Planned power work: ${esc(p.outcodes)} ${esc(p.town)}<small>${p.postcodes} postcodes. Due to finish ${esc(p.eta)}</small>${(p.postcode_list || []).length ? `<small>Postcodes: ${esc(p.postcode_list.join(', '))}</small>` : ''}<a href="${esc(p.link)}" target="_blank" rel="noopener">Details</a></div>`));
+  (d.warnings || []).filter(w => !w.local).forEach(w => box.push(`<div class="alert info">${esc(w.title)}, not including Flintshire<small>${esc(w.from)} to ${esc(w.to)}. ${esc(w.areas)}</small><a href="${esc(w.link)}" target="_blank" rel="noopener">Met Office details</a></div>`));
+  document.getElementById('alerts').innerHTML = (a.length ? '' : '<p class="ok">No Met Office warnings, flood alerts or unplanned power cuts for Deeside right now.</p>') + box.join('');
+  const f = d.forecast, hs = upcoming(f);
+  if (hs.length) {
+    const n = hs[0];
+    document.getElementById('now').innerHTML = `<div class="now">${icon(n.code, 72)}<div class="temp">${n.temp}<sup>°C</sup></div>
+      <div class="cond"><b>${esc(n.wx)}</b><span>Feels like ${n.feels}°C. Wind ${n.wind}mph, gusting ${n.gust}mph. ${n.rain ?? 0}% chance of rain</span></div></div>
+      <div class="hours">${hs.slice(1, 25).map(h => `<div class="h">${fmtHour(h.time)}${icon(h.code, 30)}<b>${h.temp}°</b><span class="r">${h.rain ?? 0}%</span><span class="g">${h.gust}mph</span></div>`).join('')}</div>`;
+    const o = d.observed; if (o && o.temp != null && (Date.now() - new Date(o.time)) < 2 * 3600e3) document.getElementById('now').insertAdjacentHTML('beforeend', `<p class="upd">Measured at Hawarden Airport at ${fmtTime(o.time)}: <b>${o.temp}°C</b>, ${esc(o.weather.toLowerCase())}${o.wind_mph != null ? `, wind ${o.wind_mph}mph${o.wind_from && o.wind_from !== 'variable' ? ' from the ' + o.wind_from : ''}` : ''}${o.gust_mph ? `, gusts ${o.gust_mph}mph` : ''}.${o.yesterday ? ` Yesterday: high of ${o.yesterday.high}°C${o.yesterday.rain_reported ? ', with some rain' : ', dry during the day'}.` : ''}</p><p class="upd"><b>Why Hawarden?</b> It is the nearest official weather station to Deeside, at Hawarden Airport beside the Airbus site at Broughton. Readings are taken every half hour while the airport is open, and it is the station used in Met Office records for this area, which is why Hawarden is the name you see when the area makes the hottest or coldest lists.</p>`);
+    document.getElementById('days').innerHTML = (f.days || []).map(x => `<div class="d"><span class="n">${dayName(x.date)}</span>${icon(x.code, 32)}<span class="w">${esc(x.wx)}</span><span class="t"><b>${x.max}°</b> <span>${x.min}°</span></span><span class="r">${x.rain ?? 0}% rain</span></div>`).join('');
+  } else {
+    document.getElementById('nowsec').style.display = document.getElementById('weeksec').style.display = 'none';
+  }
+  const t = d.tides;
+  if (t && t.events && t.events.length) {
+    const nowMs = Date.now(), nextIdx = t.events.findIndex(e => new Date(e.time) > nowMs);
+    const rows = t.events.filter((e, i) => i >= Math.max(0, nextIdx - 1)).slice(0, 12);
+    document.getElementById('tides').innerHTML = `<table class="tides"><tr><th>Day</th><th>Tide</th><th>Time</th><th>Height</th></tr>${rows.map(e =>
+      `<tr class="${t.events.indexOf(e) === nextIdx ? 'next' : ''}"><td>${dayName(e.time)}</td><td class="${e.type === 'High' ? 'hw' : ''}">${e.type} water</td><td>${fmtTime(e.time)}</td><td>${e.height ? e.height.toFixed(1) + 'm' : ''}</td></tr>`).join('')}</table>
+      <p class="tnote">Predicted times and heights. Strong winds and low pressure can push real tides higher than predicted. The Dee at Connah's Quay largely dries at low water, so no low water height is given.</p>`;
+  } else {
+    document.getElementById('tidesec').style.display = 'none';
+  }
+  size();
+}
+function size() { try { parent.postMessage({deesideWidget: 'weather-page', height: document.getElementById('wrap').offsetHeight + 8}, '*'); } catch (e) {} }
+addEventListener('resize', size);
+function load() { const p = window.__wx || fetch(DATA + '?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()); window.__wx = null; p.then(render)
+  .catch(() => { document.getElementById('upd').textContent = 'Could not load the latest data'; }); }
+load(); setInterval(load, 10 * 60 * 1000);
+</script>
+</body>
+</html>
